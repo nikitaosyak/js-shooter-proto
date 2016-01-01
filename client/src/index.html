@@ -1,0 +1,66 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Phaser multiplayer game</title>
+    <script type="text/javascript" src="js/phaser.js"></script>
+    <script type="text/javascript" src="js/Connection.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(
+    1024, 800, Phaser.AUTO, '', 
+    { preload: preload, create: create, update: update }
+    );
+var controls;
+var mySprite;
+
+var connection;
+var i = 0;
+
+var speed = 100;
+
+function preload() {
+    game.load.image('test', 'assets/test.png');
+}
+
+function create() {
+    controls = game.input.keyboard.createCursorKeys();
+    mySprite = game.add.sprite(10, 10, 'test');
+
+    connection = new Connection('188.242.130.83', 3000);
+    connection.connect();
+}
+
+function update() {
+    // if (i < 10 && connection.isReady && !connection.isCheckingRTT) {
+    //     connection.checkRTT();
+    //     i += 1;
+    // }
+    var dt = game.time.physicsElapsed;
+
+    if (controls.left.isDown) {
+        mySprite.x -= dt * speed;
+    }
+    if (controls.right.isDown) {
+        mySprite.x += dt * speed;
+    }
+    if (controls.up.isDown) {
+        mySprite.y -= dt * speed;
+    }
+    if (controls.down.isDown) {
+        mySprite.y += dt * speed;
+    }
+}
+
+</script>
+
+</body>
+</html>
