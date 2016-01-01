@@ -15,6 +15,9 @@ server.on('connection', function(socket) {
     // }
 
     console.log('incoming connection');
+
+    var d = {'id': 'debug', 8080: -1, 'ale': 'suka'};
+    socket.send(JSON.stringify(d));
 })
 
 console.log('server initialized');

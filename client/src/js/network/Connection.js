@@ -1,7 +1,9 @@
 
-Connection = function (host, port) {
+Connection = function (host, port, router) {
     this._host = host;
     this._port = port;
+    this._router = router || new Router();
+
     this._socket = null;
     this._connected = false;
     this._pingTime = 0;
@@ -34,13 +36,16 @@ Connection.prototype = {
     },
 
     _onMessage: function(self, messageEvent) {
-        var data = messageEvent.data;
-        if (data == 'pong') {
+        var rawData = messageEvent.data;
+        if (rawData == 'pong') {
             var rttTime = new Date().getTime() - self._pingTime;
             self._pingTime = 0;
             console.log('rtt time is %i', rttTime);
         } else {
-            console.log('some data came: ' + data);
+            var packet = JSON.parse(rawData);
+            var commandType = packet['id'];
+            console.log('attempting to route command id %s to router: ', commandType);
+            self._router[commandType](packet);
         }
     },
 
