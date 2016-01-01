@@ -7,12 +7,10 @@ server.on('connection', function(socket) {
     socket.on('message', function(message) {
         if (message == 'ping') {
             socket.send('pong');
+        } else {
+            console.log('incoming message: ', message);
         }
     });
-
-    // for (var k in socket) {
-    //     console.log('socket::%s', k);
-    // }
 
     console.log('incoming connection');
 

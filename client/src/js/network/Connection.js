@@ -15,14 +15,14 @@ Connection.prototype = {
 
     connect: function() {
         console.log('starting to connect at %s:%i', this._host, this._port);
-        var self = this;
-        self._socket = new WebSocket('ws://' + self._host + ':' + self._port);
-        var s = self._socket;
+        this._socket = new WebSocket('ws://' + this._host + ':' + this._port);
+        var s = this._socket;
+        var context = this;
 
-        s.onopen = function() { self._onOpen(self); };
-        s.onmessage = function(messageEvent) { self._onMessage(self, messageEvent); };
-        s.onerror = function(data) { self._onError(self, data); };
-        s.onclose = function(closeEvent) { self._onClose(self, closeEvent); };
+        s.onopen = function() { context._onOpen.call(context); };
+        s.onmessage = function(messageEvent) { context._onMessage.call(context, messageEvent); };
+        s.onerror = function(data) { context._onError.call(context, data); };
+        s.onclose = function(closeEvent) { context._onClose.call(context, closeEvent); };
     },
 
     checkRTT: function() {
@@ -31,29 +31,40 @@ Connection.prototype = {
         this._socket.send('ping');
     },
 
-    _onOpen: function(self) {
-        console.log('socket connected to ', self._host, ':', self._port);
+    pushControls: function(velocity, timeDelta) {
+        // console.log('sending new velocity: ', velocity);
+        var velocityDiff = {
+            'id': 'velocityDiff', 
+            'x': velocity.x,
+            'y': velocity.y,
+            'timeDelta': timeDelta
+        };
+        this._socket.send(JSON.stringify(velocityDiff));
     },
 
-    _onMessage: function(self, messageEvent) {
+    _onOpen: function() {
+        console.log('socket connected to ', this._host, ':', this._port);
+    },
+
+    _onMessage: function(messageEvent) {
         var rawData = messageEvent.data;
         if (rawData == 'pong') {
-            var rttTime = new Date().getTime() - self._pingTime;
-            self._pingTime = 0;
+            var rttTime = new Date().getTime() - this._pingTime;
+            this._pingTime = 0;
             console.log('rtt time is %i', rttTime);
         } else {
             var packet = JSON.parse(rawData);
             var commandType = packet['id'];
             console.log('attempting to route command id %s to router: ', commandType);
-            self._router[commandType](packet);
+            this._router[commandType](packet);
         }
     },
 
-    _onError: function(self, data) {
+    _onError: function(data) {
         console.error('error on socket: %s', data);
     },
 
-    _onClose: function(self, closeEvent) {
+    _onClose: function(closeEvent) {
         console.log('socket closed: %s', closeEvent);
     }
 };
