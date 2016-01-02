@@ -25,14 +25,10 @@ module.exports = function(grunt) {
                 tasks: ['default'],
                 options: {
                     spawn: false,
+                    atBegin: true,
                 },
             },
         },
-    });
-
-    grunt.event.on('watch', function(action, filepath, target) {
-        grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
-        grunt.config('uglify');
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');

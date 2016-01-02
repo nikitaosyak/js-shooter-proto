@@ -1,11 +1,11 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "devDependencies": {
     "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-run-node": "*",
     "ws": "*"
-  },
-  "dependencies": {
-    "bufferutil": "^1.2.1"
   }
 }

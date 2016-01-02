@@ -11,11 +11,11 @@ server.on('connection', function(socket) {
             console.log('incoming message: ', message);
         }
     });
-
     console.log('incoming connection');
 
-    var d = {'id': 'debug', 8080: -1, 'ale': 'suka'};
+    var d = {'id': 'debug', 8080: 33, 'ale': 'privet'};
     socket.send(JSON.stringify(d));
-})
+});
+
 
 console.log('server initialized');
