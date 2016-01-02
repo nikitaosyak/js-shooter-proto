@@ -1,0 +1,10 @@
+{
+  "name": "shared_module",
+  "version": "0.0.0",
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*"
+  }
+}
