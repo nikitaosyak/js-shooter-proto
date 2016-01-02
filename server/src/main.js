@@ -13,7 +13,7 @@ server.on('connection', function(socket) {
     });
     console.log('incoming connection');
 
-    var d = {'id': 'debug', 8080: 33, 'ale': 'privet'};
+    var d = {'id': 'debug', 8080: 28, 'ale': 'privet'};
     socket.send(JSON.stringify(d));
 });
 
