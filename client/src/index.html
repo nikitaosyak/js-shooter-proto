@@ -5,9 +5,11 @@
     <title>Phaser multiplayer game</title>
     <script src="//localhost:35729/livereload.js"></script>
     <script type="text/javascript" src="js/phaser.js"></script>
+    <script type="text/javascript" src="js/shared.gen.js"></script>
     <script type="text/javascript" src="js/network/Connection.js"></script>
     <script type="text/javascript" src="js/network/Router.js"></script>
     <script type="text/javascript" src="js/Input.js"></script>
+    <script type="text/javascript" src="js/State.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -21,51 +23,46 @@ var game = new Phaser.Game(
     1024, 600, Phaser.AUTO, '', 
     { preload: preload, create: create, update: update }
     );
-// var controls;
+
+var module = {};
 var input;
 var mySprite;
+var loadingSprite;
 
+var state = new State();
 var connection;
+var router = new Router(state);
 var i = 0;
 
 var speed = 100;
 
 function preload() {
     game.load.image('test', 'assets/test.png');
+    game.load.image('loading', 'assets/loading.png');
 }
 
 function create() {
-    // controls = game.input.keyboard.createCursorKeys();
-    mySprite = game.add.sprite(10, 10, 'test');
+    // mySprite = game.add.sprite(10, 10, 'test');
+    loadingSprite = game.add.sprite(10, 10, 'loading');
 
-    connection = new Connection('188.242.130.83', 3000);
-    connection.connect();
+    connection = new Connection('188.242.130.83', 3000, router);
+    connection.connect(function() {
+        connection.calculateMedian();
+        loadingSprite.visible = false;
+        mySprite = game.add.sprite(-1000, -1000, 'test');
+    });
 
     input = new Input(game, connection.pushControls, connection);
 }
 
 function update() {
-    // if (i < 10 && connection.isReady && !connection.isCheckingRTT) {
-    //     connection.checkRTT();
-    //     i += 1;
-    // }
-    var dt = game.time.elapsed / 1000;
+    if (!connection.isReady || connection.isCalculatingMedian) return;
 
+    var dt = game.time.elapsed / 1000;
     input.update(game.time.elapsed);
 
-
-    // if (controls.left.isDown) {
-    //     mySprite.x -= dt * speed;
-    // }
-    // if (controls.right.isDown) {
-    //     mySprite.x += dt * speed;
-    // }
-    // if (controls.up.isDown) {
-    //     mySprite.y -= dt * speed;
-    // }
-    // if (controls.down.isDown) {
-    //     mySprite.y += dt * speed;
-    // }
+    mySprite.x = state.pos.x;
+    mySprite.y = state.pos.y;
 }
 
 </script>

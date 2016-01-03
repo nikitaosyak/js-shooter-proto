@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         uglify: {
             options: {
                 banner: "/* SHARED LOGIC GENERATED (<%= grunt.template.today('dd-mm-yyyy') %>) */\n",
-                beautify: true
+                beautify: true,
             },
             build: {
                 files: {
@@ -21,9 +21,10 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: files,
+                files: files.concat('gruntfile.js'),
                 tasks: ['default'],
                 options: {
+                    reload: true,
                     spawn: false,
                     atBegin: true,
                 },
