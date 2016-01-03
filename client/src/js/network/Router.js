@@ -16,7 +16,12 @@ Router.prototype = {
 
     welcome: function(message) {
         console.log("incoming welcome message! id obtained:", message.clientId);
-        this._state.injectId(message.clientId);
-        this._state.injectPos(message.startX, message.startY);
+        var me = new Player(message.clientId, message.startX, message.startY, true);
+        this._state.addMe(me);
+    },
+
+    position: function(message) {
+        var targetPlayer = this._state.players[messsage.clientId];
+        targetPlayer.updateBackendPos(message.x, message.y, message.time);
     }
 }

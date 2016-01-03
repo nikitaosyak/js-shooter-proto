@@ -5,6 +5,7 @@ var _READY_STATE_STR = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
 Client = function(socket) {
     this._socket = socket;
     this._id = _clientIdCounter++;
+    this._approxLag = 0;
 };
 Client.prototype.constructor = Client;
 
@@ -19,6 +20,10 @@ Client.prototype =  {
             if (error === undefined) return;
             console.log(this.toString() + "::SEND_ERROR::" + error);
         });
+    },
+
+    setMedianRTT: function(value) {
+        this._approxLag = Math.floor(value/2);
     },
 
     purge: function () {

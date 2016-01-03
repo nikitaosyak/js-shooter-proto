@@ -1,4 +1,5 @@
 var ws = require('ws');
+var time_util = require('./time_util.js');
 var Client = require('./client.js');
 var SendMessage = require('./shared.gen.js').SendMessage;
 
@@ -16,11 +17,20 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     var client = new Client(socket);
     clients[client.id] = client;
 
-    socket.on('message', function(message) {
-        if (message == 'ping') {
+    socket.on('message', function(rawMessage) {
+        if (rawMessage == 'ping') {
             socket.send('pong');
         } else {
-            console.log('incoming message: ', message);
+            var m = JSON.parse(rawMessage);
+            switch(m.id) {
+                case 'medianRTT':
+                    clients[m.clientId].setMedianRTT(m.value);
+                    break;
+                case 'velocityDiff':
+                    console.log('velocitydiff: ', rawMessage);
+                    break;
+            }
+            // console.log('incoming message: ', rawMessage);
         }
     });
 
@@ -33,10 +43,10 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     console.log('incoming connection: ', client.toString());
 
     var startPos = spawnPositions[currentSpawnPos];
-    var welcome = {'id': 'welcome', 'clientId': client.id, 'startX': startPos.x, 'startY': startPos.y};
+    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, time_util.elapsed));
+
     currentSpawnPos += 1;
     if (currentSpawnPos > 3) currentSpawnPos = 0;
-    client.send(JSON.stringify(welcome));
 });
 
 console.log('server initialized');

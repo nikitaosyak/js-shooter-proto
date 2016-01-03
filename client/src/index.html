@@ -8,8 +8,9 @@
     <script type="text/javascript" src="js/shared.gen.js"></script>
     <script type="text/javascript" src="js/network/Connection.js"></script>
     <script type="text/javascript" src="js/network/Router.js"></script>
+    <script type="text/javascript" src="js/network/State.js"></script>
+    <script type="text/javascript" src="js/game/Player.js"></script>
     <script type="text/javascript" src="js/Input.js"></script>
-    <script type="text/javascript" src="js/State.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -61,8 +62,10 @@ function update() {
     var dt = game.time.elapsed / 1000;
     input.update(game.time.elapsed);
 
-    mySprite.x = state.pos.x;
-    mySprite.y = state.pos.y;
+    mySprite.x = state.me.lastPos.x;
+    mySprite.y = state.me.lastPos.y;
+    // mySprite.x = state.pos.x;
+    // mySprite.y = state.pos.y;
 }
 
 </script>
