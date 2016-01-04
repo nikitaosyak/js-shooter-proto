@@ -14,7 +14,7 @@ Router.prototype = {
     },
 
     welcome: function(m) {
-        console.log("incoming welcome message! id obtained:", m.clientId);
+        // console.log("incoming welcome message! id obtained:", m.clientId);
         var me = new Player(m.clientId, m.startX, m.startY, m.time, true);
         Facade.networkState.addMe(me);
     },

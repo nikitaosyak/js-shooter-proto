@@ -9,14 +9,14 @@ Connection = function (host, port, router) {
     this._pingTime = 0;
     this._calculatingMedian = false;
     this._rttHistory = [];
-    console.log('connection created at %s:%i', this._host, this._port);
+    // console.log('connection created at %s:%i', this._host, this._port);
 };
 Connection.prototype.constructor = Connection;
 
 Connection.prototype = {
 
     connect: function(onConnectionEstableashed) {
-        console.log('starting to connect at %s:%i', this._host, this._port);
+        // console.log('starting to connect at %s:%i', this._host, this._port);
         this._socket = new WebSocket('ws://' + this._host + ':' + this._port);
         var s = this._socket;
         var context = this;
@@ -38,7 +38,7 @@ Connection.prototype = {
 
     calculateMedian: function() {
         if (this._calculatingMedian) return;
-        console.log('begin median calculation');
+        // console.log('begin median calculation');
         this._calculatingMedian = true;
         this.checkRTT();
     },
@@ -63,7 +63,7 @@ Connection.prototype = {
                     this._calculatingMedian = false;
                     this._rttHistory = this._rttHistory.sort(SharedUtils.sortAcc);
                     this._socket.send(SendMessage.medianRTT(State.myClientId, this._rttHistory[5]));
-                    console.log('median check complete. history is:', this._rttHistory, 'median is:', this.RTTMedian);
+                    // console.log('median check complete. history is:', this._rttHistory, 'median is:', this.RTTMedian);
                 } else {
                     this.checkRTT();
                 }

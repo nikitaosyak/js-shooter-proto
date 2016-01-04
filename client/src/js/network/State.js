@@ -1,8 +1,9 @@
 
 State = function() {
-    console.log("state created");
+    console.log("network state created");
     this._me = null;
     this._players = {};
+    this.newPlayers = [];
 }
 
 State.prototype.constructor = State;
@@ -17,6 +18,7 @@ State.prototype = {
 
     addPlayer: function(player) {
         this._players[player.id] = player;
+        this.newPlayers.push(player.id);
     },
 
     removePlayerById: function(playerId) {
@@ -31,7 +33,7 @@ State.prototype = {
         if (playerId in this._players) {
             this._players[playerId].updateBackendPos(x, y, time);
         } else {
-            console.log('player %i arrived at %i:%i', playerId, x, y);
+            // console.log('player %i arrived at %i:%i', playerId, x, y);
             this.addPlayer(new Player(playerId, x, y, time, false));
         }
     },
