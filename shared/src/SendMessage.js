@@ -47,7 +47,7 @@ SendMessage.medianRTT = function(clientId, value) {
 };
 
 SendMessage.velocityDiff = function(x, y, timeDelta) {
-    var m = {'id': 'velocityDiff', 'x': x, 'y': y, 'timeDelta': timeDelta};
+    var m = {'id': 'vd', 'x': x, 'y': y, 'td': timeDelta};
     return JSON.stringify(m);
 };
 

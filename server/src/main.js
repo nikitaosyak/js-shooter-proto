@@ -31,7 +31,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                         console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
                     }
                     break;
-                case 'velocityDiff':
+                case 'vd':
                     console.log('velocitydiff: ', rawMessage);
                     break;
             }
@@ -60,7 +60,9 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     if (currentSpawnPos > 3) currentSpawnPos = 0;
 });
 
-console.log('server initialized');
+time_util.onTimer(function(dt) {
+    // console.log('server time update. dt:', dt, '; elapsed:', time_util.elapsed);
+});
 
 function broadcast(message, except) {
     iterateClients(function(clientId, client) {
