@@ -20,8 +20,6 @@ Router.prototype = {
     },
 
     position: function(m) {
-        // var targetPlayer = this._state.players[messsage.clientId];
-        // targetPlayer.updateBackendPos(message.x, message.y, message.time);
         Facade.networkState.addPlayerPos(m.clientId, m.x, m.y, m.time);
     }
 }

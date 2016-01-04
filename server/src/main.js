@@ -1,7 +1,10 @@
 var ws = require('ws');
 var time_util = require('./time_util.js');
 var Client = require('./client.js');
-var SendMessage = require('./shared.gen.js').SendMessage;
+
+var shared = require('./shared.gen.js');
+var SendMessage = shared.SendMessage;
+var queue = shared.queue;
 
 var spawnPositions = [
     {'x': 100, 'y': 100}, 
@@ -32,7 +35,9 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     }
                     break;
                 case 'vd':
-                    console.log('velocitydiff: ', rawMessage);
+                    // console.log('velocitydiff: ', rawMessage);
+                    var client = clients[m.cid];
+                    queue.addStreamAction(time_util.elapsed, client.lag, m.cid, m.x, m.y, m.dt);
                     break;
             }
             // console.log('incoming message: ', rawMessage);

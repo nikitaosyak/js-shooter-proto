@@ -48,4 +48,10 @@ Object.defineProperty(Client.prototype, "id", {
     }
 });
 
+Object.defineProperty(Client.prototype, "lag", {
+    get: function() {
+        return this._approxLag;
+    }
+});
+
 module.exports = Client;

@@ -55,7 +55,6 @@ function create() {
     connection.connect(function() {
         connection.calculateMedian();
         game.world.remove(loadingSprite);
-        mySprite = game.add.sprite(-1000, -1000, 'test');
     });
 
     input = new Input(connection.pushControls, connection);

@@ -7,12 +7,10 @@ State = function() {
 }
 
 State.prototype.constructor = State;
-State.myClientId = -1;
 
 State.prototype = {
     addMe: function(me) {
-        State.myClientId = me.id;
-        this._clientMe = me;
+        this._me = me;
         this.addPlayer(me);
     },
 
@@ -47,12 +45,12 @@ Object.defineProperty(State.prototype, "players", {
 
 Object.defineProperty(State.prototype, "me", {
     get: function() {
-        return this._clientMe;
+        return this._me;
     }
 });
 
-Object.defineProperty(State.prototype, "serverMe", {
+Object.defineProperty(State.prototype, "myClientId", {
     get: function() {
-        return this._serverMe;
+        return this._me.id;
     }
 });
