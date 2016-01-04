@@ -2,10 +2,11 @@
 var _clientIdCounter = 0;
 var _READY_STATE_STR = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
 
-Client = function(socket) {
+Client = function(socket, pos) {
     this._socket = socket;
     this._id = _clientIdCounter++;
     this._approxLag = 0;
+    this.pos = pos;
 };
 Client.prototype.constructor = Client;
 

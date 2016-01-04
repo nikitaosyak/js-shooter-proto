@@ -1,7 +1,6 @@
 
-Router = function(state) {
+Router = function() {
     console.log("router created");
-    this._state = state;
 }
 
 Router.prototype.constructor = Router;
@@ -14,14 +13,15 @@ Router.prototype = {
         }
     },
 
-    welcome: function(message) {
-        console.log("incoming welcome message! id obtained:", message.clientId);
-        var me = new Player(message.clientId, message.startX, message.startY, true);
-        this._state.addMe(me);
+    welcome: function(m) {
+        console.log("incoming welcome message! id obtained:", m.clientId);
+        var me = new Player(m.clientId, m.startX, m.startY, m.time, true);
+        Facade.networkState.addMe(me);
     },
 
-    position: function(message) {
-        var targetPlayer = this._state.players[messsage.clientId];
-        targetPlayer.updateBackendPos(message.x, message.y, message.time);
+    position: function(m) {
+        // var targetPlayer = this._state.players[messsage.clientId];
+        // targetPlayer.updateBackendPos(message.x, message.y, message.time);
+        Facade.networkState.addPlayerPos(m.clientId, m.x, m.y, m.time);
     }
 }

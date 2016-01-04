@@ -1,6 +1,6 @@
 
 Player = function(id, startX, startY, time, isMe) {
-    console.log("player %i created. is me? %s", id, isMe);
+    console.log("player %i created at %i:%i. is me? %s", id, startX, startY, isMe);
 
     this._id = id;
     this._freshHistory = [];

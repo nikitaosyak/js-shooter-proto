@@ -72,7 +72,7 @@ Connection.prototype = {
             }
         } else {
             var packet = JSON.parse(rawData);
-            // console.log('attempting to route command [%s] to router: ', commandType.toUpperCase());
+            // console.log('attempting to route command [%s] to router: ', packet.id.toUpperCase());
             if (packet.id in this._router) {
                 this._router[packet.id](packet);
             } else {

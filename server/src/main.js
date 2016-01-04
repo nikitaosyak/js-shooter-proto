@@ -14,7 +14,8 @@ var currentSpawnPos = 0;
 var clients = {};
 
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
-    var client = new Client(socket);
+    var startPos = spawnPositions[currentSpawnPos];
+    var client = new Client(socket, startPos);
     clients[client.id] = client;
 
     socket.on('message', function(rawMessage) {
@@ -24,7 +25,11 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             var m = JSON.parse(rawMessage);
             switch(m.id) {
                 case 'medianRTT':
-                    clients[m.clientId].setMedianRTT(m.value);
+                    if (m.clientId in clients) {
+                        clients[m.clientId].setMedianRTT(m.value);
+                    } else {
+                        console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
+                    }
                     break;
                 case 'velocityDiff':
                     console.log('velocitydiff: ', rawMessage);
@@ -42,11 +47,30 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     console.log('incoming connection: ', client.toString());
 
-    var startPos = spawnPositions[currentSpawnPos];
-    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, time_util.elapsed));
+    var startTime = time_util.elapsed;
+    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, startTime));
+    broadcast(SendMessage.position(client.id, startPos.x, startPos.y, startTime), client.id);
+    iterateClients(function(iterClientId, iterClient) {
+        if (iterClientId == client.id) return;
+        console.log('sending client', client.id, ' position of', iterClientId);
+        client.send(SendMessage.position(iterClient.id, iterClient.pos.x, iterClient.pos.y, startTime));
+    });
 
     currentSpawnPos += 1;
     if (currentSpawnPos > 3) currentSpawnPos = 0;
 });
 
 console.log('server initialized');
+
+function broadcast(message, except) {
+    iterateClients(function(clientId, client) {
+        if (clientId == except) return;
+        client.send(message);
+    });
+}
+
+function iterateClients(action) {
+    for (var clientId in clients) {
+        action(clientId, clients[clientId]);
+    }
+}

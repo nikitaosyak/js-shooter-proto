@@ -10,7 +10,10 @@
     <script type="text/javascript" src="js/network/Router.js"></script>
     <script type="text/javascript" src="js/network/State.js"></script>
     <script type="text/javascript" src="js/game/Player.js"></script>
-    <script type="text/javascript" src="js/Input.js"></script>
+    <script type="text/javascript" src="js/game/VisualState.js"></script>
+    
+    <script type="text/javascript" src="js/utils/Input.js"></script>
+    <script type="text/javascript" src="js/utils/Factory.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -20,22 +23,20 @@
 <body>
 
 <script type="text/javascript">
+
 var game = new Phaser.Game(
-    1024, 600, Phaser.AUTO, '', 
-    { preload: preload, create: create, update: update }
+        1024, 600, Phaser.AUTO, '', 
+        { preload: preload, create: create, update: update }
     );
 
-var module = {};
+Facade = function() {}
+Facade.prototype.constructor = Facade;
+
+
+var networkState;
+var visualState;
 var input;
-var mySprite;
-var loadingSprite;
-
-var state = new State();
 var connection;
-var router = new Router(state);
-var i = 0;
-
-var speed = 100;
 
 function preload() {
     game.load.image('test', 'assets/test.png');
@@ -43,17 +44,21 @@ function preload() {
 }
 
 function create() {
-    // mySprite = game.add.sprite(10, 10, 'test');
-    loadingSprite = game.add.sprite(10, 10, 'loading');
+    Facade.game = game;
+    Facade.factory = new Factory(game);
+    visualState = Facade.visualState = new VisualState(game);
+    networkState = Facade.networkState = new State();
 
-    connection = new Connection('188.242.130.83', 3000, router);
+    var loadingSprite = game.add.sprite(10, 10, 'loading');
+
+    connection = new Connection('188.242.130.83', 3000);
     connection.connect(function() {
         connection.calculateMedian();
-        loadingSprite.visible = false;
+        game.world.remove(loadingSprite);
         mySprite = game.add.sprite(-1000, -1000, 'test');
     });
 
-    input = new Input(game, connection.pushControls, connection);
+    input = new Input(connection.pushControls, connection);
 }
 
 function update() {
@@ -62,10 +67,12 @@ function update() {
     var dt = game.time.elapsed / 1000;
     input.update(game.time.elapsed);
 
-    mySprite.x = state.me.lastPos.x;
-    mySprite.y = state.me.lastPos.y;
-    // mySprite.x = state.pos.x;
-    // mySprite.y = state.pos.y;
+    visualState.serverMe.x = networkState.me.lastPos.x;
+    visualState.serverMe.y = networkState.me.lastPos.y;
+
+    visualState.me.x = networkState.me.lastPos.x;
+    visualState.me.y = networkState.me.lastPos.y;
+
 }
 
 </script>

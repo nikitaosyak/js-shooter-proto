@@ -13,9 +13,9 @@ var _OPPOSITE_KEYS = {
     68: 65
 };
 
-Input = function(game, onVelocityChange, velocityContext) {
+Input = function(onVelocityChange, velocityContext) {
     console.log("input created");
-    game.input.keyboard.addCallbacks(this, this._onKeyDown, this._onKeyUp, null);
+    Facade.game.input.keyboard.addCallbacks(this, this._onKeyDown, this._onKeyUp, null);
 
     this._onVelocityChange = onVelocityChange;
     this._velocityContext = velocityContext;
