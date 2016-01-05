@@ -5,9 +5,10 @@ Factory = function(game) {
 Factory.prototype.constructor = Factory;
 
 Factory.prototype = {
-    sprite: function(x, y, visual, parent, tint, scale, pivot) {
+    sprite: function(x, y, visual, parent, tint, scale, pivot, alpha) {
         tint = tint || 0xFFFFFF;
         scale = scale || new Phaser.Point(1, 1);
+        alpha = alpha || 1;
 
         var image = this._game.cache.getImage(visual);
         if (pivot) {
@@ -20,6 +21,7 @@ Factory.prototype = {
         s.tint = tint;
         s.scale = scale;
         s.pivot = pivot;
+        s.alpha = alpha;
         if (parent) {
             parent.add(s);
         }

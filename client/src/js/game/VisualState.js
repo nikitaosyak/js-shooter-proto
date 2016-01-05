@@ -69,7 +69,7 @@ VisualState.prototype = {
 
     _doDebugSprite: function(x, y, isMe) {
         var color = isMe ? 0xCCCCCC : 0xAAAAAA;
-        return Facade.factory.sprite(x, y, 'test', this._group, color);
+        return Facade.factory.sprite(x, y, 'test', this._group, color, undefined, undefined, 0.1);
     },
 
     _doClientSprite: function(x, y, isMe) {
