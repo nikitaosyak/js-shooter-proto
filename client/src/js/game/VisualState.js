@@ -70,12 +70,16 @@ VisualState.prototype = {
     _doDebugSprite: function(x, y, isMe) {
         var color = isMe ? 0xCCCCCC : 0xAAAAAA;
         var alpha = Facade.params.serverStateVisible ? 0.2 : 0;
-        return Facade.factory.sprite(x, y, 'test', this._group, color, undefined, undefined, alpha);
+        return Facade.factory.sprite(
+            x, y, 'player_sprite', this._group, color, undefined, undefined, alpha
+            );
     },
 
     _doClientSprite: function(x, y, isMe) {
         var color = isMe ? 0x0000CC : 0xCC0000;
-        return Facade.factory.sprite(x, y, 'test', this._group, color, new Phaser.Point(0.95, 0.95));  
+        return Facade.factory.sprite(
+            x, y, 'player_sprite', this._group, color, new Phaser.Point(0.95, 0.95)
+            );  
     }
 };
 
