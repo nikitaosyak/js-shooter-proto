@@ -16,9 +16,12 @@ Router.prototype = {
     welcome: function(m) {
         var me = new Player(m.clientId, m.startX, m.startY, true);
         Facade.networkState.addMe(me);
+        console.log("incoming welcome message! id obtained:", m.clientId);
+    },
+
+    srvTime: function(m) {
         Facade.srvDeltaTime = Date.now() - m.time;
-        console.log("incoming welcome message! id obtained:", m.clientId, 
-            "; deltaTime:", Facade.srvDeltaTime, "current time: ", m.time);
+        console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
     },
 
     position: function(m) {

@@ -64,6 +64,7 @@ Connection.prototype = {
                     this._rttHistory = this._rttHistory.sort(SharedUtils.sortAcc);
                     this._socket.send(SendMessage.medianRTT(Facade.networkState.myClientId, this._rttHistory[5]));
                     Facade.approxLag = Math.round(this.RTTMedian/2);
+                    console.log('approxLag:', Facade.approxLag);
                     // console.log('median check complete. history is:', this._rttHistory, 'median is:', this.RTTMedian);
                 } else {
                     this.checkRTT();

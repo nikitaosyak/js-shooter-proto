@@ -56,8 +56,10 @@ VisualState.prototype = {
 
         // interpolation will be here:
         for (var clientId in this._interpolatedPlayers) {
-            this._interpolatedPlayers[clientId].x = players[clientId].lastPos.x;
-            this._interpolatedPlayers[clientId].y = players[clientId].lastPos.y;
+            var interpolatedPlayer = this._interpolatedPlayers[clientId];
+            players[clientId].interpolate(interpolatedPlayer);
+            // .x = players[clientId].lastPos.x;
+            // this._interpolatedPlayers[clientId].y = players[clientId].lastPos.y;
         }
 
         var sX = Facade.params.playerSpeedX;

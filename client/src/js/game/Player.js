@@ -7,6 +7,10 @@ Player = function(id, startX, startY, isMe) {
     this._oldHistory = [];
     this._oldHistory.push({'x': startX, 'y': startY, 'time': 0});
     this._isMe = isMe;
+
+    this._drained = true;
+    this._interpolatedTime = -1;
+    this._maximumBufferTime = Facade.params.serverUpdateTime * 2.5;
 }
 
 Player.prototype.constructor = Player;
@@ -14,8 +18,22 @@ Player.prototype.constructor = Player;
 Player.prototype = {
     updateBackendPos: function(x, y, time) {
         this._freshHistory.push({'x': x, 'y': y, 'time': time});
-        console.log(this._freshHistory);
-    }
+    },
+
+    interpolate: function(state) {
+        if (this._drained) {
+            if (this._freshHistory.length >= 2) {
+                this._drained = false;
+            } else {
+                return;
+            }
+        }
+
+        var len = this._freshHistory.length;
+        var currentServerTime = Date.now() - Facade.srvDeltaTime - Facade.approxLag;
+        var approxBufferTime = currentServerTime - this._freshHistory[0].time;
+        console.log(approxBufferTime, 'srv time', currentServerTime, 'lastHistoryEntryTime', this._freshHistory[len-1].time);
+    },
 };
 
 Object.defineProperty(Player.prototype, "id", {

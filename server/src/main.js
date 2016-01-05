@@ -32,6 +32,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     if (m.clientId in clients) {
                         console.log('got player', m.clientId, 'median rtt:', m.value);
                         clients[m.clientId].setMedianRTT(m.value);
+                        clients[m.clientId].send(SendMessage.srvTime(time_util.elapsed));
                     } else {
                         console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
                     }
@@ -55,8 +56,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     console.log('incoming connection: ', client.toString());
 
-    var startTime = time_util.elapsed;
-    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, startTime)); 
+    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y)); 
     broadcast(SendMessage.position(client.id, startPos.x, startPos.y), client.id);
     iterateClients(function(iterClientId, iterClient) {
         if (iterClientId == client.id) return;
@@ -67,6 +67,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     currentSpawnPos += 1;
     if (currentSpawnPos > 3) currentSpawnPos = 0;
 });
+
 
 time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;

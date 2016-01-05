@@ -25,6 +25,13 @@ SendMessage.welcome = function(clientId, x, y, time) {
     return JSON.stringify(m);
 };
 
+SendMessage.srvTime = function(time) {
+    var m = {
+        'id': 'srvTime', 'time': time
+    };
+    return JSON.stringify(m);
+};
+
 SendMessage.position = function(clientId, x, y) {
     var m = {
         'id': 'position', 

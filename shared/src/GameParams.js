@@ -1,6 +1,6 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 300;     // milliseconds
+GameParams.serverUpdateTime = 500;     // milliseconds
 GameParams.playerSpeedX = 180;          // px/sec
 GameParams.playerSpeedY = 180;          // px/sec
 
