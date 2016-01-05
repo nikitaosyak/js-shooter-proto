@@ -21,5 +21,13 @@ Router.prototype = {
 
     position: function(m) {
         Facade.networkState.addPlayerPos(m.clientId, m.x, m.y, m.time);
+    },
+
+    positionBatch: function(m) {
+        // console.log('incoming pos batch: ', m);
+        for (var i = 0; i < m.value.length; i++) {
+            var piece = m.value[i];
+            Facade.networkState.addPlayerPos(piece.clientId, piece.x, piece.y, piece.time);
+        }
     }
 }

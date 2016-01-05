@@ -46,7 +46,7 @@ Input.prototype = {
             if (this._lastVelEnded > 0) {
                 var myLastDt = this._lastVelEnded - this._myVelocityUpdated;
                 this._shitSum += myLastDt;
-                console.log('lastShitsum: ', this._shitSum);
+                // console.log('lastShitsum: ', this._shitSum);
                 this._shitSum = 0;
                 this._lastVelEnded = 0;
                 this._myVelocityUpdated = 0;
@@ -59,6 +59,7 @@ Input.prototype = {
         // console.log('updating for current velocity: dt: ', dt, '; myDt: ', myDt);
         this._myVelocityUpdated = now;
         this._shitSum += myDt;
+        
     },
 
     _onKeyDown: function(e) {

@@ -12,8 +12,8 @@ Player = function(id, startX, startY, time, isMe) {
 Player.prototype.constructor = Player;
 
 Player.prototype = {
-    updateBackendPos: function(x, x, time) {
-        this._freshHistory.push({'x': x, 'y': x, 'time': time});
+    updateBackendPos: function(x, y, time) {
+        this._freshHistory.push({'x': x, 'y': y, 'time': time});
     }
 };
 

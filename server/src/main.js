@@ -66,7 +66,17 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 });
 
 time_util.onTimer(function(dt) {
-    // console.log('server time update. dt:', dt, '; elapsed:', time_util.elapsed);
+    var currentTime = time_util.elapsed;
+    var diff = [];
+    iterateClients(function(clientId, client) {
+        // console.log('moving client', clientId, client.pos);
+        var clientMoved = queue.simulateStream(currentTime, clientId, client.pos, 100, 100);
+        if (!clientMoved) return;
+        diff.push({clientId: clientId, x: client.pos.x, y: client.pos.y, time: currentTime});
+    });
+    if (diff.length === 0) return;
+    // console.log('outcoming diffs: ', diff);
+    broadcast(SendMessage.positionBatch(diff));
 });
 
 function broadcast(message, except) {

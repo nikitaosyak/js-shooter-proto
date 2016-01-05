@@ -3,6 +3,7 @@ StreamAction = function(clientId, velocityX, velocityY, startTime) {
     this.clientId = clientId;
     this.startTime = startTime;
     this.endTime = -1;
+    this.simulationTime = -1;
     this.velocityX = velocityX;
     this.velocityY = velocityY;
 };
@@ -27,6 +28,12 @@ Object.defineProperty(StreamAction.prototype, "length", {
     get: function() {
         if (this.ended) return this.endTime - this.startTime;
         return -1;
+    }
+});
+
+Object.defineProperty(StreamAction.prototype, "wasSimulated", {
+    get: function() {
+        return this.simulationTime !== -1;
     }
 });
 
