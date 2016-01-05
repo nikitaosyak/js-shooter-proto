@@ -45,6 +45,7 @@ function preload() {
 
 function create() {
     Facade.game = game;
+    Facade.params = GameParams;
     Facade.factory = new Factory(game);
     Facade.queue = new ActionQueue();
     networkState = Facade.networkState = new State();

@@ -42,7 +42,7 @@ VisualState.prototype = {
             this._serverPlayers[clientId].y = players[clientId].lastPos.y;
         }
 
-        Facade.queue.simulateStream(Date.now(), 0, this._clientMe.position, 100, 100);
+        Facade.queue.simulateStream(Date.now(), 0, this._clientMe.position, Facade.params.playerSpeedX, Facade.params.playerSpeedY);
     }
 };
 

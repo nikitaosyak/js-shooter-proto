@@ -4,6 +4,7 @@ var Client = require('./client.js');
 
 var shared = require('./shared.gen.js');
 var SendMessage = shared.SendMessage;
+var GameParams = shared.GameParams;
 var queue = shared.queue;
 
 var spawnPositions = [
@@ -70,7 +71,7 @@ time_util.onTimer(function(dt) {
     var diff = [];
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
-        var clientMoved = queue.simulateStream(currentTime, clientId, client.pos, 100, 100);
+        var clientMoved = queue.simulateStream(currentTime, clientId, client.pos, GameParams.playerSpeedX, GameParams.playerSpeedY);
         if (!clientMoved) return;
         diff.push({clientId: clientId, x: client.pos.x, y: client.pos.y, time: currentTime});
     });
