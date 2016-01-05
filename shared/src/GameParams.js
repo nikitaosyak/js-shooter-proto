@@ -7,7 +7,7 @@ GameParams.playerSpeedY = 240;          // px/sec
 //
 // debug values
 //
-GameParams.serverStateVisible = false;
+GameParams.serverStateVisible = true;
 
 if (typeof module !== 'undefined') {
     module.exports.GameParams = GameParams;

@@ -7,8 +7,13 @@ Factory.prototype.constructor = Factory;
 Factory.prototype = {
     sprite: function(x, y, visual, parent, tint, scale, pivot, alpha) {
         tint = tint || 0xFFFFFF;
-        scale = scale || new Phaser.Point(1, 1);
-        if (typeof alpha === 'undefined') alpha = 1;
+        if (typeof scale === 'undefined') {
+            scale = new Phaser.Point(0.75, 0.75);  
+        } else {
+            scale = new Phaser.Point(0.75*scale.x, 0.75*scale.y);
+        }
+        if (typeof alpha === 'undefined') 
+            alpha = 1;
 
         var image = this._game.cache.getImage(visual);
         if (pivot) {
