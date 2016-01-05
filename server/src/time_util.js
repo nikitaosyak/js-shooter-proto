@@ -3,7 +3,7 @@ TimeUtil = function() {
     this._started = Date.now();
     this._lastUpdate = this._started;
     this._callback = null;
-    setInterval(this._onTimer, 50, this);
+    setInterval(this._onTimer, 100, this);
 };
 TimeUtil.prototype.constructor = TimeUtil;
 

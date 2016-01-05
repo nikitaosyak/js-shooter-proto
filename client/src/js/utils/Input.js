@@ -33,7 +33,6 @@ Input.prototype = {
         this._lastVelStarted = 0;
         this._lastVelEnded = 0;
         this._myVelocityUpdated = 0;
-        this._shitSum = 0;
         this._downHistory = [];
         this._downKeys = {};
         for (var k in _KEY_TO_VEL) {
@@ -42,24 +41,17 @@ Input.prototype = {
     },
     
     update: function(dt) {
+        this._queue
         if (this._velocity.isZero()) {
             if (this._lastVelEnded > 0) {
-                var myLastDt = this._lastVelEnded - this._myVelocityUpdated;
-                this._shitSum += myLastDt;
-                // console.log('lastShitsum: ', this._shitSum);
-                this._shitSum = 0;
                 this._lastVelEnded = 0;
                 this._myVelocityUpdated = 0;
             }
             return;
         }
 
-        var now = Date.now();
-        var myDt = now - this._myVelocityUpdated;
         // console.log('updating for current velocity: dt: ', dt, '; myDt: ', myDt);
-        this._myVelocityUpdated = now;
-        this._shitSum += myDt;
-        
+        this._myVelocityUpdated = Date.now();
     },
 
     _onKeyDown: function(e) {
@@ -111,8 +103,10 @@ Input.prototype = {
                 ts = now - this._lastVelStarted;
             }
             this._onVelocityChange.call(this._velocityContext, this._velocity, ts);
+            Facade.queue.addStreamAction(Date.now(), 0, 0, this._velocity.x, this._velocity.y, ts)
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;
+
 
             if (this._velocity.isZero()) {
                 this._lastVelStarted = 0;

@@ -14,7 +14,7 @@ ActionQueue.prototype = {
         };
         var finalizeAction = function(la, cid, dt) {
             la.endTime = la.startTime + dt;
-            // console.log("finalizing last action [", cid, "] at [", la.endTime, "], action len: ", la.length);
+    // console.log("finalizing last action [", cid, "] at [", la.endTime, "], action len: ", la.length);
         };
 
         var lastAction = this._getLastStreamAction(clientId);
@@ -66,8 +66,8 @@ ActionQueue.prototype = {
             startTime = action.simulationTime;
             if (action.ended) {
                 if (currentTime > action.endTime) { // rollback
-                    var backwardTime = action.simulationTime - action.startTime;
-                    this._simulateTimeSpan(backwardTime, clientState, sX, sY, -action.velocityX, -action.velocityY);
+                    var dt = action.simulationTime - action.startTime;
+                    this._simulateTimeSpan(dt, clientState, sX, sY, -action.velocityX, -action.velocityY);
                     startTime = action.startTime;
                     endTime = action.endTime;
                 } else {

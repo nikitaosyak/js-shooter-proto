@@ -41,6 +41,8 @@ VisualState.prototype = {
             this._serverPlayers[clientId].x = players[clientId].lastPos.x;
             this._serverPlayers[clientId].y = players[clientId].lastPos.y;
         }
+
+        Facade.queue.simulateStream(Date.now(), 0, this._clientMe.position, 100, 100);
     }
 };
 
