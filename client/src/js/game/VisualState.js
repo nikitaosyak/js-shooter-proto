@@ -57,7 +57,7 @@ VisualState.prototype = {
         // interpolation will be here:
         for (var clientId in this._interpolatedPlayers) {
             var interpolatedPlayer = this._interpolatedPlayers[clientId];
-            players[clientId].interpolate(interpolatedPlayer);
+            players[clientId].interpolate(interpolatedPlayer, dt);
             // .x = players[clientId].lastPos.x;
             // this._interpolatedPlayers[clientId].y = players[clientId].lastPos.y;
         }
@@ -69,7 +69,8 @@ VisualState.prototype = {
 
     _doDebugSprite: function(x, y, isMe) {
         var color = isMe ? 0xCCCCCC : 0xAAAAAA;
-        return Facade.factory.sprite(x, y, 'test', this._group, color, undefined, undefined, 0.1);
+        var alpha = Facade.params.serverStateVisible ? 0.2 : 0;
+        return Facade.factory.sprite(x, y, 'test', this._group, color, undefined, undefined, alpha);
     },
 
     _doClientSprite: function(x, y, isMe) {

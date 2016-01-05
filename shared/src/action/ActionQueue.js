@@ -65,13 +65,13 @@ ActionQueue.prototype = {
         if (action.wasSimulated) {
             startTime = action.simulationTime;
             if (action.ended) {
-                if (currentTime > action.endTime) { // rollback
+                if (currentTime >= action.endTime) { // rollback
                     var dt = action.simulationTime - action.startTime;
                     this._simulateTimeSpan(dt, clientState, sX, sY, -action.velocityX, -action.velocityY);
                     startTime = action.startTime;
                     endTime = action.endTime;
                 } else {
-                    console.log('kokoko'); //seems like an impossible scenario
+                    console.log('kokoko', action.endTime - currentTime); //seems like an impossible scenario
                     endTime = action.endTime;
                     action.simulationTime = action.endTime;
                 }
