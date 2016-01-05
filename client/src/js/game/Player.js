@@ -1,11 +1,11 @@
 
-Player = function(id, startX, startY, time, isMe) {
+Player = function(id, startX, startY, isMe) {
     console.log("player %i created at %i:%i. is me? %s", id, startX, startY, isMe);
 
     this._id = id;
     this._freshHistory = [];
     this._oldHistory = [];
-    this._freshHistory.push({'x': startX, 'y': startY, 'time': time});
+    this._oldHistory.push({'x': startX, 'y': startY, 'time': 0});
     this._isMe = isMe;
 }
 
@@ -14,6 +14,7 @@ Player.prototype.constructor = Player;
 Player.prototype = {
     updateBackendPos: function(x, y, time) {
         this._freshHistory.push({'x': x, 'y': y, 'time': time});
+        console.log(this._freshHistory);
     }
 };
 

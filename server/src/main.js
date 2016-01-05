@@ -30,6 +30,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             switch(m.id) {
                 case 'medianRTT':
                     if (m.clientId in clients) {
+                        console.log('got player', m.clientId, 'median rtt:', m.value);
                         clients[m.clientId].setMedianRTT(m.value);
                     } else {
                         console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
@@ -45,6 +46,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
         }
     });
 
+
     socket.on('close', function() {
         console.log('client', client.toString(), 'leaving: removing from clients');
         delete clients[client.id];
@@ -54,12 +56,12 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     console.log('incoming connection: ', client.toString());
 
     var startTime = time_util.elapsed;
-    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, startTime));
-    broadcast(SendMessage.position(client.id, startPos.x, startPos.y, startTime), client.id);
+    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, startTime)); 
+    broadcast(SendMessage.position(client.id, startPos.x, startPos.y), client.id);
     iterateClients(function(iterClientId, iterClient) {
         if (iterClientId == client.id) return;
         console.log('sending client', client.id, ' position of', iterClientId);
-        client.send(SendMessage.position(iterClient.id, iterClient.pos.x, iterClient.pos.y, startTime));
+        client.send(SendMessage.position(iterClient.id, iterClient.pos.x, iterClient.pos.y));
     });
 
     currentSpawnPos += 1;

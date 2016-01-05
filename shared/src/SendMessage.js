@@ -25,10 +25,10 @@ SendMessage.welcome = function(clientId, x, y, time) {
     return JSON.stringify(m);
 };
 
-SendMessage.position = function(clientId, x, y, time) {
+SendMessage.position = function(clientId, x, y) {
     var m = {
         'id': 'position', 
-        'clientId': clientId, 'x': x, 'y': y, 'time': time
+        'clientId': clientId, 'x': x, 'y': y
     };
     return JSON.stringify(m);
 };

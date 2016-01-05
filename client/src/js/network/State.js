@@ -28,12 +28,11 @@ State.prototype = {
     },
 
     addPlayerPos: function(playerId, x, y, time) {
-        if (playerId in this._players) {
-            this._players[playerId].updateBackendPos(x, y, time);
-        } else {
-            // console.log('player %i arrived at %i:%i', playerId, x, y);
-            this.addPlayer(new Player(playerId, x, y, time, false));
-        }
+        this._players[playerId].updateBackendPos(x, y, time);
+    },
+
+    setPlayerPos: function(playerId, x, y) {
+        this.addPlayer(new Player(playerId, x, y, false));
     },
 };
 

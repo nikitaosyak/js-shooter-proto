@@ -9,12 +9,23 @@ VisualState = function(game, networkState) {
     this._serverMe = null;
     this._clientMe = null;
     this._serverPlayers = {};
+    this._interpolatedPlayers = {};
 }
 
 VisualState.prototype.constructor = VisualState;
 
 VisualState.prototype = {
     update: function(dt) {
+        function doDebugSprite(x, y, group) {
+            
+        }
+        function doClientSprite(x, y, group) {
+            var s = doDebugSprite(x, y, group);
+            s.tint = 0x0000CC;
+            s.scale = new Phaser.Point(0.95, 0.95);
+            return s;
+        }
+
         var newPlayersLen = this._networkState.newPlayers.length;
         if (newPlayersLen > 0) {
             for (var i = 0; i < newPlayersLen; i++) {
@@ -23,12 +34,13 @@ VisualState.prototype = {
                 var pos = newPlayer.lastPos;
                 if (newPlayer.isMe) {
                     console.log('adding visual for myself!');
-                    this._serverMe = Facade.factory.sprite(pos.x, pos.y, 'test', this._group, 0xCCCCCC);
+                    this._serverMe = this._doDebugSprite(pos.x, pos.y, true);
                     this._serverPlayers[newPlayerId] = this._serverMe;
-                    this._clientMe = Facade.factory.sprite(pos.x, pos.y, 'test', this._group, 0x0000CC, new Phaser.Point(0.95, 0.95));
+                    this._clientMe = this._doClientSprite(pos.x, pos.y, true);
                 } else {
                     console.log('adding visual for player', newPlayerId);
-                    this._serverPlayers[newPlayerId] = Facade.factory.sprite(pos.x, pos.y, 'test', this._group, 0xCCCCCC);
+                    this._serverPlayers[newPlayerId] = this._doDebugSprite(pos.x, pos.y, false);
+                    this._interpolatedPlayers[newPlayerId] = this._doClientSprite(pos.x, pos.y, false);
                 }
             }
         }
@@ -42,7 +54,25 @@ VisualState.prototype = {
             this._serverPlayers[clientId].y = players[clientId].lastPos.y;
         }
 
-        Facade.queue.simulateStream(Date.now(), 0, this._clientMe.position, Facade.params.playerSpeedX, Facade.params.playerSpeedY);
+        // interpolation will be here:
+        for (var clientId in this._interpolatedPlayers) {
+            this._interpolatedPlayers[clientId].x = players[clientId].lastPos.x;
+            this._interpolatedPlayers[clientId].y = players[clientId].lastPos.y;
+        }
+
+        var sX = Facade.params.playerSpeedX;
+        var sY = Facade.params.playerSpeedY;
+        Facade.queue.simulateStream(Date.now(), 0, this._clientMe.position, sX, sY);
+    },
+
+    _doDebugSprite: function(x, y, isMe) {
+        var color = isMe ? 0xCCCCCC : 0xAAAAAA;
+        return Facade.factory.sprite(x, y, 'test', this._group, color);
+    },
+
+    _doClientSprite: function(x, y, isMe) {
+        var color = isMe ? 0x0000CC : 0xCC0000;
+        return Facade.factory.sprite(x, y, 'test', this._group, color, new Phaser.Point(0.95, 0.95));  
     }
 };
 

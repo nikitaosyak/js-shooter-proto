@@ -31,6 +31,8 @@ var game = new Phaser.Game(
 
 Facade = function() {}
 Facade.prototype.constructor = Facade;
+Facade.srvDeltaTime = -1; // will be calculated on welcome packet
+Facade.approxLag = -1; // will be calculated in connection
 
 
 var networkState;

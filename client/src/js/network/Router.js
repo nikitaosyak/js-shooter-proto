@@ -14,13 +14,15 @@ Router.prototype = {
     },
 
     welcome: function(m) {
-        // console.log("incoming welcome message! id obtained:", m.clientId);
-        var me = new Player(m.clientId, m.startX, m.startY, m.time, true);
+        var me = new Player(m.clientId, m.startX, m.startY, true);
         Facade.networkState.addMe(me);
+        Facade.srvDeltaTime = Date.now() - m.time;
+        console.log("incoming welcome message! id obtained:", m.clientId, 
+            "; deltaTime:", Facade.srvDeltaTime, "current time: ", m.time);
     },
 
     position: function(m) {
-        Facade.networkState.addPlayerPos(m.clientId, m.x, m.y, m.time);
+        Facade.networkState.setPlayerPos(m.clientId, m.x, m.y);
     },
 
     positionBatch: function(m) {
