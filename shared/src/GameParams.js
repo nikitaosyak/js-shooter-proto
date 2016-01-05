@@ -1,8 +1,8 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 200;     // milliseconds
-GameParams.playerSpeedX = 80;          // px/sec
-GameParams.playerSpeedY = 80;          // px/sec
+GameParams.serverUpdateTime = 300;     // milliseconds
+GameParams.playerSpeedX = 180;          // px/sec
+GameParams.playerSpeedY = 180;          // px/sec
 
 if (typeof module !== 'undefined') {
     module.exports.GameParams = GameParams;

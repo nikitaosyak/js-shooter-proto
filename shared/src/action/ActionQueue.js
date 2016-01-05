@@ -95,11 +95,12 @@ ActionQueue.prototype = {
     _simulateTimeSpan: function(timespan, state, sX, sY, vX, vY) {
         var isAngle = vX !== 0 && vY !== 0;
         if (isAngle) {
+            // рассчет для частного случая. говно конечно.
             var vxSign = vX;
             var vySign = vY;
-            var sqrtVel = Math.sqrt(vX*vX + vY*vY);
-            vX = sqrtVel * vxSign;
-            vY = sqrtVel * vySign;
+            var hipVel = 1 * Math.cos(45 * Math.PI / 180);
+            vX = hipVel * vxSign;
+            vY = hipVel * vySign;
         }
         var dt = timespan/1000;
         state.x += sX * vX * dt;
