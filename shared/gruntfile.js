@@ -11,6 +11,7 @@ module.exports = function(grunt) {
             options: {
                 banner: "/* SHARED LOGIC GENERATED (<%= grunt.template.today('dd-mm-yyyy') %>) */\n",
                 beautify: true,
+                mangle: false
             },
             build: {
                 files: {
@@ -36,5 +37,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['jshint', 'uglify']);
+    grunt.registerTask('default', ['uglify']);
 }

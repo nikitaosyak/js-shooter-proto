@@ -1,0 +1,96 @@
+<!doctype html> 
+<html lang="en"> 
+<style>
+    canvas { /* float below */
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+</style>
+<head> 
+    <meta charset="UTF-8" />
+    <title>chipmunk test</title>
+    <script src="//localhost:35729/livereload.js"></script>
+    <script type="text/javascript" src="js/shared.gen.js"></script>
+</head>
+<body>
+
+<canvas width='1000', height='1000'></canvas>
+
+<script type="text/javascript">
+
+var v = cp.v;
+var ctx = document.getElementsByTagName('canvas')[0].getContext('2d');
+var vx = 0;
+var vy = 0;
+
+var space = new cp.Space();
+space.damping = 0;
+// space.gravity = v(0, 0);
+// space.sleepTimeThreshold = 0.5;
+// space.collisionSlop = 0.5;
+// space.sleepTimeThreshold = 0.5;
+
+var width = 50;
+var height = 60;
+var mass = width * height * 1/1000;
+
+// var b = space.addBody(new cp.Body(20, 0.1));
+// b.setPos(v(50, 80));
+// var c = space.addShape(new cp.CircleShape(b, 30, v(0, 0)));
+
+var body;
+for (var i = 1; i <= 2; i++) {
+    var radius = 20;
+    mass = 10;
+    body = space.addBody(new cp.Body(10, 1));
+    body.setPos(v(200 + i * 50, (2 * radius + 5) * 2));
+    var circle = space.addShape(new cp.CircleShape(body, radius, v(0, 0)));
+    // circle.setElasticity(0);
+    // circle.setFriction(0);
+}
+
+var time = Date.now();
+window.setInterval(function(){
+    var now = Date.now();
+    var dt = now - time;
+    time = now;
+
+    ctx.clearRect(0, 0, 1000, 1000);
+
+    // console.log(dt);
+    body.setVel(new cp.Vect(vx * 0.1, vy * 0.1));
+    space.step(10);
+
+    this.space.eachShape(function(shape) {
+        ctx.beginPath();
+        ctx.arc(shape.tc.x, shape.tc.y, shape.r, 0, 2*Math.PI, false);
+        ctx.fill();
+        ctx.stroke();
+    });
+
+}, 16);
+
+
+document.onkeypress = function(event) {
+    // console.log(event.keyCode);
+    if (event.keyCode == 97) {
+        vx = -1;
+    } 
+    if (event.keyCode == 100) {
+        vx = 1;
+    }
+    if (event.keyCode == 115) {
+        vy = 1;
+    }
+    if (event.keyCode == 119) {
+        vy = -1;
+    }
+};
+
+
+</script>
+
+</body>
+</html>
