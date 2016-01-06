@@ -39,8 +39,13 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     break;
                 case 'vd':
                     // console.log('velocitydiff: ', rawMessage);
-                    var client = clients[m.cid];
-                    queue.addStreamAction(time_util.elapsed, client.lag, m.cid, m.x, m.y, m.dt);
+                    queue.addStreamAction(
+                        time_util.elapsed, clients[m.cid].lag, m.cid, m.x, m.y, m.dt
+                    );
+                    break;
+                case 'pointer':
+                    clients[m.cid].pointer.x = m.x;
+                    clients[m.cid].pointer.y = m.y;
                     break;
             }
             // console.log('incoming message: ', rawMessage);
@@ -74,9 +79,22 @@ time_util.onTimer(function(dt) {
     var diff = [];
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
+        var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
         var clientMoved = queue.simulateStream(currentTime, clientId, client.pos, GameParams.playerSpeedX, GameParams.playerSpeedY);
-        if (!clientMoved) return;
-        diff.push({clientId: clientId, x: client.pos.x, y: client.pos.y, time: currentTime});
+        // if (!clientMoved) return;
+        if (!clientMoved && !addPointerToDiff) return;
+        var d = {clientId: clientId, time:currentTime};
+        if (clientMoved) {
+            d.x = client.pos.x;
+            d.y = client.pos.y;
+        }
+        if (addPointerToDiff) {
+            d.px = client.pointer.x;
+            d.py = client.pointer.y;
+            client.lastSentPointer.x = client.pointer.x;
+            client.lastSentPointer.y = client.pointer.y;
+        }
+        diff.push(d);
     });
     if (diff.length === 0) return;
     // console.log('outcoming diffs: ', diff);

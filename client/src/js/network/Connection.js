@@ -49,7 +49,9 @@ Connection.prototype = {
     },
 
     sendPointer: function(x, y) {
-        // console.log('sending pointer ', x, y);
+        x = Math.round(x);
+        y = Math.round(y);
+        this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y))
     },
 
     _onOpen: function() {

@@ -11,6 +11,9 @@ Player = function(id, startX, startY, isMe) {
     this._drained = true;
     this._startSimulationTimeDiff = -1;
     this._targetSimulationTime = -1;
+
+    this._serverPointer = {x:-1, y:-1, time:-1};
+    this._currentPointer = {x:-1, y:-1, time:-1};
 }
 
 Player.prototype.constructor = Player;
@@ -19,9 +22,28 @@ Player.prototype = {
     updateBackendPos: function(x, y, time) {
         this._freshHistory.push({'x': x, 'y': y, time: time, simulatedTime: -1});
     },
+    updatePointerPosition: function(x, y, time) {
+        this._serverPointer.x = x;
+        this._serverPointer.y = y;
+        this._serverPointer.time = time;
+        if (this._currentPointer.x == -1 && this._currentPointer.y == -1) {
+            this._currentPointer.x = x;
+            this._currentPointer.y = y;
+            this._currentPointer.time = time;
+        }
+    },
 
     interpolate: function(state, dt) {
-        var start = Date.now();
+        var currentServerTime = Date.now() - Facade.srvDeltaTime - Facade.approxLag;
+        if (this._currentPointer.time < this._serverPointer.time) {
+            // console.log(this._serverPointer.time, currentServerTime);
+
+            // if (this._currentPointer.time === -1) {
+            // this._currentPointer.time = currentServerTime - dt;
+            // this._currentPointer.
+            // }
+        }
+
         var len = this._freshHistory.length;
         if (this._drained) {
             if (len >= 2) {
@@ -31,7 +53,7 @@ Player.prototype = {
             }
         }
 
-        var currentServerTime = Date.now() - Facade.srvDeltaTime - Facade.approxLag;
+        
         var approxBufferTime = currentServerTime - this._freshHistory[0].time;
 
         var prevPosition = this._oldHistory[this._oldHistory.length-1];
@@ -105,6 +127,12 @@ Object.defineProperty(Player.prototype, "lastPos", {
             return this._freshHistory[freshLen-1];
         }
         return this._oldHistory[this._oldHistory.length-1];
+    }
+});
+
+Object.defineProperty(Player.prototype, "lastPointerPos", {
+    get: function() {
+        return this._serverPointer;
     }
 });
 

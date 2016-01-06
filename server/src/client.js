@@ -7,6 +7,8 @@ Client = function(socket, pos) {
     this._id = _clientIdCounter++;
     this._approxLag = 0;
     this.pos = pos;
+    this.lastSentPointer = {x:-1, y:-1};
+    this.pointer = {x:-1, y:-1};
 };
 Client.prototype.constructor = Client;
 

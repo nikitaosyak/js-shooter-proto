@@ -30,9 +30,15 @@ Router.prototype = {
 
     positionBatch: function(m) {
         // console.log('incoming pos batch: ', m);
+        var ns = Facade.networkState;
         for (var i = 0; i < m.value.length; i++) {
             var piece = m.value[i];
-            Facade.networkState.addPlayerPos(piece.clientId, piece.x, piece.y, piece.time);
+            if ('x' in piece) {
+                ns.addPlayerPos(piece.clientId, piece.x, piece.y, piece.time);
+            }
+            if ('px' in piece) {
+                ns.setPointerLocation(piece.clientId, piece.px, piece.py, piece.time);
+            }
         }
     }
 }

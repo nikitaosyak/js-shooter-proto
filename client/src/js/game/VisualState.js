@@ -32,6 +32,10 @@ VisualState.prototype = {
             if (player.isMe) continue;
             player.interpolate(playerVisual.view, dt);
             playerVisual.arrow.position = playerVisual.view.position;
+
+            // pointer display
+            var r = this._calcArrowRotation(playerVisual.view, player.lastPointerPos);
+            playerVisual.arrow.rotation = r;
         }
 
         // client prediction for myself:

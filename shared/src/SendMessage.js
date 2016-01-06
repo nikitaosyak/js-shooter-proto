@@ -12,6 +12,10 @@ SendMessage.debug = function() {
     return JSON.stringify(m);
 };
 
+SendMessage.pointer = function(clientId, x, y) {
+    return JSON.stringify({id:"pointer", cid:clientId, x:x, y:y});
+};
+
 
 //
 // Server messages
