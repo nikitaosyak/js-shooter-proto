@@ -64,7 +64,7 @@ function create() {
         game.world.remove(loadingSprite);
     });
 
-    input = new Input(connection.pushControls, connection);
+    input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
 }
 
 function update() {

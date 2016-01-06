@@ -14,6 +14,9 @@ VisualState.prototype.constructor = VisualState;
 
 VisualState.prototype = {
     update: function(dt) {
+        // float xDiff = p2.X - p1.X; 
+        // float yDiff = p2.Y - p1.Y; 
+        // return Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
         this._addNewPlayers();
         this._removeLeftPlayers();
 

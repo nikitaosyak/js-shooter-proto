@@ -43,9 +43,13 @@ Connection.prototype = {
         this.checkRTT();
     },
 
-    pushControls: function(v, td) {
+    sendVelocity: function(v, td) {
         var m = SendMessage.velocityDiff(Facade.networkState.myClientId, v.x, v.y, td);
         this._socket.send(m);
+    },
+
+    sendPointer: function(x, y) {
+        // console.log('sending pointer ', x, y);
     },
 
     _onOpen: function() {
