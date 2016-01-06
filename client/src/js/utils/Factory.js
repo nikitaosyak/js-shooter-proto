@@ -8,9 +8,9 @@ Factory.prototype = {
     sprite: function(x, y, visual, parent, tint, scale, pivot, alpha) {
         tint = tint || 0xFFFFFF;
         if (typeof scale === 'undefined') {
-            scale = new Phaser.Point(0.75, 0.75);  
+            scale = new Phaser.Point(1, 1);  
         } else {
-            scale = new Phaser.Point(0.75*scale.x, 0.75*scale.y);
+            scale = new Phaser.Point(scale.x, scale.y);
         }
         if (typeof alpha === 'undefined') 
             alpha = 1;

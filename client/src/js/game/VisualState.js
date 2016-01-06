@@ -29,12 +29,14 @@ VisualState.prototype = {
             // visual interpolation of other players:
             if (player.isMe) continue;
             player.interpolate(playerVisual.view, dt);
+            playerVisual.arrow.position = playerVisual.view.position;
         }
 
         // client prediction for myself:
         var sX = Facade.params.playerSpeedX;
         var sY = Facade.params.playerSpeedY;
         Facade.queue.simulateStream(Date.now(), 0, this._visualMe.view.position, sX, sY);
+        this._visualMe.arrow.position = this._visualMe.view.position;
     },
 
     _addNewPlayers: function() {
