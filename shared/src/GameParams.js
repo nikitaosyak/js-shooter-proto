@@ -9,7 +9,7 @@ GameParams.pointerSendRate = 1000;       // milliseconds
 //
 // debug values
 //
-GameParams.serverStateVisible = true;
+GameParams.serverStateVisible = false;
 
 if (typeof module !== 'undefined') {
     module.exports.GameParams = GameParams;

@@ -18,7 +18,7 @@ PlayerVisual = function(x, y, group, isMe) {
     this.arrow = Facade.factory.sprite(
         x, y, 'player_dir_arrow', group, color,
         undefined,
-        new Phaser.Point(0.5, 3)
+        new Phaser.Point(-2, 0.5)
     );
 }
 

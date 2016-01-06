@@ -14,22 +14,21 @@ VisualState.prototype.constructor = VisualState;
 
 VisualState.prototype = {
     update: function(dt) {
-        // float xDiff = p2.X - p1.X; 
-        // float yDiff = p2.Y - p1.Y; 
-        // return Math.Atan2(yDiff, xDiff) * (180 / Math.PI);
+        // handle player coming\going
         this._addNewPlayers();
         this._removeLeftPlayers();
 
+        // debug update and interpolation
         var players = this._networkState.players;
         for (var clientId in this._visuals) {
 
-            // debug server movement display:
+            // raw snapshot movement display:
             var player = players[clientId];
             var playerVisual = this._visuals[clientId];
             playerVisual.debugView.x = player.lastPos.x;
             playerVisual.debugView.y = player.lastPos.y;
 
-            // visual interpolation of other players:
+            // interpolated movement
             if (player.isMe) continue;
             player.interpolate(playerVisual.view, dt);
             playerVisual.arrow.position = playerVisual.view.position;
@@ -40,6 +39,10 @@ VisualState.prototype = {
         var sY = Facade.params.playerSpeedY;
         Facade.queue.simulateStream(Date.now(), 0, this._visualMe.view.position, sX, sY);
         this._visualMe.arrow.position = this._visualMe.view.position;
+
+        var pointer = this._game.input.mousePointer;
+        var r = this._calcArrowRotation(this._visualMe.view, pointer);
+        this._visualMe.arrow.rotation = r;
     },
 
     _addNewPlayers: function() {
@@ -60,6 +63,12 @@ VisualState.prototype = {
 
     _removeLeftPlayers: function() {
 
+    },
+
+    _calcArrowRotation: function(p1, p2) {
+        var xd = p2.x - p1.x;
+        var yd = p2.y - p1.y;
+        return Math.atan2(yd, xd);
     }
 };
 
