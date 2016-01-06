@@ -30,11 +30,11 @@ VisualState.prototype = {
 
             // interpolated movement
             if (player.isMe) continue;
-            player.interpolate(playerVisual.view, dt);
+            player.interpolate(playerVisual.view, playerVisual.pointerPos, dt);
             playerVisual.arrow.position = playerVisual.view.position;
 
             // pointer display
-            var r = this._calcArrowRotation(playerVisual.view, player.lastPointerPos);
+            var r = this._calcArrowRotation(playerVisual.view, playerVisual.pointerPos);
             playerVisual.arrow.rotation = r;
         }
 

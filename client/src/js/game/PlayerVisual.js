@@ -1,6 +1,7 @@
 PlayerVisual = function(x, y, group, isMe) {
     this.isMe = isMe;
     this.group = group;
+    this.pointerPos = {x:-1, y:-1};
 
     this.debugView = Facade.factory.sprite(
         x, y, 

@@ -12,8 +12,10 @@ Player = function(id, startX, startY, isMe) {
     this._startSimulationTimeDiff = -1;
     this._targetSimulationTime = -1;
 
+    this._pointerSimulationTimeDiff = -1;
+    this._pointerTargetSimulationTime = -1;
     this._serverPointer = {x:-1, y:-1, time:-1};
-    this._currentPointer = {x:-1, y:-1, time:-1};
+    this._currentPointer = {x:-1, y:-1, simulatedTime:-1};
 }
 
 Player.prototype.constructor = Player;
@@ -29,20 +31,15 @@ Player.prototype = {
         if (this._currentPointer.x == -1 && this._currentPointer.y == -1) {
             this._currentPointer.x = x;
             this._currentPointer.y = y;
-            this._currentPointer.time = time;
+        } else {
+            this._currentPointer.simulatedTime = -1;
         }
     },
 
-    interpolate: function(state, dt) {
+    interpolate: function(state, pointerState, dt) {
         var currentServerTime = Date.now() - Facade.srvDeltaTime - Facade.approxLag;
-        if (this._currentPointer.time < this._serverPointer.time) {
-            // console.log(this._serverPointer.time, currentServerTime);
 
-            // if (this._currentPointer.time === -1) {
-            // this._currentPointer.time = currentServerTime - dt;
-            // this._currentPointer.
-            // }
-        }
+        this._interpolatePointer(pointerState, currentServerTime, dt);
 
         var len = this._freshHistory.length;
         if (this._drained) {
@@ -52,9 +49,6 @@ Player.prototype = {
                 return;
             }
         }
-
-        
-        var approxBufferTime = currentServerTime - this._freshHistory[0].time;
 
         var prevPosition = this._oldHistory[this._oldHistory.length-1];
         var current = this._freshHistory[0];
@@ -69,6 +63,9 @@ Player.prototype = {
                 this._targetSimulationTime = -1;
                 this._startSimulationTimeDiff = -1;
                 this._oldHistory.push(this._freshHistory.shift());
+                if (this._oldHistory.length > 10) {
+                    this._oldHistory.shift();
+                }
 
                 if (this._freshHistory.length === 0) {
                     this._drained = true;
@@ -76,7 +73,6 @@ Player.prototype = {
                 }
                 current = this._freshHistory[0];
                 prevPosition = this._oldHistory[this._oldHistory.length-1];
-                // return this.interpolate(state);
             }
         }
 
@@ -105,8 +101,33 @@ Player.prototype = {
 
         current.simulatedTime = currentServerTime;
         var simTimeDt = (currentServerTime - this._startSimulationTimeDiff)/this._targetSimulationTime;
+        simTimeDt = Math.min(simTimeDt, 1);
         state.x = this._interpolateValue(prevPosition.x, current.x, simTimeDt);
         state.y = this._interpolateValue(prevPosition.y, current.y, simTimeDt);
+    },
+
+    _interpolatePointer: function(state, currentTime, dt) {
+        if (this._currentPointer.x == this._serverPointer.x && this._currentPointer.y == this._serverPointer.y) return;
+        if (this._currentPointer.simulatedTime > 0) {
+            var simulatedServerTime = this._pointerSimulationTimeDiff + this._pointerTargetSimulationTime;
+            if (currentTime > simulatedServerTime) {
+                this._currentPointer.x = this._serverPointer.x;
+                this._currentPointer.y = this._serverPointer.y;
+            }
+        }
+
+        if (this._currentPointer.simulatedTime < 0) {
+            this._currentPointer.x = state.x;
+            this._currentPointer.y = state.y;
+            this._pointerSimulationTimeDiff = currentTime;
+            this._pointerTargetSimulationTime = Facade.params.serverUpdateTime * 1.5;
+        }
+
+        this._currentPointer.simulatedTime = currentTime;
+        var simTimeDt = (currentTime - this._pointerSimulationTimeDiff)/this._pointerTargetSimulationTime;
+        simTimeDt = Math.min(simTimeDt, 1);
+        state.x = this._interpolateValue(this._currentPointer.x, this._serverPointer.x, simTimeDt);
+        state.y = this._interpolateValue(this._currentPointer.y, this._serverPointer.y, simTimeDt);
     },
 
     _interpolateValue: function(a, b, t) {
@@ -133,6 +154,12 @@ Object.defineProperty(Player.prototype, "lastPos", {
 Object.defineProperty(Player.prototype, "lastPointerPos", {
     get: function() {
         return this._serverPointer;
+    }
+});
+
+Object.defineProperty(Player.prototype, "simulatedPointerPos", {
+    get: function() {
+        return this._currentPointer;
     }
 });
 

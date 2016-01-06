@@ -4,7 +4,7 @@ GameParams.serverUpdateTime = 50;       // milliseconds
 GameParams.playerSpeedX = 240;          // px/sec
 GameParams.playerSpeedY = 240;          // px/sec
 
-GameParams.pointerSendRate = 100;       // milliseconds
+GameParams.pointerSendRate = 40;       // milliseconds
 
 //
 // debug values
