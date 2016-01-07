@@ -3,26 +3,20 @@ module.exports = function(grunt) {
         jshint: {
             files: ["src/*.js", "!src/shared.gen.js"]
         },
-        run_node: {
-            start: {
+        run: {
+            node_server: {
                 options: {
-                    stdio: [0, 1, 2],
+                    wait: false
                 },
-                files: { 
-                    src: ['src/main.js'],
-                },
-            },
-        },
-        stop_node: {
-            stop: {}
+                args: ['./src/main.js']
+            }
         },
         watch: {
             scripts: {
-                files: "src/*.*",
-                tasks: ['default'],
+                files: ["src/*.*"],
+                tasks: ['jshint', 'stop:node_server', 'run:node_server'],
                 options: {
-                    spawn: false,
-                    atBegin: true,
+                    spawn: false
                 },
             },
         },
@@ -30,7 +24,8 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-run-node');
+    grunt.loadNpmTasks('grunt-run');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['stop_node', 'jshint', 'run_node']);
+    grunt.registerTask('default', ['jshint', 'run:node_server', 'watch']);
 }
