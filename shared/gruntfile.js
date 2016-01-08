@@ -1,7 +1,7 @@
 
 module.exports = function(grunt) {
 
-    var files = ['src/*.js', 'src/*/*.js'];
+    var files = ['src/GameParams.js', 'src/chipmunk.min.js', 'src/SharedUtils.js', 'src/SendMessage.js', 'src/action/StreamAction.js', 'src/action/ActionQueue.js'];
 
     grunt.initConfig({
         jshint: {
