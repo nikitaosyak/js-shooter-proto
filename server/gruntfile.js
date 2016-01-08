@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         run: {
             node_server: {
                 options: {
-                    wait: false
+                    wait: true
                 },
                 args: ['./src/main.js']
             }
@@ -14,18 +14,20 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ["src/*.*"],
-                tasks: ['jshint', 'stop:node_server', 'run:node_server'],
+                tasks: ['jshint', 'run:node_server'],
                 options: {
-                    spawn: false
+                    spawn: true,
+                    interrupt: true,
+                    reload: true,
+                    atBegin: true
                 },
             },
         },
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-run-node');
     grunt.loadNpmTasks('grunt-run');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['jshint', 'run:node_server', 'watch']);
+    grunt.registerTask('default', ['watch']);
 }
