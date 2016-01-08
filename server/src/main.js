@@ -55,12 +55,14 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     socket.on('close', function() {
         console.log('client', client.toString(), 'leaving: removing from clients');
+        queue.deleteClient(client.id);
         delete clients[client.id];
         client.purge();
     });
 
     console.log('incoming connection: ', client.toString());
 
+    queue.addClient(client.id, startPos.x, startPos.y);
     client.send(SendMessage.welcome(client.id, startPos.x, startPos.y)); 
     broadcast(SendMessage.position(client.id, startPos.x, startPos.y), client.id);
     iterateClients(function(iterClientId, iterClient) {
