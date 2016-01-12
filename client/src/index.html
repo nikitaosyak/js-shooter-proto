@@ -58,7 +58,7 @@ function create() {
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
 
-    connection = new Connection('127.0.0.1', 3000);
+    connection = new Connection('188.242.130.83', 3000);
     connection.connect(function() {
         connection.calculateMedian();
         game.world.remove(loadingSprite);
