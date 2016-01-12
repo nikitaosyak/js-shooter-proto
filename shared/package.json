@@ -5,6 +5,7 @@
     "grunt": "*",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
-    "grunt-contrib-watch": "*"
+    "grunt-contrib-watch": "*",
+    "matter-js": "0.8.0"
   }
 }

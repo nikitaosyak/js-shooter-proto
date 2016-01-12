@@ -5,7 +5,9 @@
     "grunt": "~0.4.5",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-watch": "*",
+    "grunt-run-node": "*",
     "grunt-run": "*",
-    "ws": "*"
+    "ws": "*",
+    "matter-js": "0.8.0"
   }
 }
