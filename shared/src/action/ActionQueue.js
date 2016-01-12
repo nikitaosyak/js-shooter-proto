@@ -7,13 +7,27 @@ ActionQueue = function() {
     this._history = {};
     this._bodies = {};
 
-    var e = Matter.Engine.create();
+    this._engine = Matter.Engine.create();
+    this._world = Matter.World.create({gravity: {x:0, y:0}});
+    this._engine.world = this._world;
+
 };
 ActionQueue.prototype.constructor = ActionQueue;
 
 ActionQueue.prototype = {
     addClient: function(clientId, x, y) {
         console.log('queue: adding client body', clientId, x, y);
+        var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
+        b.friction = 1;
+        b.frictionAir = 1;
+
+        Matter.World.add(this._world, b);
+        this._bodies[clientId] = b;
+
+        var hist = [new StreamAction(clientId, 0, 0, -1)];
+        hist[0].state.x = x;
+        hist[0].state.y = y;
+        this._history[clientId] = hist;
     },
 
     deleteClient: function(clientId) {
@@ -22,10 +36,10 @@ ActionQueue.prototype = {
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
-        var addBrandNew = function(t, cid, a, ct, cl) {
-            a.startTime = ct - cl;
-            // console.log("adding brand new action [", cid, "] at [", a.startTime, "]");
-            t.push(a);
+        var addBrandNew = function(_timeline, _cid, _action, _currentTime, _clientLag) {
+            _action.startTime = _currentTime - _clientLag;
+            // console.log("adding brand new action [", _cid, "] at [", _action.startTime, "]");
+            _timeline.push(_action);
         };
         var finalizeAction = function(la, cid, dt) {
             la.endTime = la.startTime + dt;
@@ -62,7 +76,7 @@ ActionQueue.prototype = {
         var len = timeline.length;
         if (len > 0) {
             for (var i = 0; i < len; i++) {
-                this._simulateStreamPiece(timeline[i], currentTime, clientState, speedX, speedY);
+                this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState, speedX, speedY);
             }
 
             var clientHistory = this._history[clientId];
@@ -77,16 +91,18 @@ ActionQueue.prototype = {
         return false;
     },
 
-    _simulateStreamPiece: function(action, currentTime, clientState, sX, sY) {
+    _simulateStreamPiece: function(clientId, action, currentTime, clientState, sX, sY) {
         var startTime;
         var endTime;
 
         if (action.wasSimulated) {
             startTime = action.simulationTime;
             if (action.ended) {
-                if (currentTime >= action.endTime) { // rollback
-                    var dt = action.simulationTime - action.startTime;
-                    this._simulateTimeSpan(dt, clientState, sX, sY, -action.velocityX, -action.velocityY);
+                if (action.simulationTime > action.endTime) { // rollback
+                    // console.log('rolling back: simulating whole action from start');
+                    var prevState = this._history[clientId][this._history[clientId].length-1].state;
+                    clientState.x = prevState.x;
+                    clientState.y = prevState.y;
                     startTime = action.startTime;
                     endTime = action.endTime;
                 } else {
@@ -107,8 +123,17 @@ ActionQueue.prototype = {
             action.simulationTime = currentTime;
         }
 
+        if (startTime == endTime) {
+            console.log('seems like nothing to do');
+            return;
+        }
+
         // console.log(startTime, endTime);
         this._simulateTimeSpan(endTime - startTime, clientState, sX, sY, action.velocityX, action.velocityY);
+        if (action.ended) {
+            action.state.x = clientState.x;
+            action.state.y = clientState.y;
+        }
     },
 
     _simulateTimeSpan: function(timespan, state, sX, sY, vX, vY) {
@@ -136,7 +161,6 @@ ActionQueue.prototype = {
             return null;
         } 
         this._streamTimeline[clientId] = [];
-        this._history[clientId] = [];
         return null;
     },
 

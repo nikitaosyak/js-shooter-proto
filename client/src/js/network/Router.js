@@ -16,6 +16,7 @@ Router.prototype = {
     welcome: function(m) {
         var me = new Player(m.clientId, m.startX, m.startY, true);
         Facade.networkState.addMe(me);
+        Facade.queue.addClient(0, m.startX, m.startY);
         console.log("incoming welcome message! id obtained:", m.clientId);
     },
 

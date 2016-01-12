@@ -43,7 +43,7 @@ Player.prototype = {
 
         var len = this._freshHistory.length;
         if (this._drained) {
-            if (len >= 2) {
+            if (len >= Facade.params.interpolationSnapshotBuffer) {
                 this._drained = false;
             } else {
                 return;

@@ -31,7 +31,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 case 'medianRTT':
                     if (m.clientId in clients) {
                         console.log('got player', m.clientId, 'median rtt:', m.value);
-                        clients[m.clientId].setMedianRTT(m.value);
+                        clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
                         clients[m.clientId].send(SendMessage.srvTime(time_util.elapsed));
                     } else {
                         console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
