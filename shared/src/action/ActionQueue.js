@@ -1,6 +1,6 @@
-
 if ("undefined" !== typeof exports) {
     var cp = exports;
+    var Matter = exports.Matter;
 }
 
 ActionQueue = function() {
@@ -8,21 +8,14 @@ ActionQueue = function() {
     this._history = {};
     this._bodies = {};
 
-    this._space = new cp.Space();
-    this._space.damping = 0;
+    // var e = Matter.Engine;
 };
 ActionQueue.prototype.constructor = ActionQueue;
 
 ActionQueue.prototype = {
     addClient: function(clientId, x, y) {
         console.log('queue: adding client body', clientId, x, y);
-        var clientBody = this._space.addBody(new cp.Body(10, 1));
-        clientBody.setPos(cp.v(x, y));
-        var clientShape = new cp.CircleShape(clientBody, 20, cp.v(0, 0));
-        this._bodies[clientId] = clientBody;
     },
-    // addInteractibleShape: function(objectId, x, y) {
-    // }
 
     deleteClient: function(clientId) {
         // todo: implement this
@@ -59,96 +52,6 @@ ActionQueue.prototype = {
             }
         } else {
             addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
-        }
-    },
-
-    simulatePhysicalStep: function(currentTime) {
-        var speed = {x: GameParams.playerSpeedX, y:GameParams.playerSpeedY};
-
-        // preform rollback:
-        this._simulateRollback(currentTime, speed);
-
-        // simulating step
-        this._simulateStep(currentTime, speed);
-
-        // clean ended actions
-        for (var timelineKey in this._streamTimeline) {
-            var timeline = this._streamTimeline[timelineKey];
-            var history = this._history[timelineKey];
-            while(timeline.length > 0 && timeline[0].ended) {
-                history.push(timeline.shift());
-                if (history.length > 20) {
-                    history.shift();
-                }
-            }
-        }
-    },
-
-    _simulateRollback: function(currentTime, speed) {
-        //
-        // determine what bodies have oversimulated because of lag and need to be moved back
-        var rollbackCount = 0;
-        var rollbackTimeDict = {};
-        var totalActions = [];
-        for (var timelineKey in this._streamTimeline) {
-            // if timeline have no values, the body is still, skip it.
-            var timeline = this._streamTimeline[timelineKey];
-            if (timeline.length == 0) {
-                this._bodies[timelineKey].vx = this._bodies[timelineKey].vy = 0;
-                continue;
-            }
-
-            // get the oldest action in a timeline and see, if it end simulating with overshoot
-            var lastAction = timeline[0];
-            if (lastAction.wasSimulated && lastAction.ended && action.simulationTime > action.endTime) {
-                totalActions.push(lastAction);
-                this._bodies[timelineKey].vx = -lastAction.velocityX * speed.x;
-                this._bodies[timelineKey].vy = -lastAction.velocityX * speed.y;
-                rollbackCount += 1;
-                var rollbackAmount = action.simulationTime - action.endTime;
-                console.log('client', timelineKey, 'has', rollbackAmount, 'overrun, rolling back');
-                if (rollbackAmount in rollbackTimeDict) {
-                    rollbackTimeDict[rollbackAmount].push(timelineKey);
-                } else {
-                    rollbackTimeDict[rollbackAmount] = [timelineKey];
-                }
-            } else {
-                this._bodies[timelineKey].vx = this._bodies[timelineKey].vy = 0;
-            }
-        }
-
-        if (rollbackCount === 0) return;
-
-        // determine the minimum rollback time amount
-        var minimumRollbackAmount = GameParams.serverUpdateTime * 2;
-        var totalRollbackTimes = 0;
-        for (var rollbackAmountKey in rollbackTimeDict) {
-            totalRollbackTimes += 1;
-            if (minimumRollbackAmount < rollbackAmountKey) continue;
-            minimumRollbackAmount = rollbackAmountKey;
-        }
-
-        var clientIdsWithEndedActions = rollbackTimeDict[minimumRollbackAmount];
-        console.log('rolling back', minimumRollbackAmount, 'milliseconds on', clientIdsWithEndedActions.length, 'clients');
-        this._space.step(timespan);
-
-        for(var i = 0; i < totalActions.length; i++) {
-            totalActions[i].simulationTime -= minimumRollbackAmount;
-        }
-        
-        if (totalRollbackTimes > 1) {
-            this._simulateRollback(currentTime, speed);
-        }
-    },
-
-    _simulateStep: function(currentTime, speed) {
-        for (var timelineKey in this._streamTimeline) {
-            var timeline = this._streamTimeline[timelineKey];
-            if (timeline.length == 0) {
-                this._bodies[timelineKey].vx = this._bodies[timelineKey].vy = 0;
-                continue;
-            }
-            // var action = 
         }
     },
 

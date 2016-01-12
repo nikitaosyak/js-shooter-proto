@@ -7,7 +7,6 @@
     "grunt-contrib-watch": "*",
     "grunt-run-node": "*",
     "grunt-run": "*",
-    "ws": "*",
-    "matter-js": "0.8.0"
+    "ws": "*"
   }
 }

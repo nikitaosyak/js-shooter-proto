@@ -1,9 +1,12 @@
 
 module.exports = function(grunt) {
 
+    var libs = [
+        'src/matter-0.8.0.js'
+    ];
+
     var files = [
         'src/GameParams.js', 
-        'src/chipmunk.min.js', 
         'src/SharedUtils.js', 
         'src/SendMessage.js', 
         'src/action/StreamAction.js', 
@@ -22,8 +25,8 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    '../server/src/shared.gen.js': files,
-                    '../client/src/js/shared.gen.js': files
+                    '../server/src/shared.gen.js': files.concat(libs),
+                    '../client/src/js/shared.gen.js': files.concat(libs)
                 }
             }
         },
@@ -44,5 +47,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['uglify']);
+    grunt.registerTask('default', ['uglify', 'jshint']);
 }
