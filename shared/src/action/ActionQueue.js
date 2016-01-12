@@ -1,5 +1,4 @@
 if ("undefined" !== typeof exports) {
-    var cp = exports;
     var Matter = exports.Matter;
 }
 
@@ -8,7 +7,7 @@ ActionQueue = function() {
     this._history = {};
     this._bodies = {};
 
-    // var e = Matter.Engine;
+    var e = Matter.Engine.create();
 };
 ActionQueue.prototype.constructor = ActionQueue;
 

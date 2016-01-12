@@ -25,14 +25,14 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    '../server/src/shared.gen.js': files.concat(libs),
-                    '../client/src/js/shared.gen.js': files.concat(libs)
+                    '../server/src/shared.gen.js': libs.concat(files),
+                    '../client/src/js/shared.gen.js': libs.concat(files)
                 }
             }
         },
         watch: {
             scripts: {
-                files: files.concat('gruntfile.js'),
+                files: files.concat(libs).concat('gruntfile.js'),
                 tasks: ['default'],
                 options: {
                     reload: true,
