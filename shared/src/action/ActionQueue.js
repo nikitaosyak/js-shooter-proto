@@ -11,9 +11,11 @@ ActionQueue = function() {
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
 
-    // var b = Matter.Bodies.circle(0, 0, 50, null, 32);
-    // Matter.Body.setStatic(true);
-    // Matter.World.add(this._world, b);
+    var b = Matter.Bodies.rectangle(0, 0, 50, 50);
+    // b.friction = 1;
+    // b.frictionAir = 1;
+    Matter.Body.setStatic(b, true);
+    Matter.World.add(this._world, b);
 };
 ActionQueue.prototype.constructor = ActionQueue;
 
@@ -102,7 +104,6 @@ ActionQueue.prototype = {
             startTime = action.simulationTime;
             if (action.ended) {
                 if (action.simulationTime > action.endTime) { // rollback
-                    console.log('rolling back: simulating whole action from start');
                     var prevState = this._history[clientId][this._history[clientId].length-1].state;
                     var body = this._bodies[clientId];
                     Matter.Body.translate(body, {x: prevState.x - body.position.x, y: prevState.y - body.position.y});
@@ -110,22 +111,36 @@ ActionQueue.prototype = {
                     clientState.y = prevState.y;
                     startTime = action.startTime;
                     endTime = action.endTime;
+                    // console.log('rolling back: simulating whole action from start: ', (endTime-startTime));
                 } else {
                     // ended in a nick of time, all ok
                     endTime = action.endTime;
                     action.simulationTime = action.endTime;
+                    // console.log('ended in a nick of time. simulating for', (endTime - startTime));
                 }
             }
         } else {
             startTime = action.startTime;
+            action.simulationTime = action.startTime;
             if (action.ended) {
                 endTime = action.endTime;
                 action.simulationTime = action.endTime;
+                // console.log('simulating at once for', (endTime - startTime));
             } 
         }
+
         if (!action.ended) {
-            endTime = currentTime;
-            action.simulationTime = currentTime;
+            var simAmount = currentTime - action.simulationTime;
+            if (simAmount < GameParams.dStep) {
+                // console.log('not enough time to simulate, will wait');
+                return;
+            } else {
+                var extra = simAmount % GameParams.dStep;
+                endTime = currentTime - extra;
+                action.simulationTime = endTime;
+            }
+            // endTime = currentTime;
+            // action.simulationTime = currentTime;
         }
 
         if (startTime == endTime) {
@@ -142,15 +157,25 @@ ActionQueue.prototype = {
     },
 
     _simulateTimeSpan: function(clientId, timespan, state, vX, vY) {
-        var speed = GameParams.playerSpeed;
-        var resultVelocity = GameParams.playerSpeed / (timespan * 100);
         var body = this._bodies[clientId];
-        body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
-        // Matter.Body.update(body, timespan, 1, 1);
-        Matter.Engine.update(this._engine, timespan);
+        // Matter.Body.update(timespan);
+
+        var extrasim = timespan % GameParams.dStep;
+        var simulations = Math.floor(timespan/GameParams.dStep);
+        var resultVelocity = GameParams.playerSpeed / (GameParams.dStep * 100);
+        for(var i = 0; i < simulations; i++) {
+            body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
+            Matter.Engine.update(this._engine, GameParams.dStep);
+        }
+        // console.log('simulated for', GameParams.dStep, i+1, 'times. total span:', timespan);
+        if (extrasim > 0) {
+            resultVelocity = GameParams.playerSpeed / (extrasim * 100);
+            body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
+            Matter.Engine.update(this._engine, extrasim);
+            // console.log('extrasimulated for', extrasim);   
+        }
         state.x = body.position.x;
         state.y = body.position.y;
-        console.log(state.x, state.y);
     },
 
     _getLastStreamAction: function(clientId) {
