@@ -25,6 +25,7 @@ ActionQueue.prototype = {
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
         b.friction = 1;
         b.frictionAir = 1;
+        b.groupId = 1;
 
         Matter.World.add(this._world, b);
         this._bodies[clientId] = b;
@@ -157,6 +158,16 @@ ActionQueue.prototype = {
     },
 
     _simulateTimeSpan: function(clientId, timespan, state, vX, vY) {
+        var isAngle = vX !== 0 && vY !== 0;
+        if (isAngle) {
+            // рассчет для частного случая. говно конечно.
+            var vxSign = vX;
+            var vySign = vY;
+            var hipVel = 1 * Math.cos(45 * Math.PI / 180);
+            vX = hipVel * vxSign;
+            vY = hipVel * vySign;
+        }
+
         var body = this._bodies[clientId];
         // Matter.Body.update(timespan);
 
