@@ -2,7 +2,7 @@ function GameParams() {}
 
 GameParams.serverUpdateTime = 100;       // milliseconds
 
-GameParams.playerSpeed = 240;
+GameParams.playerSpeed = 400;
 GameParams.playerRadius = 100;
 
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds

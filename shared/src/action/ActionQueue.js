@@ -99,8 +99,10 @@ ActionQueue.prototype = {
             startTime = action.simulationTime;
             if (action.ended) {
                 if (action.simulationTime > action.endTime) { // rollback
-                    // console.log('rolling back: simulating whole action from start');
+                    console.log('rolling back: simulating whole action from start');
                     var prevState = this._history[clientId][this._history[clientId].length-1].state;
+                    var body = this._bodies[clientId];
+                    Matter.Body.translate(body, {x: prevState.x - body.position.x, y: prevState.y - body.position.y});
                     clientState.x = prevState.x;
                     clientState.y = prevState.y;
                     startTime = action.startTime;
@@ -129,27 +131,21 @@ ActionQueue.prototype = {
         }
 
         // console.log(startTime, endTime);
-        var speed = GameParams.playerSpeed;
-        this._simulateTimeSpan(endTime - startTime, clientState, speed, speed, action.velocityX, action.velocityY);
+        this._simulateTimeSpan(clientId, endTime - startTime, clientState, action.velocityX, action.velocityY);
         if (action.ended) {
             action.state.x = clientState.x;
             action.state.y = clientState.y;
         }
     },
 
-    _simulateTimeSpan: function(timespan, state, sX, sY, vX, vY) {
-        var isAngle = vX !== 0 && vY !== 0;
-        if (isAngle) {
-            // рассчет для частного случая. говно конечно.
-            var vxSign = vX;
-            var vySign = vY;
-            var hipVel = 1 * Math.cos(45 * Math.PI / 180);
-            vX = hipVel * vxSign;
-            vY = hipVel * vySign;
-        }
-        var dt = timespan/1000;
-        state.x += sX * vX * dt;
-        state.y += sY * vY * dt;
+    _simulateTimeSpan: function(clientId, timespan, state, vX, vY) {
+        var speed = GameParams.playerSpeed;
+        var resultVelocity = GameParams.playerSpeed / (timespan * 100);
+        var body = this._bodies[clientId];
+        body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
+        Matter.Body.update(body, timespan, 1, 1);
+        state.x = body.position.x;
+        state.y = body.position.y;
     },
 
     _getLastStreamAction: function(clientId) {
