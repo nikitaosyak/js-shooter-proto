@@ -18,6 +18,7 @@
     
     <script type="text/javascript" src="js/utils/Input.js"></script>
     <script type="text/javascript" src="js/utils/Factory.js"></script>
+    <script type="text/javascript" src="js/utils/settings_loader.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -60,17 +61,20 @@ function create() {
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
 
-    connection = new Connection('188.242.130.83', 3000);
-    connection.connect(function() {
-        connection.calculateMedian();
-        game.world.remove(loadingSprite);
-    });
+    loadSettings(function(settings) {
+        console.log('settings loaded:', settings);
+        connection = new Connection(settings.server_address, settings.server_port);
+        connection.connect(function() {
+            connection.calculateMedian();
+            game.world.remove(loadingSprite);
+        });
 
-    input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+        input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+    });
 }
 
 function update() {
-    if (!connection.isReady || connection.isCalculatingMedian) return;
+    if (!connection || !connection.isReady || connection.isCalculatingMedian) return;
 
     var dt = game.time.elapsed;
     input.update(dt);

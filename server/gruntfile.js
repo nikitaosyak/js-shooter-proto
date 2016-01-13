@@ -1,5 +1,19 @@
+var isWindows = process.platform == 'win32';
+var isLinux = process.platform == 'linux'
+
 module.exports = function(grunt) {
     grunt.initConfig({
+        if: {
+            default: {
+                options: {
+                    test: function() {
+                        return isLinux;
+                    }
+                },
+                ifTrue: ['stop_node', 'run_node'],
+                ifFalse: ['run:node_server']
+            }
+        },
         jshint: {
             files: ["src/*.js", "!src/shared.gen.js"]
         },
@@ -18,7 +32,7 @@ module.exports = function(grunt) {
         run: {
             node_server: {
                 options: {
-                    wait: false
+                    wait: true
                 },
                 args: ['./src/main.js']
             }
@@ -26,18 +40,18 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ["src/*.*"],
-                //tasks: ['jshint', 'run:node_server'],
-                tasks: ['jshint', 'stop_node', 'run_node'],
+                tasks: ['jshint', 'if'],
                 options: {
-                    spawn: false,
-                    // interrupt: true,
-                    // reload: true,
+                    spawn: isWindows,
+                    interrupt: isWindows,
+                    reload: isWindows,
                     atBegin: true
                 },
             },
         },
     });
 
+    grunt.loadNpmTasks('grunt-if');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-run');
     grunt.loadNpmTasks('grunt-run-node');
