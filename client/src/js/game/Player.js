@@ -81,7 +81,7 @@ Player.prototype = {
             // console.log(current, prevPosition);
             if (timeSpanBetweenActions > Facade.params.serverUpdateTime*1.1) {
                 var actualDist = Phaser.Point.distance(new Phaser.Point(current.x, current.y), new Phaser.Point(prevPosition.x, prevPosition.y));
-                var approxDt = Math.floor((actualDist / Facade.params.playerSpeedX) * 1000);
+                var approxDt = Math.floor((actualDist / Facade.params.playerSpeed) * 1000);
                 if (approxDt < Facade.params.serverUpdateTime) {
                     // console.log('recovering from fullStop', currentServerTime, dt, oversimulateTime);
                     this._startSimulationTimeDiff = currentServerTime;

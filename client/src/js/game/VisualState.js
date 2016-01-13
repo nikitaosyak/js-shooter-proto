@@ -39,9 +39,7 @@ VisualState.prototype = {
         }
 
         // client prediction for myself:
-        var sX = Facade.params.playerSpeedX;
-        var sY = Facade.params.playerSpeedY;
-        Facade.queue.simulateStream(Date.now(), 0, this._visualMe.view.position, sX, sY);
+        Facade.queue.simulateStream(Date.now(), 0, this._visualMe.view.position);
         this._visualMe.arrow.position = this._visualMe.view.position;
 
         var pointer = this._game.input.mousePointer;

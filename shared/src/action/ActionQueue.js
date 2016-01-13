@@ -68,7 +68,7 @@ ActionQueue.prototype = {
         }
     },
 
-    simulateStream: function(currentTime, clientId, clientState, speedX, speedY) {
+    simulateStream: function(currentTime, clientId, clientState) {
         if (!this._hasCurrentStreamAction(clientId)) return false;
 
         var startState = {x:clientState.x, y:clientState.y};
@@ -76,7 +76,7 @@ ActionQueue.prototype = {
         var len = timeline.length;
         if (len > 0) {
             for (var i = 0; i < len; i++) {
-                this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState, speedX, speedY);
+                this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState);
             }
 
             var clientHistory = this._history[clientId];
@@ -91,7 +91,7 @@ ActionQueue.prototype = {
         return false;
     },
 
-    _simulateStreamPiece: function(clientId, action, currentTime, clientState, sX, sY) {
+    _simulateStreamPiece: function(clientId, action, currentTime, clientState) {
         var startTime;
         var endTime;
 
@@ -124,12 +124,13 @@ ActionQueue.prototype = {
         }
 
         if (startTime == endTime) {
-            console.log('seems like nothing to do');
+            // console.log('seems like nothing to do');
             return;
         }
 
         // console.log(startTime, endTime);
-        this._simulateTimeSpan(endTime - startTime, clientState, sX, sY, action.velocityX, action.velocityY);
+        var speed = GameParams.playerSpeed;
+        this._simulateTimeSpan(endTime - startTime, clientState, speed, speed, action.velocityX, action.velocityY);
         if (action.ended) {
             action.state.x = clientState.x;
             action.state.y = clientState.y;
