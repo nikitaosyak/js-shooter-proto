@@ -11,6 +11,9 @@ ActionQueue = function() {
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
 
+    // var b = Matter.Bodies.circle(0, 0, 50, null, 32);
+    // Matter.Body.setStatic(true);
+    // Matter.World.add(this._world, b);
 };
 ActionQueue.prototype.constructor = ActionQueue;
 
@@ -143,9 +146,11 @@ ActionQueue.prototype = {
         var resultVelocity = GameParams.playerSpeed / (timespan * 100);
         var body = this._bodies[clientId];
         body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
-        Matter.Body.update(body, timespan, 1, 1);
+        // Matter.Body.update(body, timespan, 1, 1);
+        Matter.Engine.update(this._engine, timespan);
         state.x = body.position.x;
         state.y = body.position.y;
+        console.log(state.x, state.y);
     },
 
     _getLastStreamAction: function(clientId) {
