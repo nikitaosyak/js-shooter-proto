@@ -64,7 +64,7 @@ function create() {
         Facade.level = new LevelModel().fromTiledDescriptor(data);
         Facade.queue.addStaticBodies(Facade.level.bodies);
         visualState = Facade.visualState = new VisualState(game, networkState, Facade.level);
-        game.world.setBounds(0, 0, Facade.level.width, Facade.level.height);
+        game.world.setBounds(-20, -20, Facade.level.width+40, Facade.level.height+60);
 
 
         loadJson('assets/platform_settings.json', function(settings) {

@@ -1,76 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="64" tileheight="64" nextobjectid="31">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="64" tileheight="64" nextobjectid="51">
  <objectgroup color="#ff0000" name="bounds">
-  <object id="1" x="-34" y="-48" width="2004" height="58"/>
-  <object id="2" x="-50" y="-22" width="58" height="1328"/>
-  <object id="4" x="-56" y="1258" width="2030" height="64"/>
-  <object id="5" x="1908" y="-76" width="58" height="1438"/>
- </objectgroup>
- <objectgroup color="#0055ff" name="walls" visible="0">
-  <object id="6" x="138" y="244">
-   <polygon points="0,0 -2,96 318,100 284,-120 178,-114 202,-48 148,-4 82,16"/>
-  </object>
-  <object id="7" x="248" y="514">
-   <polygon points="0,0 -6,282 536,272 452,52"/>
-  </object>
-  <object id="8" x="1032" y="538">
-   <polygon points="0,0 -88,-176 -42,-236 746,-206 582,-76"/>
-  </object>
-  <object id="9" x="924" y="812">
-   <polygon points="0,0 0,340 170,334 148,-70"/>
-  </object>
-  <object id="11" x="1220" y="698">
-   <polygon points="0,0 40,-66 528,-128 582,-46"/>
-  </object>
-  <object id="12" x="1238" y="830">
-   <polygon points="0,0 -2,252 120,220 92,104 210,78 202,-20"/>
-  </object>
-  <object id="13" x="1582" y="958">
-   <polygon points="0,0 210,0 194,122 -42,116"/>
-  </object>
-  <object id="14" x="666" y="116">
-   <polygon points="0,0 42,142 226,-12"/>
-  </object>
-  <object id="15" x="304" y="992">
-   <polygon points="0,0 -128,190 284,192"/>
-  </object>
+  <object id="1" x="-26" y="-62" width="1334" height="58" rotation="1"/>
+  <object id="2" x="-50" y="-16" width="58" height="1015.94" rotation="-1"/>
+  <object id="32" x="1276.94" y="-2.54545" width="58" height="1003.39" rotation="1"/>
+  <object id="33" x="-28.697" y="970.697" width="1334" height="58" rotation="-1"/>
  </objectgroup>
  <objectgroup color="#55aa00" name="respawns">
-  <object id="16" x="142" y="96">
+  <object id="16" x="106" y="108">
    <ellipse/>
   </object>
-  <object id="17" x="1156" y="760">
+  <object id="17" x="1194" y="864">
    <ellipse/>
   </object>
-  <object id="18" x="768" y="446">
+  <object id="18" x="832" y="512">
    <ellipse/>
   </object>
-  <object id="19" x="1154" y="128">
+  <object id="19" x="1176" y="114">
    <ellipse/>
   </object>
-  <object id="20" x="1600" y="128">
+  <object id="24" x="568" y="797">
    <ellipse/>
   </object>
-  <object id="21" x="1728" y="770">
+  <object id="25" x="182" y="810">
    <ellipse/>
   </object>
-  <object id="22" x="1470" y="1142">
+  <object id="39" x="798" y="866">
    <ellipse/>
   </object>
-  <object id="23" x="764" y="1090">
+  <object id="40" x="736" y="102">
    <ellipse/>
   </object>
-  <object id="24" x="512" y="888">
-   <ellipse/>
-  </object>
-  <object id="25" x="132" y="896">
+  <object id="41" x="306" y="402">
    <ellipse/>
   </object>
  </objectgroup>
  <objectgroup name="walls_fixed">
-  <object id="26" x="250" y="194" width="94" height="98" rotation="40"/>
+  <object id="26" x="250" y="194" width="94" height="98" rotation="30"/>
   <object id="27" x="140" y="468" width="100" height="98" rotation="10"/>
-  <object id="28" x="490" y="94" width="102" height="88" rotation="20"/>
-  <object id="29" x="434" y="380" width="226" height="60"/>
+  <object id="28" x="490" y="94" width="102" height="88" rotation="23"/>
+  <object id="29" x="531.487" y="374.141" width="660" height="65.8814" rotation="-5"/>
+  <object id="34" x="392" y="484" width="62" height="210" rotation="2"/>
+  <object id="35" x="359" y="787" width="62" height="210" rotation="-3"/>
+  <object id="36" x="615" y="511" width="139" height="117" rotation="10"/>
+  <object id="37" x="914.5" y="496" width="55.5" height="466.5" rotation="3"/>
+  <object id="38" x="1054.25" y="388.75" width="73.75" height="473.25"/>
+  <object id="42" x="725.908" y="710.23" width="79.2971" height="67.5181"/>
+  <object id="44" x="1104.47" y="171.742" width="70.8286" height="82.179" rotation="50"/>
+  <object id="45" x="1007.44" y="153.554" width="121.115" height="112.892" rotation="150"/>
+  <object id="46" x="648.341" y="166.53" width="39.8103" height="202.441" rotation="5"/>
+  <object id="50" x="413.678" y="265.62" width="64.6436" height="68.7609" rotation="3"/>
  </objectgroup>
 </map>

@@ -29,9 +29,15 @@ LevelModel.prototype = {
                     this.respawns.push({x:levelObject.x, y:levelObject.y});
                     continue;
                 }
+                var x = levelObject.x, y = levelObject.y;
+                var w = levelObject.width, h = levelObject.height;
+                var hip = Math.sqrt((w/2 * w/2) + (h/2 * h/2));
+                var bigAngle = Math.asin(h/2/hip);
                 var angleRad = levelObject.rotation * Math.PI /180;
-                // console.log(angleRad);
-                var boundBody = Matter.Bodies.rectangle(levelObject.x + levelObject.width/2, levelObject.y + levelObject.height/2, levelObject.width, levelObject.height, {angle:angleRad});
+                var wholeAngle = angleRad + bigAngle;
+                var xDiff = hip * Math.cos(wholeAngle);
+                var yDiff = hip * Math.sin(wholeAngle);
+                var boundBody = Matter.Bodies.rectangle(x + xDiff, y + yDiff, w, h, {angle:angleRad});
                 boundBody.colorScheme = layer.name;
                 this.bodies.push(boundBody);
             }
