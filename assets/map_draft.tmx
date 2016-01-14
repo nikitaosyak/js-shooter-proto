@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="64" tileheight="64" nextobjectid="51">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="64" tileheight="64" nextobjectid="54">
  <objectgroup color="#ff0000" name="bounds">
-  <object id="1" x="-26" y="-62" width="1334" height="58" rotation="1"/>
+  <object id="1" x="-26" y="-36" width="1334" height="58" rotation="-1"/>
   <object id="2" x="-50" y="-16" width="58" height="1015.94" rotation="-1"/>
   <object id="32" x="1276.94" y="-2.54545" width="58" height="1003.39" rotation="1"/>
-  <object id="33" x="-28.697" y="970.697" width="1334" height="58" rotation="-1"/>
+  <object id="33" x="-26.697" y="978.697" width="1334" height="58" rotation="-1"/>
  </objectgroup>
  <objectgroup color="#55aa00" name="respawns">
   <object id="16" x="106" y="108">
@@ -16,19 +16,19 @@
   <object id="18" x="832" y="512">
    <ellipse/>
   </object>
-  <object id="19" x="1176" y="114">
+  <object id="19" x="1194" y="94">
    <ellipse/>
   </object>
   <object id="24" x="568" y="797">
    <ellipse/>
   </object>
-  <object id="25" x="182" y="810">
+  <object id="25" x="122" y="868">
    <ellipse/>
   </object>
   <object id="39" x="798" y="866">
    <ellipse/>
   </object>
-  <object id="40" x="736" y="102">
+  <object id="40" x="722" y="96">
    <ellipse/>
   </object>
   <object id="41" x="306" y="402">
@@ -36,19 +36,22 @@
   </object>
  </objectgroup>
  <objectgroup name="walls_fixed">
-  <object id="26" x="250" y="194" width="94" height="98" rotation="30"/>
+  <object id="26" x="222" y="184" width="94" height="98" rotation="30"/>
   <object id="27" x="140" y="468" width="100" height="98" rotation="10"/>
-  <object id="28" x="490" y="94" width="102" height="88" rotation="23"/>
+  <object id="28" x="488" y="90" width="102" height="88" rotation="23"/>
   <object id="29" x="531.487" y="374.141" width="660" height="65.8814" rotation="-5"/>
-  <object id="34" x="392" y="484" width="62" height="210" rotation="2"/>
-  <object id="35" x="359" y="787" width="62" height="210" rotation="-3"/>
-  <object id="36" x="615" y="511" width="139" height="117" rotation="10"/>
+  <object id="34" x="378" y="484" width="62" height="210" rotation="2"/>
+  <object id="35" x="411.343" y="831.711" width="62" height="165.227" rotation="-3"/>
+  <object id="36" x="547" y="521" width="139" height="117" rotation="10"/>
   <object id="37" x="914.5" y="496" width="55.5" height="466.5" rotation="3"/>
-  <object id="38" x="1054.25" y="388.75" width="73.75" height="473.25"/>
-  <object id="42" x="725.908" y="710.23" width="79.2971" height="67.5181"/>
-  <object id="44" x="1104.47" y="171.742" width="70.8286" height="82.179" rotation="50"/>
-  <object id="45" x="1007.44" y="153.554" width="121.115" height="112.892" rotation="150"/>
+  <object id="38" x="1056.79" y="385.749" width="55.75" height="473.25" rotation="-1.81117"/>
+  <object id="42" x="736.927" y="704.722" width="206.092" height="37.7698" rotation="-3.59152"/>
+  <object id="44" x="1173.69" y="203.094" width="70.8286" height="82.179" rotation="-223.093"/>
+  <object id="45" x="965.443" y="177.554" width="121.115" height="112.892" rotation="150"/>
   <object id="46" x="648.341" y="166.53" width="39.8103" height="202.441" rotation="5"/>
   <object id="50" x="413.678" y="265.62" width="64.6436" height="68.7609" rotation="3"/>
+  <object id="51" x="111.758" y="706.276" width="175.987" height="34.72" rotation="6.88454"/>
+  <object id="52" x="208.099" y="840.019" width="30.0943" height="153.996" rotation="7.47354"/>
+  <object id="53" x="668.23" y="833.002" width="37.971" height="57.1138" rotation="-18.9521"/>
  </objectgroup>
 </map>

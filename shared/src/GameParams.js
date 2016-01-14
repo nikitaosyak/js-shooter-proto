@@ -1,8 +1,8 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 80;       // milliseconds
+GameParams.serverUpdateTime = 50;       // milliseconds
 
-GameParams.playerSpeed = 80;
+GameParams.playerSpeed = 60;
 GameParams.playerRadius = 32;
 
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds
@@ -11,7 +11,7 @@ GameParams.dStep = 5;
 //
 // debug values
 //
-GameParams.serverStateVisible = true;
+GameParams.serverStateVisible = false;
 GameParams.interpolationSnapshotBuffer = 2;
 GameParams.additionalVirtualLagMedian = 0;
 
