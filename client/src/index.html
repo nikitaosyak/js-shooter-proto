@@ -61,16 +61,36 @@ function create() {
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
 
-    loadSettings(function(settings) {
-        console.log('settings loaded:', settings);
-        connection = new Connection(settings.server_address, settings.server_port);
-        connection.connect(function() {
-            connection.calculateMedian();
-            game.world.remove(loadingSprite);
-        });
+    loadJson('assets/map_draft.json', function(data) {
+        Facade.map_draft = data;
+        Facade.static_bodies = [];
+        loadJson('assets/platform_settings.json', function(settings) {
+            console.log('settings loaded:', settings);
+            connection = new Connection(settings.server_address, settings.server_port);
+            connection.connect(function() {
+                connection.calculateMedian();
+                game.world.remove(loadingSprite);
+            });
 
-        input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+            input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+        });    
+
+        for (var i = 0; i < Facade.map_draft.layers.length; i++) {
+            var l = Facade.map_draft.layers[i];
+            console.log(l.name);
+            if (l.name == 'bounds') {
+                for (var oi=0; oi < l.objects.length; oi++) {
+                    var obj = l.objects[oi];
+                    // console.log(obj.x, obj.y, obj.width, obj.height);
+                    var b = Matter.Bodies.rectangle(obj.x, obj.y, obj.width, obj.height);
+                    Facade.static_bodies.push(b);
+                    Facade.queue.addStaticBody(b);
+                }
+            }
+        }
     });
+
+    
 }
 
 function update() {

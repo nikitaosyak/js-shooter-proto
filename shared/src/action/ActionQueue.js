@@ -10,16 +10,15 @@ ActionQueue = function() {
     this._engine = Matter.Engine.create();
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
-
-    var b = Matter.Bodies.rectangle(0, 0, 50, 50);
-    // b.friction = 1;
-    // b.frictionAir = 1;
-    Matter.Body.setStatic(b, true);
-    Matter.World.add(this._world, b);
 };
 ActionQueue.prototype.constructor = ActionQueue;
 
 ActionQueue.prototype = {
+    addStaticBody: function(b) {
+        Matter.Body.setStatic(b, true);
+        Matter.World.add(this._world, b);
+    },
+
     addClient: function(clientId, x, y) {
         console.log('queue: adding client body', clientId, x, y);
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
