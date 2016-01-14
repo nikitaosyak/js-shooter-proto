@@ -22,7 +22,7 @@ LevelModel.prototype = {
         this._source = jsonSource;
         for (var layerIdx = 0; layerIdx < jsonSource.layers.length; layerIdx++) {
             var layer = jsonSource.layers[layerIdx];
-            console.log(layer.name);
+            // console.log(layer.name);
             for (var boundIdx = 0; boundIdx < layer.objects.length; boundIdx++) {
                 var levelObject = layer.objects[boundIdx];
                 if (layer.name == 'respawns') {
@@ -30,7 +30,7 @@ LevelModel.prototype = {
                     continue;
                 }
                 var angleRad = levelObject.rotation * Math.PI /180;
-                console.log(angleRad);
+                // console.log(angleRad);
                 var boundBody = Matter.Bodies.rectangle(levelObject.x + levelObject.width/2, levelObject.y + levelObject.height/2, levelObject.width, levelObject.height, {angle:angleRad});
                 boundBody.colorScheme = layer.name;
                 this.bodies.push(boundBody);

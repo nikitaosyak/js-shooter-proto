@@ -7,7 +7,7 @@ VisualState = function(game, networkState, levelModel) {
     var g = game.add.graphics(levelModel.width, levelModel.height);
     g.x = 0;
     g.y = 0;
-    console.log(levelModel);
+    // console.log(levelModel);
     for (var bi = 0; bi < levelModel.bodies.length; bi++) {
         var b = levelModel.bodies[bi];
         if (b.colorScheme == 'bounds') {
@@ -56,7 +56,8 @@ VisualState.prototype = {
             playerVisual.arrow.position = playerVisual.view.position;
 
             // pointer display
-            var r = this._calcArrowRotation(playerVisual.view, playerVisual.pointerPos);
+            var r = this._calcArrowRotation(playerVisual.view.position, playerVisual.pointerPos);
+            // console.log(playerVisual.view.position, playerVisual.pointerPos);
             playerVisual.arrow.rotation = r;
         }
 
@@ -65,8 +66,9 @@ VisualState.prototype = {
         this._visualMe.arrow.position = this._visualMe.view.position;
 
         var pointer = this._game.input.mousePointer;
-        var r = this._calcArrowRotation(this._visualMe.view, pointer);
+        var r = this._calcArrowRotation(this._visualMe.view.worldPosition, pointer);
         this._visualMe.arrow.rotation = r;
+        // this._game.camera.update();
     },
 
     _addNewPlayers: function() {
@@ -80,6 +82,7 @@ VisualState.prototype = {
                 this._visuals[newPlayerId] = new PlayerVisual(pos.x, pos.y, this._group, newPlayer.isMe);
                 if (newPlayer.isMe) {
                     this._visualMe = this._visuals[newPlayerId];
+                    this._game.camera.follow(this._visualMe.view);
                 }
             }
         }

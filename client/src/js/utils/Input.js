@@ -48,12 +48,14 @@ Input.prototype = {
     update: function(dt) {
 
         // update mouse position
+        var p = this._game.input.mousePointer;
+        // console.log(p.worldX, p.worldY);
         var elapsed = Date.now() - this._lastPointerUpdated;
         if (this._lastPointerUpdated === 0) {
-            this._sendPointer(this._game.input.mousePointer);
+            this._sendPointer({x:p.worldX, y:p.worldY});
         } else {
             if (elapsed >= Facade.params.pointerSendRate) {
-                this._sendPointer(this._game.input.mousePointer);
+                this._sendPointer({x:p.worldX, y:p.worldY});
             }
         }
 

@@ -25,6 +25,7 @@ Player.prototype = {
         this._freshHistory.push({'x': x, 'y': y, time: time, simulatedTime: -1});
     },
     updatePointerPosition: function(x, y, time) {
+        // console.log('new point:', x, y);
         this._serverPointer.x = x;
         this._serverPointer.y = y;
         this._serverPointer.time = time;
