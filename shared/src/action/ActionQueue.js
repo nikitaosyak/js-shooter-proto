@@ -19,6 +19,12 @@ ActionQueue.prototype = {
         Matter.World.add(this._world, b);
     },
 
+    addStaticBodies: function(bs) {
+        for (var i = 0; i < bs.length; i++) {
+            this.addStaticBody(bs[i]);
+        }
+    },
+
     addClient: function(clientId, x, y) {
         console.log('queue: adding client body', clientId, x, y);
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);

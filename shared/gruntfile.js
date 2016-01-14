@@ -9,6 +9,7 @@ module.exports = function(grunt) {
         'src/GameParams.js', 
         'src/SharedUtils.js', 
         'src/SendMessage.js', 
+        'src/LevelModel.js',
         'src/action/StreamAction.js', 
         'src/action/ActionQueue.js'
     ];

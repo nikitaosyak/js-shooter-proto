@@ -3,7 +3,7 @@
         {
          "color":"#ff0000",
          "draworder":"topdown",
-         "height":20,
+         "height":0,
          "name":"bounds",
          "objects":[
                 {
@@ -69,14 +69,14 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":30,
+         "width":0,
          "x":0,
          "y":0
         }, 
         {
          "color":"#0055ff",
          "draworder":"topdown",
-         "height":20,
+         "height":0,
          "name":"walls",
          "objects":[
                 {
@@ -389,15 +389,15 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
-         "width":30,
+         "visible":false,
+         "width":0,
          "x":0,
          "y":0
         }, 
         {
          "color":"#55aa00",
          "draworder":"topdown",
-         "height":20,
+         "height":0,
          "name":"respawns",
          "objects":[
                 {
@@ -563,11 +563,83 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
+         "width":0,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "height":20,
+         "name":"walls_fixed",
+         "objects":[
+                {
+                 "height":98,
+                 "id":26,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":40,
+                 "type":"",
+                 "visible":true,
+                 "width":94,
+                 "x":250,
+                 "y":194
+                }, 
+                {
+                 "height":98,
+                 "id":27,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":10,
+                 "type":"",
+                 "visible":true,
+                 "width":100,
+                 "x":140,
+                 "y":468
+                }, 
+                {
+                 "height":88,
+                 "id":28,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":20,
+                 "type":"",
+                 "visible":true,
+                 "width":102,
+                 "x":490,
+                 "y":94
+                }, 
+                {
+                 "height":60,
+                 "id":29,
+                 "name":"",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":226,
+                 "x":434,
+                 "y":380
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
          "width":30,
          "x":0,
          "y":0
         }],
- "nextobjectid":26,
+ "nextobjectid":31,
  "orientation":"orthogonal",
  "properties":
     {

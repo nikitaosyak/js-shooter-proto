@@ -1,3 +1,4 @@
+var fs = require('fs');
 var ws = require('ws');
 var time_util = require('./time_util.js');
 var Client = require('./client.js');
@@ -6,13 +7,13 @@ var shared = require('./shared.gen.js');
 var SendMessage = shared.SendMessage;
 var GameParams = shared.GameParams;
 var queue = shared.queue;
+var LevelModel = shared.LevelModel;
 
-var spawnPositions = [
-    {'x': 100, 'y': 100}, 
-    {'x': 400, 'y': 100}, 
-    {'x': 100, 'y': 400}, 
-    {'x': 400, 'y': 400}
-];
+var levelRaw = fs.readFileSync('src/assets/map_draft.json');
+var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
+queue.addStaticBodies(level.bodies);
+
+var spawnPositions = level.respawns;
 var currentSpawnPos = 0;
 
 var clients = {};

@@ -1,8 +1,30 @@
 
-VisualState = function(game, networkState) {
+VisualState = function(game, networkState, levelModel) {
     console.log("visual state created");
     this._game = game;
     this._networkState = networkState;
+
+    var g = game.add.graphics(levelModel.width, levelModel.height);
+    g.x = 0;
+    g.y = 0;
+    console.log(levelModel);
+    for (var bi = 0; bi < levelModel.bodies.length; bi++) {
+        var b = levelModel.bodies[bi];
+        if (b.colorScheme == 'bounds') {
+            g.lineStyle(2, 0xCC1111, 1);
+        } else {
+            g.lineStyle(2, 0xCCCCCC, 1);
+        }
+
+        g.moveTo(b.vertices[0].x, b.vertices[0].y);
+        for (var vi = 1; vi < b.vertices.length; vi++) {
+            var v = b.vertices[vi];
+            g.lineTo(v.x, v.y);
+        }
+        g.lineTo(b.vertices[0].x, b.vertices[0].y);
+    }
+
+
     this._group = new Phaser.Group(game, game.world);
     game.world.add(this._group);
 
