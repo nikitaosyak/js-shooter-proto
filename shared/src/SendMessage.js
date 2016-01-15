@@ -16,6 +16,13 @@ SendMessage.pointer = function(clientId, x, y) {
     return JSON.stringify({id:"pointer", cid:clientId, x:x, y:y});
 };
 
+SendMessage.ping = function() {
+    return JSON.stringify({id:"p"});
+};
+
+SendMessage.pong = function() {
+    return JSON.stringify({id:"p_ack"});
+};
 
 //
 // Server messages

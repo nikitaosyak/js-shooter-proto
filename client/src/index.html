@@ -70,7 +70,7 @@ function create() {
 
         loadJson('assets/platform_settings.json', function(settings) {
             console.log('settings loaded:', settings);
-            connection = new Connection(settings.server_address, settings.server_port);
+            Facade.connection = connection = new Connection(settings.server_address, settings.server_port);
             connection.connect(function() {
                 connection.calculateMedian();
                 game.world.remove(loadingSprite);

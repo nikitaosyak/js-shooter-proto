@@ -36,6 +36,10 @@ Connection.prototype = {
         this._socket.send('ping');
     },
 
+    sendPong: function() {
+        this._socket.send(SendMessage.pong());
+    },
+
     calculateMedian: function() {
         if (this._calculatingMedian) return;
         // console.log('begin median calculation');

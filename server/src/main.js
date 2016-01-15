@@ -48,6 +48,9 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     clients[m.cid].pointer.x = m.x;
                     clients[m.cid].pointer.y = m.y;
                     break;
+                case 'p_ack':
+                    client.ackPong(time_util.elapsed);
+                    break;
             }
             // console.log('incoming message: ', rawMessage);
         }
@@ -104,6 +107,13 @@ time_util.onTimer(function(dt) {
     if (diff.length === 0) return;
     // console.log('outcoming diffs: ', diff);
     broadcast(SendMessage.positionBatch(diff));
+});
+
+time_util.onLongTimer(function() {
+    var currentTime = time_util.now;
+    iterateClients(function(clientId, client) {
+        client.ping(time_util.elapsed);
+    });
 });
 
 function broadcast(message, except) {

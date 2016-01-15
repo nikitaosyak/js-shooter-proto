@@ -13,6 +13,10 @@ Router.prototype = {
         }
     },
 
+    p: function(message) {
+        Facade.connection.sendPong();
+    },
+
     welcome: function(m) {
         if (m.me) {
             var me = new Player(m.clientId, m.startX, m.startY, m.name, true);

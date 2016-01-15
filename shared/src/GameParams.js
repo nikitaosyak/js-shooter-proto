@@ -2,6 +2,9 @@ function GameParams() {}
 
 GameParams.serverUpdateTime = 50;       // milliseconds
 
+GameParams.rttCheckTimeout = 500;
+GameParams.rttMedianHistory = 11;
+
 GameParams.playerSpeed = 60;
 GameParams.playerRadius = 32;
 
