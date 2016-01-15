@@ -5,6 +5,7 @@ var _READY_STATE_STR = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
 Client = function(socket, pos) {
     this._socket = socket;
     this._id = _clientIdCounter++;
+    this._name = "client" + this._id;
     this._approxLag = 0;
     this.pos = pos;
     this.lastSentPointer = {x:-1, y:-1};
@@ -36,9 +37,9 @@ Client.prototype =  {
     toString: function () {
         if (this._socket) {
             var socketState = _READY_STATE_STR[this._socket.readyState];
-            return '{client [' + this._id + "]; sock [" + socketState + "]}";
+            return '{[' + this._id + ":" + this._name + "]; sock [" + socketState + "]}";
         } else {
-            return '{client [' + this._id + "]; sock [DEAD]}";
+            return '{[' + this._id + ":" + this._name + "]; sock [DEAD]}";
         }    
     }
 };
@@ -46,6 +47,12 @@ Client.prototype =  {
 Object.defineProperty(Client.prototype, "id", {
     get: function() {
         return this._id;
+    }
+});
+
+Object.defineProperty(Client.prototype, "name", {
+    get: function() {
+        return this._name;
     }
 });
 

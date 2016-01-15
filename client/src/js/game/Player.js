@@ -1,8 +1,9 @@
 
-Player = function(id, startX, startY, isMe) {
-    console.log("player %i created at %i:%i. is me? %s", id, startX, startY, isMe);
+Player = function(id, startX, startY, name, isMe) {
+    console.log("player %i:%s created at %i:%i. is me? %s", id, name, startX, startY, isMe);
 
     this._id = id;
+    this._name = name;
     this._freshHistory = [];
     this._oldHistory = [];
     this._oldHistory.push({'x': startX, 'y': startY, 'time': 0,});
@@ -139,6 +140,12 @@ Player.prototype = {
 Object.defineProperty(Player.prototype, "id", {
     get: function() {
         return this._id;
+    }
+});
+
+Object.defineProperty(Player.prototype, "name", {
+    get: function() {
+        return this._name;
     }
 });
 

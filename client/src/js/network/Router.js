@@ -14,19 +14,19 @@ Router.prototype = {
     },
 
     welcome: function(m) {
-        var me = new Player(m.clientId, m.startX, m.startY, true);
-        Facade.networkState.addMe(me);
-        Facade.queue.addClient(0, m.startX, m.startY);
-        console.log("incoming welcome message! id obtained:", m.clientId);
+        if (m.me) {
+            var me = new Player(m.clientId, m.startX, m.startY, m.name, true);
+            Facade.networkState.addMe(me);
+            Facade.queue.addClient(0, m.startX, m.startY);
+        } else {
+            var other = new Player(m.clientId, m.startX, m.startY, m.name, false);
+            Facade.networkState.addPlayer(other);
+        }
     },
 
     srvTime: function(m) {
         Facade.srvDeltaTime = Date.now() - m.time;
         console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
-    },
-
-    position: function(m) {
-        Facade.networkState.setPlayerPos(m.clientId, m.x, m.y);
     },
 
     positionBatch: function(m) {

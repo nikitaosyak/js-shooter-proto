@@ -21,10 +21,11 @@ SendMessage.pointer = function(clientId, x, y) {
 // Server messages
 //
 
-SendMessage.welcome = function(clientId, x, y, time) {
+SendMessage.welcome = function(clientId, x, y, name, isMe) {
+    if (isMe === 'undefined') isMe = false;
     var m = {
         'id': 'welcome', 
-        'clientId': clientId, 'startX': x, 'startY': y, 'time': time
+        'clientId': clientId, 'startX': x, 'startY': y, 'name': name, 'me': isMe
     };
     return JSON.stringify(m);
 };
@@ -32,14 +33,6 @@ SendMessage.welcome = function(clientId, x, y, time) {
 SendMessage.srvTime = function(time) {
     var m = {
         'id': 'srvTime', 'time': time
-    };
-    return JSON.stringify(m);
-};
-
-SendMessage.position = function(clientId, x, y) {
-    var m = {
-        'id': 'position', 
-        'clientId': clientId, 'x': x, 'y': y
     };
     return JSON.stringify(m);
 };

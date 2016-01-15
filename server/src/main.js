@@ -66,12 +66,12 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     console.log('incoming connection: ', client.toString());
 
     queue.addClient(client.id, startPos.x, startPos.y);
-    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y)); 
-    broadcast(SendMessage.position(client.id, startPos.x, startPos.y), client.id);
+    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, true));
+    broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name), client.id);
     iterateClients(function(iterClientId, iterClient) {
         if (iterClientId == client.id) return;
         // console.log('sending client', client.id, ' position of', iterClientId);
-        client.send(SendMessage.position(iterClient.id, iterClient.pos.x, iterClient.pos.y));
+        client.send(SendMessage.welcome(iterClient.id, iterClient.pos.x, iterClient.pos.y, iterClient.name));
     });
 
     currentSpawnPos += 1;

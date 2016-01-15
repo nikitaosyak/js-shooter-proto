@@ -32,10 +32,6 @@ State.prototype = {
     setPointerLocation: function(playerId, x, y, time) {
         this._players[playerId].updatePointerPosition(x, y, time);
     },
-
-    setPlayerPos: function(playerId, x, y) {
-        this.addPlayer(new Player(playerId, x, y, false));
-    },
 };
 
 Object.defineProperty(State.prototype, "players", {
