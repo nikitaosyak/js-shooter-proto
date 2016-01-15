@@ -11,7 +11,7 @@ GameParams.dStep = 5;
 //
 // debug values
 //
-GameParams.serverStateVisible = false;
+GameParams.serverStateVisible = true;
 GameParams.interpolationSnapshotBuffer = 2;
 GameParams.additionalVirtualLagMedian = 0;
 

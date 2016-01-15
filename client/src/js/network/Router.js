@@ -41,5 +41,9 @@ Router.prototype = {
                 ns.setPointerLocation(piece.clientId, piece.px, piece.py, piece.time);
             }
         }
+    },
+
+    playerDeath: function(m) {
+        Facade.networkState.removePlayerById(m.value);
     }
 }

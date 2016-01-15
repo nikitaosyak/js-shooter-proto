@@ -31,7 +31,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             switch(m.id) {
                 case 'medianRTT':
                     if (m.clientId in clients) {
-                        console.log('got player', m.clientId, 'median rtt:', m.value);
+                        console.log('client', m.clientId, 'median rtt:', m.value);
                         clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
                         clients[m.clientId].send(SendMessage.srvTime(time_util.elapsed));
                     } else {
@@ -56,9 +56,11 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     socket.on('close', function() {
         console.log('client', client.toString(), 'leaving: removing from clients');
-        queue.deleteClient(client.id);
-        delete clients[client.id];
+        var removingId = client.id;
+        queue.deleteClient(removingId);
+        delete clients[removingId];
         client.purge();
+        broadcast(SendMessage.playerDeath(removingId));
     });
 
     console.log('incoming connection: ', client.toString());
@@ -68,12 +70,12 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     broadcast(SendMessage.position(client.id, startPos.x, startPos.y), client.id);
     iterateClients(function(iterClientId, iterClient) {
         if (iterClientId == client.id) return;
-        console.log('sending client', client.id, ' position of', iterClientId);
+        // console.log('sending client', client.id, ' position of', iterClientId);
         client.send(SendMessage.position(iterClient.id, iterClient.pos.x, iterClient.pos.y));
     });
 
     currentSpawnPos += 1;
-    if (currentSpawnPos > 3) currentSpawnPos = 0;
+    if (currentSpawnPos > spawnPositions.length-1) currentSpawnPos = 0;
 });
 
 

@@ -75,7 +75,7 @@ VisualState.prototype = {
         var newPlayersLen = this._networkState.newPlayers.length;
         if (newPlayersLen > 0) {
             for (var i = 0; i < newPlayersLen; i++) {
-                var newPlayerId = this._networkState.newPlayers.shift();
+                var newPlayerId = this._networkState.newPlayers[i];
                 var newPlayer = this._networkState.players[newPlayerId];
                 var pos = newPlayer.lastPos;
                 console.log('adding visual player (isMe:', newPlayer.isMe);
@@ -85,11 +85,22 @@ VisualState.prototype = {
                     this._game.camera.follow(this._visualMe.view);
                 }
             }
+            this._networkState.newPlayers = [];
         }
     },
 
     _removeLeftPlayers: function() {
-
+        var leftPlayersLen = this._networkState.removedPlayers.length;
+        if (leftPlayersLen > 0) {
+            for (var i = 0; i < leftPlayersLen; i++) {
+                var leftPlayerId = this._networkState.removedPlayers[i];
+                console.log('removing visual player', leftPlayerId);
+                var leftPlayer = this._visuals[leftPlayerId];
+                delete this._visuals[leftPlayerId];
+                leftPlayer.purge();
+            }
+            this._networkState.removedPlayers = [];
+        }
     },
 
     _calcArrowRotation: function(p1, p2) {

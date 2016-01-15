@@ -4,6 +4,7 @@ State = function() {
     this._me = null;
     this._players = {};
     this.newPlayers = [];
+    this.removedPlayers = [];
 }
 
 State.prototype.constructor = State;
@@ -20,11 +21,8 @@ State.prototype = {
     },
 
     removePlayerById: function(playerId) {
+        this.removedPlayers.push(playerId);
         delete this._players[playerId];
-    },
-
-    removePlayer: function(player) {
-        delete this._players[player.id];
     },
 
     addPlayerPos: function(playerId, x, y, time) {

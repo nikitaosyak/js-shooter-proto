@@ -25,4 +25,15 @@ PlayerVisual = function(x, y, group, isMe) {
 
 PlayerVisual.prototype.constructor = PlayerVisual;
 
-PlayerVisual.prototype = {}
+PlayerVisual.prototype = {
+    purge: function() {
+        this.group.remove(this.debugView);
+        this.group.remove(this.view);
+        this.group.remove(this.arrow);
+        this.group = null;
+
+        this.debugView = null;
+        this.view = null;
+        this.arrow = null;
+    }
+}

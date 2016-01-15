@@ -15,8 +15,7 @@ Client.prototype.constructor = Client;
 Client.prototype =  {
 
     send: function (data) {
-        if (!this._socket) {
-            console.log(this.toString());
+        if (!this._socket || this._socket.readyState !== 1) {
             return;
         }
         this._socket.send(data, function ack(error) {

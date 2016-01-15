@@ -48,6 +48,10 @@ SendMessage.positionBatch = function(stampsArray) {
     return JSON.stringify({'id': 'positionBatch', 'value': stampsArray});
 };
 
+SendMessage.playerDeath = function(clientId) {
+    return JSON.stringify({'id': 'playerDeath', 'value': clientId});
+};
+
 
 //
 // Client messages

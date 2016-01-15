@@ -26,7 +26,7 @@ ActionQueue.prototype = {
     },
 
     addClient: function(clientId, x, y) {
-        console.log('queue: adding client body', clientId, x, y);
+        // console.log('queue: adding client body', clientId, x, y);
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
         b.friction = 1;
         b.frictionAir = 1;
@@ -42,8 +42,11 @@ ActionQueue.prototype = {
     },
 
     deleteClient: function(clientId) {
-        // todo: implement this
         console.log('queue: removing client body and history', clientId);
+        Matter.World.remove(this._world, this._bodies[clientId]);
+        delete this._bodies[clientId];
+        delete this._history[clientId];
+        delete this._streamTimeline[clientId];
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
