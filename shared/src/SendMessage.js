@@ -20,7 +20,10 @@ SendMessage.ping = function() {
     return JSON.stringify({id:"p"});
 };
 
-SendMessage.pong = function() {
+SendMessage.pong = function(srvTime) {
+    if (srvTime !== 'undefined') {
+        return JSON.stringify({id:"p_ack", time:srvTime});    
+    }
     return JSON.stringify({id:"p_ack"});
 };
 

@@ -48,6 +48,9 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     clients[m.cid].pointer.x = m.x;
                     clients[m.cid].pointer.y = m.y;
                     break;
+                case 'p':
+                    client.send(SendMessage.pong(time_util.elapsed));
+                    break;
                 case 'p_ack':
                     client.ackPong(time_util.elapsed);
                     break;

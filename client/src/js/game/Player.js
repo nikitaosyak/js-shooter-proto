@@ -39,7 +39,9 @@ Player.prototype = {
     },
 
     interpolate: function(state, pointerState, dt) {
-        var currentServerTime = Date.now() - Facade.srvDeltaTime - Facade.approxLag;
+        var srvDelta = Facade.connection.sync.srvDelta;
+        var lag = Facade.connection.sync.lag;
+        var currentServerTime = Date.now() - srvDelta - lag;
 
         this._interpolatePointer(pointerState, currentServerTime, dt);
 

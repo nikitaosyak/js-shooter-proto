@@ -8,6 +8,7 @@
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/shared.gen.js"></script>
 
+    <script type="text/javascript" src="js/network/ServerSync.js"></script>
     <script type="text/javascript" src="js/network/Connection.js"></script>
     <script type="text/javascript" src="js/network/Router.js"></script>
     <script type="text/javascript" src="js/network/State.js"></script>
@@ -37,8 +38,6 @@ var game = new Phaser.Game(
 Facade = function() {}
 Facade.prototype.constructor = Facade;
 Facade.srvDeltaTime = -1; // will be calculated on srvTime packet
-Facade.approxLag = -1; // will be calculated in connection
-
 
 var networkState;
 var visualState;
@@ -84,12 +83,17 @@ function create() {
 }
 
 function update() {
-    if (!connection || !connection.isReady || connection.isCalculatingMedian) return;
-
+    if (!connection || !connection.isReady) {
+        // console.log('cannot update');
+        return;
+    }
     var dt = game.time.elapsed;
+    // console.log('before sync');
+    connection.sync.update();
+    // console.log('before input');
     input.update(dt);
-    // console.log(game.time.physicsElapsedMS);
-    visualState.update(game.time.physicsElapsedMS);
+    // console.log('before vs');
+    visualState.update(dt);
 }
 
 </script>

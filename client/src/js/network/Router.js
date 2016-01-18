@@ -14,7 +14,11 @@ Router.prototype = {
     },
 
     p: function(message) {
-        Facade.connection.sendPong();
+        Facade.connection.sync.ackToServer();
+    },
+
+    p_ack: function(message) {
+        Facade.connection.sync.pingAck(message);
     },
 
     welcome: function(m) {
