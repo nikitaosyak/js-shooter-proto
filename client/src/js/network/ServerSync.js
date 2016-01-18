@@ -39,7 +39,7 @@ ServerSync.prototype = {
                 this._wasMedianChecked = true;
                 this._rttHistory.sort(SharedUtils.sortAcc);
                 this._lastRtt = this._rttHistory[Math.floor(Facade.params.rttMedianHistory/2)];
-                this._socket.send(SendMessage.medianRTT(Facade.networkState.myClientId, this._lastRtt))
+                this._socket.send(SendMessage.medianRTT(Facade.networkState.myClientId, this._lastRtt));
                 console.log('initial approx rtt:', this._lastRtt);
             } else {
                 this.ping();

@@ -30,7 +30,7 @@ VisualState = function(game, networkState, levelModel) {
 
     this._visuals = {};
     this._visualMe = null;
-}
+};
 
 VisualState.prototype.constructor = VisualState;
 
@@ -42,6 +42,7 @@ VisualState.prototype = {
 
         // debug update and interpolation
         var players = this._networkState.players;
+        var r;
         for (var clientId in this._visuals) {
 
             // raw snapshot movement display:
@@ -56,7 +57,7 @@ VisualState.prototype = {
             playerVisual.arrow.position = playerVisual.view.position;
 
             // pointer display
-            var r = this._calcArrowRotation(playerVisual.view.position, playerVisual.pointerPos);
+            r = this._calcArrowRotation(playerVisual.view.position, playerVisual.pointerPos);
             // console.log(playerVisual.view.position, playerVisual.pointerPos);
             playerVisual.arrow.rotation = r;
         }
@@ -66,7 +67,7 @@ VisualState.prototype = {
         this._visualMe.arrow.position = this._visualMe.view.position;
 
         var pointer = this._game.input.mousePointer;
-        var r = this._calcArrowRotation(this._visualMe.view.worldPosition, pointer);
+        r = this._calcArrowRotation(this._visualMe.view.worldPosition, pointer);
         this._visualMe.arrow.rotation = r;
         // this._game.camera.update();
     },

@@ -21,7 +21,7 @@ PlayerVisual = function(x, y, group, isMe) {
         undefined,
         new Phaser.Point(-1, 0.5), 0.8
     );
-}
+};
 
 PlayerVisual.prototype.constructor = PlayerVisual;
 
@@ -35,5 +35,5 @@ PlayerVisual.prototype = {
         this.debugView = null;
         this.view = null;
         this.arrow = null;
-    }
-}
+    },
+};

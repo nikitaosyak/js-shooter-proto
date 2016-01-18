@@ -23,7 +23,8 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
     this._onPointerChange = onPointerChange;
     this._pointerContext = pointerContext;
     this.reset();
-}
+};
+
 Input.prototype.constructor = Input;
 
 Input.prototype = {
@@ -123,11 +124,11 @@ Input.prototype = {
         if (!sameX || !sameY) {
             var ts = 0;
             var now = Date.now();
-            if (this._lastVelStarted != 0) {
+            if (this._lastVelStarted !== 0) {
                 ts = now - this._lastVelStarted;
             }
             this._onVelocityChange.call(this._velocityContext, this._velocity, ts);
-            Facade.queue.addStreamAction(Date.now(), 0, 0, this._velocity.x, this._velocity.y, ts)
+            Facade.queue.addStreamAction(Date.now(), 0, 0, this._velocity.x, this._velocity.y, ts);
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;
 
@@ -140,7 +141,7 @@ Input.prototype = {
             }
         }
     }
-}
+};
 
 Object.defineProperty(Input.prototype, "velocity", {
     get: function() {

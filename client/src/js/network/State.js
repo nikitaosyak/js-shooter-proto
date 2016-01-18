@@ -3,9 +3,11 @@ State = function() {
     console.log("network state created");
     this._me = null;
     this._players = {};
+    this._interpolator = new Interpolator();
+
     this.newPlayers = [];
     this.removedPlayers = [];
-}
+};
 
 State.prototype.constructor = State;
 
@@ -18,6 +20,10 @@ State.prototype = {
     addPlayer: function(player) {
         this._players[player.id] = player;
         this.newPlayers.push(player.id);
+
+        if (player.id != this.myClientId) {
+            this._interpolator.addNode(player.id);
+        }
     },
 
     removePlayerById: function(playerId) {

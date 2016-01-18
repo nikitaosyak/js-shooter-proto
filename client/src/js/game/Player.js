@@ -17,7 +17,7 @@ Player = function(id, startX, startY, name, isMe) {
     this._pointerTargetSimulationTime = -1;
     this._serverPointer = {x:-1, y:-1, time:-1};
     this._currentPointer = {x:-1, y:-1, simulatedTime:-1};
-}
+};
 
 Player.prototype.constructor = Player;
 

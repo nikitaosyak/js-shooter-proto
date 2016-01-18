@@ -40,7 +40,7 @@ Connection.prototype = {
     sendPointer: function(x, y) {
         x = Math.round(x);
         y = Math.round(y);
-        this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y))
+        this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y));
     },
 
     _onOpen: function() {
@@ -70,7 +70,7 @@ Connection.prototype = {
 
 Object.defineProperty(Connection.prototype, "isReady", {
     get: function() {
-        return this._socket != null && this._socket.readyState == 1 && this._sync.isReady;
+        return this._socket !== null && this._socket.readyState == 1 && this._sync.isReady;
     }
 });
 

@@ -1,7 +1,7 @@
 
 Factory = function(game) {
     this._game = game;
-}
+};
 Factory.prototype.constructor = Factory;
 
 Factory.prototype = {
@@ -32,4 +32,4 @@ Factory.prototype = {
         }
         return s;
     }
-}
+};
