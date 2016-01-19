@@ -24,11 +24,11 @@ Router.prototype = {
     welcome: function(m) {
         if (m.me) {
             var me = new Player(m.clientId, m.startX, m.startY, m.name, true);
-            Facade.networkState.addMe(me);
+            Facade.networkState.addMe(me, {'pos': {x: m.startX, y: m.startY}, 'pointer_pos': {x: 0, y: 0}});
             Facade.queue.addClient(0, m.startX, m.startY);
         } else {
             var other = new Player(m.clientId, m.startX, m.startY, m.name, false);
-            Facade.networkState.addPlayer(other);
+            Facade.networkState.addPlayer(other, {'pos': {x: m.startX, y: m.startY}, 'pointer_pos': {x: 0, y: 0}});
         }
     },
 

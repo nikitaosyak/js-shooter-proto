@@ -12,18 +12,15 @@ State = function() {
 State.prototype.constructor = State;
 
 State.prototype = {
-    addMe: function(me) {
+    addMe: function(me, startState) {
         this._me = me;
-        this.addPlayer(me);
+        this.addPlayer(me, startState);
     },
 
-    addPlayer: function(player) {
+    addPlayer: function(player, startState) {
         this._players[player.id] = player;
         this.newPlayers.push(player.id);
-
-        if (player.id != this.myClientId) {
-            this._interpolator.addNode(player.id);
-        }
+        this._interpolator.addNode(player.id, startState);
     },
 
     removePlayerById: function(playerId) {

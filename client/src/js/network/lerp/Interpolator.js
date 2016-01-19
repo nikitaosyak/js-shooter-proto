@@ -1,7 +1,7 @@
 Interpolator = function() {
     console.log('interpolator created');
     this._nodes = {};
-    this.lerpTime = 0;
+    this._lerpTime = 0;
 };
 
 Interpolator.prototype.constructor = Interpolator;
@@ -11,23 +11,51 @@ Interpolator.prototype = {
         this._nodes[id] = new InterpolatorNode(id, startState);
     },
 
-    addPosition: function(id, x, y, time) {
-        this._node[id].addPosition(x, y, time);
+    removeNode: function(id) {
+        this._nodes[id].purge();
+        delete this._nodes[id];
     },
 
-    addPointerPosition: function(id, x, y, time) {
-        this._node[id].addPointerPosition(x, y, time);
+    addPropertyValue: function(id, name, state) {
+        this._nodes[id].addPropertyValue(name, state);
     },
 
     update: function(dt) {
+        var srvDelta = Facade.connection.sync.srvDelta;
+        var lag = Facade.connection.sync.lag;
+        var calculatedServerTime = Date.now() - srvDelta - lag;
 
+        var id, n;
+        for (id in this._nodes) {
+            n = this._nodes[id];
+            n.update(dt, calculatedServerTime);
+        }
+
+        var minimalSimulatedTime = Number.POSITIVE_INFINITY;
+        for (id in this._nodes) {
+            n = this._nodes[id];
+            if (n.simulatedTime < minimalSimulatedTime) {
+                minimalSimulatedTime = n.simulatedTime;
+            }
+        }
+
+        if (minimalSimulatedTime == Number.POSITIVE_INFINITY || minimalSimulatedTime === 0) {
+            this._lerpTime = 0;
+        } else {
+            this._lerpTime = calculatedServerTime - minimalSimulatedTime;
+        }
     },
 
 
     //
     // for visual state
 
-    getServerPosition: function(id) { return this._node[id].serverPosition; },
-    getLerpPosition: function(id) { return this._node[id].lerpPosition; },
-    getLerpPointerPosition: function(id) { return this._node[id].lerpPointerPosition; },
+    getRawProperty: function(id, propertyName) { return this._nodes[id].getRawPropertyValue(propertyName); },
+    getLerpProperty: function(id, propertyName) { return this._nodes[id].getLerpPropertyValue(propertyName); },
 };
+
+Object.defineProperty(Interpolator.prototype, "lerpTime", {
+    get: function() {
+        return this._lerpTime;
+    }
+});
