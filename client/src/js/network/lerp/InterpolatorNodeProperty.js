@@ -9,7 +9,7 @@ InterpolatorNodeProperty = function(name, initialState) {
         this._template.push(interpolatedValueKey);
         this._lerpState[interpolatedValueKey] = initialState[interpolatedValueKey];
     }
-    console.log('    created property', name, 'with lerp template', this._template);
+    console.log('    created [', name, '] with lerp template {', this._template.join(', '), '}');
 
     this._freshHistory = [];
     this._oldHistory = [initialState];
