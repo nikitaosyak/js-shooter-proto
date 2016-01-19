@@ -3,7 +3,7 @@ State = function() {
     console.log("network state created");
     this._me = null;
     this._players = {};
-    this._interpolator = new Interpolator();
+    this.interpolator = new Interpolator();
 
     this.newPlayers = [];
     this.removedPlayers = [];
@@ -20,20 +20,23 @@ State.prototype = {
     addPlayer: function(player, startState) {
         this._players[player.id] = player;
         this.newPlayers.push(player.id);
-        this._interpolator.addNode(player.id, startState);
+        this.interpolator.addNode(player.id, startState);
     },
 
     removePlayerById: function(playerId) {
         this.removedPlayers.push(playerId);
+        this.interpolator.removeNode(playerId);
         delete this._players[playerId];
     },
 
     addPlayerPos: function(playerId, x, y, time) {
         this._players[playerId].updateBackendPos(x, y, time);
+        this.interpolator.addPropertyValue(playerId, 'pos', {x:x, y:y, time:time});
     },
 
     setPointerLocation: function(playerId, x, y, time) {
         this._players[playerId].updatePointerPosition(x, y, time);
+        this.interpolator.addPropertyValue(playerId, 'pointer_pos', {x:x, y:y, time:time});
     },
 };
 

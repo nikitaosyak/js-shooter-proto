@@ -151,16 +151,6 @@ Object.defineProperty(Player.prototype, "name", {
     }
 });
 
-Object.defineProperty(Player.prototype, "lastPos", {
-    get: function() {
-        var freshLen = this._freshHistory.length;
-        if (freshLen > 0) {
-            return this._freshHistory[freshLen-1];
-        }
-        return this._oldHistory[this._oldHistory.length-1];
-    }
-});
-
 Object.defineProperty(Player.prototype, "lastPointerPos", {
     get: function() {
         return this._serverPointer;

@@ -91,11 +91,9 @@ function update() {
         return;
     }
     var dt = game.time.elapsed;
-    // console.log('before sync');
     connection.sync.update();
-    // console.log('before input');
     input.update(dt);
-    // console.log('before vs');
+    networkState.interpolator.update(dt);
     visualState.update(dt);
 }
 

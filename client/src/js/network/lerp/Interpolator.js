@@ -39,7 +39,7 @@ Interpolator.prototype = {
             }
         }
 
-        if (minimalSimulatedTime == Number.POSITIVE_INFINITY || minimalSimulatedTime === 0) {
+        if (minimalSimulatedTime == Number.POSITIVE_INFINITY || minimalSimulatedTime <= 0) {
             this._lerpTime = 0;
         } else {
             this._lerpTime = calculatedServerTime - minimalSimulatedTime;
