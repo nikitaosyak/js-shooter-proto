@@ -31,7 +31,7 @@ ActionQueue.prototype = {
         b.friction = 1;
         b.frictionAir = 1;
         b.groupId = 1;
-        b.playerId = clientId;
+        b.clientId = clientId;
 
         Matter.World.add(this._world, b);
         this._bodies[clientId] = b;
@@ -55,6 +55,15 @@ ActionQueue.prototype = {
         delete this._bodies[clientId];
         delete this._history[clientId];
         delete this._streamTimeline[clientId];
+    },
+
+    ray: function(from, to) {
+        var bs = Matter.Composite.allBodies(this._engine.world);
+        // var a = [];
+        // for (var k in this._bodies) {
+        //     a.push(this._bodies[k]);
+        // }
+        return Matter.Query.ray(bs, from, to);
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {

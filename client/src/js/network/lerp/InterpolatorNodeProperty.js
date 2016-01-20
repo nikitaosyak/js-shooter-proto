@@ -75,7 +75,7 @@ InterpolatorNodeProperty.prototype = {
 
                 if (this._freshHistory.length === 0) {
                     this._drained = true;
-                    console.log('drained');
+                    // console.log('drained');
                     return;
                 }
 

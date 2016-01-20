@@ -36,6 +36,22 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         g.moveTo(0, 0);
         g.lineTo(vec.x, vec.y);
 
+        var result = Facade.queue.ray({x:myP.x, y:myP.y}, {x:p.worldX, y:p.worldY});
+        // console.log(result);
+        var walls = 0;
+        var players = 0;
+        for (var i = 0; i < result.length; i++) {
+            var c = result[i];
+            if (c.body.clientId == Facade.myId) continue;
+            if (c.body.isStatic) {
+                walls += 1;  
+            } else {
+                players += 1;
+            }
+        }
+        console.log('hit', walls, 'walls and', players, 'players');
+        console.log(result);
+
         game.add.tween(g).to({alpha: 0}, 250, "Linear", true).onComplete.addOnce(function(obj, tween) {
             // console.log('tween complete', obj, tween);
             this._game.world.remove(obj);
