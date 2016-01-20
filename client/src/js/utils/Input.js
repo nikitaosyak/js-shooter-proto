@@ -17,6 +17,32 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
     console.log("input created");
     this._game = Facade.game;
     this._game.input.keyboard.addCallbacks(this, this._onKeyDown, this._onKeyUp, null);
+    this._game.input.mouse.callbackContext = this;
+    this._railgunShotAt = 0;
+    this._game.input.mouse.mouseDownCallback = function(e) {
+        var t = Date.now();
+        if (t - this._railgunShotAt < Facade.params.weapons.railgun.recoilTime) 
+            return;
+        this._railgunShotAt = t;
+
+        var p = this._game.input.mousePointer;
+        var myP = Facade.visualState.me.view.position;
+        // console.log(p.worldX, p.worldY);
+        var vec = new Phaser.Point(p.worldX - myP.x, p.worldY - myP.y);
+        vec.setMagnitude(500);
+
+        var g = this._game.add.graphics(myP.x, myP.y);
+        g.lineStyle(3, 0xCC0000);
+        g.moveTo(0, 0);
+        g.lineTo(vec.x, vec.y);
+
+        game.add.tween(g).to({alpha: 0}, 250, "Linear", true).onComplete.addOnce(function(obj, tween) {
+            // console.log('tween complete', obj, tween);
+            this._game.world.remove(obj);
+            this._game.world.remove(tween);
+        }, this);
+        // console.log(vec);
+    };
 
     this._onVelocityChange = onVelocityChange;
     this._velocityContext = velocityContext;

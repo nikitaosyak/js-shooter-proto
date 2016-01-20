@@ -13,6 +13,15 @@ GameParams.dStep = 5;
 
 GameParams.interpolatorHistoryLen = 10;
 
+GameParams.weapons = {
+    railgun: {
+        instant: true,
+        automatic: false,
+        recoilTime: 800,
+        damage: 100
+    }
+};
+
 //
 // debug values
 //
