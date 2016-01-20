@@ -40,7 +40,6 @@ var game = new Phaser.Game(
 
 Facade = function() {}
 Facade.prototype.constructor = Facade;
-Facade.srvDeltaTime = -1; // will be calculated on srvTime packet
 
 var networkState;
 var visualState;
@@ -55,6 +54,7 @@ function preload() {
 
 function create() {
     game.stage.disableVisibilityChange = true;
+    Facade.myId = -1;
     Facade.game = game;
     Facade.params = GameParams;
     Facade.factory = new Factory(game);

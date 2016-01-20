@@ -128,7 +128,7 @@ Input.prototype = {
                 ts = now - this._lastVelStarted;
             }
             this._onVelocityChange.call(this._velocityContext, this._velocity, ts);
-            Facade.queue.addStreamAction(Date.now(), 0, 0, this._velocity.x, this._velocity.y, ts);
+            Facade.queue.addStreamAction(Date.now(), 0, Facade.myId, this._velocity.x, this._velocity.y, ts);
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;
 

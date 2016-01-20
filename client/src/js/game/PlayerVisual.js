@@ -1,4 +1,5 @@
-PlayerVisual = function(x, y, group, isMe) {
+PlayerVisual = function(id, x, y, group, isMe) {
+    this.id = id;
     this.isMe = isMe;
     this.group = group;
     this.pointerPos = {x:-1, y:-1};
@@ -35,5 +36,32 @@ PlayerVisual.prototype = {
         this.debugView = null;
         this.view = null;
         this.arrow = null;
+    },
+
+    updateDebugPos: function(newPos) {
+        this.debugView.position.x = newPos.x;
+        this.debugView.position.y = newPos.y;
+    },
+
+    updatePos: function(newPos) {
+        var prevPos = {x: this.view.position.x, y: this.view.position.y};
+        this.view.position.x = newPos.x;
+        this.view.position.y = newPos.y;
+        this.arrow.position = this.view.position;
+
+        if (this.isMe) return;
+
+        var b = Facade.queue.getClientBody(this.id);
+        Matter.Body.translate(b, {
+            x: newPos.x - prevPos.x,
+            y: newPos.y - prevPos.y
+        });
+    },
+
+    updateArrowAngle: function(newPointerPos) {
+        this.pointerPos = newPointerPos;
+        var xd = newPointerPos.x - this.view.position.x;
+        var yd = newPointerPos.y - this.view.position.y;
+        this.arrow.rotation = Math.atan2(yd, xd);
     },
 };

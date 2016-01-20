@@ -46,38 +46,25 @@ VisualState.prototype = {
         var lerp = this._networkState.interpolator;
         for (var clientId in this._visuals) {
 
-            // raw snapshot movement display:
-            var player = players[clientId];
+            // debug snapshot movement display:
             var playerVisual = this._visuals[clientId];
-            var rawState = lerp[clientId].pos.rawValue;
-            playerVisual.debugView.x = rawState.x;
-            playerVisual.debugView.y = rawState.y;
+            playerVisual.updateDebugPos(lerp[clientId].pos.rawValue);
 
-            // interpolated movement
-            if (player.isMe) continue;
-            var lerpState = lerp[clientId].pos.lerpValue;
-            var lerpArrowState = lerp[clientId].pointer_pos.lerpValue;
-            // console.log(lerpState);
-            playerVisual.view.position.x = lerpState.x;
-            playerVisual.view.position.y = lerpState.y;
-            playerVisual.arrow.position = playerVisual.view.position;
-
-            playerVisual.pointerPos.x = lerpArrowState.x;
-            playerVisual.pointerPos.y = lerpArrowState.y;
-
-            // pointer display
-            r = this._calcArrowRotation(playerVisual.view.position, playerVisual.pointerPos);
-            // console.log(playerVisual.view.position, playerVisual.pointerPos);
-            playerVisual.arrow.rotation = r;
+            // interpolate movement and arrow rotation
+            if (players[clientId].isMe) continue;
+            playerVisual.updatePos(lerp[clientId].pos.lerpValue);
+            playerVisual.updateArrowAngle(lerp[clientId].pointer_pos.lerpValue);
         }
 
         // client prediction for myself:
-        Facade.queue.simulateStream(Date.now(), 0, this._visualMe.view.position);
-        this._visualMe.arrow.position = this._visualMe.view.position;
-
-        var pointer = this._game.input.mousePointer;
-        r = this._calcArrowRotation(this._visualMe.view.worldPosition, pointer);
-        this._visualMe.arrow.rotation = r;
+        var state = {x: this._visualMe.view.position.x, y: this._visualMe.view.position.y};
+        Facade.queue.simulateStream(Date.now(), Facade.myId, state);
+        this._visualMe.updatePos(state);
+        var pointerState = {
+            x: this._game.input.mousePointer.worldX,
+            y: this._game.input.mousePointer.worldY
+        };
+        this._visualMe.updateArrowAngle(pointerState);
     },
 
     _addNewPlayers: function() {
@@ -88,7 +75,7 @@ VisualState.prototype = {
                 var newPlayer = this._networkState.players[newPlayerId];
                 var pos = this._networkState.interpolator[newPlayerId].pos.rawValue;
                 // console.log('adding visual player (isMe:', newPlayer.isMe);
-                this._visuals[newPlayerId] = new PlayerVisual(pos.x, pos.y, this._group, newPlayer.isMe);
+                this._visuals[newPlayerId] = new PlayerVisual(newPlayerId, pos.x, pos.y, this._group, newPlayer.isMe);
                 if (newPlayer.isMe) {
                     this._visualMe = this._visuals[newPlayerId];
                     this._game.camera.follow(this._visualMe.view);
@@ -110,12 +97,6 @@ VisualState.prototype = {
             }
             this._networkState.removedPlayers = [];
         }
-    },
-
-    _calcArrowRotation: function(p1, p2) {
-        var xd = p2.x - p1.x;
-        var yd = p2.y - p1.y;
-        return Math.atan2(yd, xd);
     }
 };
 

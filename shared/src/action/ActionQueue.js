@@ -31,6 +31,7 @@ ActionQueue.prototype = {
         b.friction = 1;
         b.frictionAir = 1;
         b.groupId = 1;
+        b.playerId = clientId;
 
         Matter.World.add(this._world, b);
         this._bodies[clientId] = b;
@@ -39,6 +40,13 @@ ActionQueue.prototype = {
         hist[0].state.x = x;
         hist[0].state.y = y;
         this._history[clientId] = hist;
+    },
+
+    getClientBody: function(clientId) {
+        if (clientId in this._bodies) {
+            return this._bodies[clientId];
+        }
+        return null;
     },
 
     deleteClient: function(clientId) {
