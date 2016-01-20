@@ -27,17 +27,34 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
 
         var p = this._game.input.mousePointer;
         var myP = Facade.visualState.me.view.position;
-        // console.log(p.worldX, p.worldY);
-        var vec = new Phaser.Point(p.worldX - myP.x, p.worldY - myP.y);
-        vec.setMagnitude(500);
+        var shotOrigin = new Phaser.Point(p.worldX - myP.x, p.worldY - myP.y).normalize();
+        var shotEnd = new Phaser.Point(shotOrigin.x, shotOrigin.y);
+        shotEnd.setMagnitude(Facade.params.weapons.railgun.rayLength);
+        shotOrigin.setMagnitude(Facade.params.playerRadius+1);
+        shotEnd.subtract(shotOrigin.x, shotOrigin.y);
+        // shotOrigin.add(myP.x, myP.y);
 
-        var g = this._game.add.graphics(myP.x, myP.y);
-        g.lineStyle(3, 0xCC0000);
+        var t = Date.now();
+        var shitres = ShitCast.cast(Facade.queue.ray, Facade.queue,
+            {x:myP.x + shotOrigin.x, y:myP.y + shotOrigin.y}, 
+            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y}
+        );
+        console.log('shit cast took:', Date.now() - t);
+        if ('clientId' in shitres) {
+            console.log('hit player', shitres.clientId);
+        } else {
+            console.log('hit wall');
+        }
+
+        var g = this._game.add.graphics(myP.x + shotOrigin.x, myP.y + shotOrigin.y);
+        g.lineStyle(2, 0xCC0000);
         g.moveTo(0, 0);
-        g.lineTo(vec.x, vec.y);
+        g.lineTo(shotEnd.x, shotEnd.y);
 
-        var result = Facade.queue.ray({x:myP.x, y:myP.y}, {x:p.worldX, y:p.worldY});
-        // console.log(result);
+        var result = Facade.queue.ray(
+            {x:myP.x + shotOrigin.x, y:myP.y + shotOrigin.y}, 
+            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y}
+        );
         var walls = 0;
         var players = 0;
         for (var i = 0; i < result.length; i++) {
@@ -49,8 +66,8 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
                 players += 1;
             }
         }
-        console.log('hit', walls, 'walls and', players, 'players');
-        console.log(result);
+        // console.log('hit', walls, 'walls and', players, 'players');
+        // console.log(result);
 
         game.add.tween(g).to({alpha: 0}, 250, "Linear", true).onComplete.addOnce(function(obj, tween) {
             // console.log('tween complete', obj, tween);

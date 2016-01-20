@@ -10,6 +10,7 @@ module.exports = function(grunt) {
         'src/SharedUtils.js', 
         'src/SendMessage.js', 
         'src/LevelModel.js',
+        'src/ShitCast.js',
         'src/action/StreamAction.js', 
         'src/action/ActionQueue.js'
     ];
