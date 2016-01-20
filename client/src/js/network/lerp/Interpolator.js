@@ -1,6 +1,7 @@
 Interpolator = function() {
     console.log('interpolator created');
     this._nodeKeyList = [];
+    this._tt = -1;
 };
 
 Interpolator.prototype.constructor = Interpolator;
@@ -21,6 +22,12 @@ Interpolator.prototype = {
         var srvDelta = Facade.connection.sync.srvDelta;
         var lag = Facade.connection.sync.lag;
         var calculatedServerTime = Date.now() - srvDelta - lag;
+        if (this._tt == -1) {
+            this._tt = calculatedServerTime;
+        } else {
+            // console.log(calculatedServerTime - this._tt, dt);
+            this._tt = calculatedServerTime;
+        }
 
         // console.log(dt, calculatedServerTime);
         for (var i = 0; i < this._nodeKeyList.length; i++) {

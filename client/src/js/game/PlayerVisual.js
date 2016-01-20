@@ -8,7 +8,7 @@ PlayerVisual = function(x, y, group, isMe) {
         'player_sprite', group, 
         isMe ? 0xCCCCCC : 0xAAAAAA, 
         new Phaser.Point(0.5, 0.5), undefined, 
-        Facade.params.serverStateVisible ? 0.3 : 0
+        Facade.params.serverStateVisible ? 0.08 : 0
     );
     
     var color = isMe ? 0x0000CC : 0xCC0000;

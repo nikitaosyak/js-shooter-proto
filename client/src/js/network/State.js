@@ -30,13 +30,11 @@ State.prototype = {
     },
 
     addPlayerPos: function(playerId, x, y, time) {
-        this._players[playerId].updateBackendPos(x, y, time);
-        this.interpolator[playerId]['pos'].addState({x:x, y:y, time:time});
+        this.interpolator[playerId].pos.addState({x:x, y:y, time:time});
     },
 
     setPointerLocation: function(playerId, x, y, time) {
-        this._players[playerId].updatePointerPosition(x, y, time);
-        this.interpolator[playerId]['pointer_pos'].addState({x:x, y:y, time:time});
+        this.interpolator[playerId].pointer_pos.addState({x:x, y:y, time:time});
     },
 };
 

@@ -31,7 +31,7 @@ InterpolatorNode.prototype = {
     },
 
     update: function(dt, calculatedServerTime) {
-        for (var i = 0; i < this._propertyNamelist; i++) {
+        for (var i = 0; i < this._propertyNamelist.length; i++) {
             var p = this[this._propertyNamelist[i]];
             p.update(dt, calculatedServerTime);
         }

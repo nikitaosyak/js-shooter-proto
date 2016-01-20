@@ -49,14 +49,21 @@ VisualState.prototype = {
             // raw snapshot movement display:
             var player = players[clientId];
             var playerVisual = this._visuals[clientId];
-            var rawState = lerp[clientId]['pos'].rawValue;
+            var rawState = lerp[clientId].pos.rawValue;
             playerVisual.debugView.x = rawState.x;
             playerVisual.debugView.y = rawState.y;
 
             // interpolated movement
             if (player.isMe) continue;
-            player.interpolate(playerVisual.view, playerVisual.pointerPos, dt);
+            var lerpState = lerp[clientId].pos.lerpValue;
+            var lerpArrowState = lerp[clientId].pointer_pos.lerpValue;
+            // console.log(lerpState);
+            playerVisual.view.position.x = lerpState.x;
+            playerVisual.view.position.y = lerpState.y;
             playerVisual.arrow.position = playerVisual.view.position;
+
+            playerVisual.pointerPos.x = lerpArrowState.x;
+            playerVisual.pointerPos.y = lerpArrowState.y;
 
             // pointer display
             r = this._calcArrowRotation(playerVisual.view.position, playerVisual.pointerPos);
@@ -79,7 +86,7 @@ VisualState.prototype = {
             for (var i = 0; i < newPlayersLen; i++) {
                 var newPlayerId = this._networkState.newPlayers[i];
                 var newPlayer = this._networkState.players[newPlayerId];
-                var pos = this._networkState.interpolator[newPlayerId]['pos'].rawValue;
+                var pos = this._networkState.interpolator[newPlayerId].pos.rawValue;
                 // console.log('adding visual player (isMe:', newPlayer.isMe);
                 this._visuals[newPlayerId] = new PlayerVisual(pos.x, pos.y, this._group, newPlayer.isMe);
                 if (newPlayer.isMe) {

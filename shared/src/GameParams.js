@@ -1,6 +1,6 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 50;       // milliseconds
+GameParams.serverUpdateTime = 100;       // milliseconds
 
 GameParams.rttCheckTimeout = 500;
 GameParams.rttMedianHistory = 11;
@@ -10,6 +10,8 @@ GameParams.playerRadius = 32;
 
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds
 GameParams.dStep = 5;
+
+GameParams.interpolatorHistoryLen = 10;
 
 //
 // debug values
