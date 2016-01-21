@@ -47,28 +47,15 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
             1
         );
         // console.log('shit cast took:', Date.now() - t);
-        if (shitres.length != 0) {
+        if (shitres.length !== 0) {
             shotEnd.setMagnitude(shitres[0].rayLen);
         }
-        
-        var g = this._game.add.graphics(myP.x + shotOrigin.x, myP.y + shotOrigin.y);
-        g.lineStyle(2, 0xCC0000);
-        g.moveTo(0, 0);
-        g.lineTo(shotEnd.x, shotEnd.y);
 
-        game.add.tween(g).to({alpha: 0}, 400, "Linear", true).onComplete.addOnce(function(obj, tween) {
-            // console.log('tween complete', obj, tween);
-            this._game.world.remove(obj);
-            this._game.world.remove(tween);
-        }, this);
+        var from = {x: myP.x + shotOrigin.x, y: myP.y + shotOrigin.y};
+        var to = {x: myP.x + shotEnd.x, y: myP.y + shotEnd.y};
 
-        for (var i = 0; i < shitres.length; i++) {
-            var b = shitres[i].body;
-            if ('clientId' in b) {
-                Facade.networkState.removePlayerById(b.clientId);
-            }
-        }
-        // console.log(vec);
+        Facade.visualState.drawRay(from, shotEnd);
+        Facade.connection.sendShot(0, from, to);
     };
 
     this._onVelocityChange = onVelocityChange;

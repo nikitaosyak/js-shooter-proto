@@ -35,6 +35,18 @@ VisualState = function(game, networkState, levelModel) {
 VisualState.prototype.constructor = VisualState;
 
 VisualState.prototype = {
+    drawRay: function(from, offset) {
+        var g = this._game.add.graphics(from.x, from.y);
+        g.lineStyle(2, 0xCC0000);
+        g.moveTo(0, 0);
+        g.lineTo(offset.x, offset.y);
+
+        game.add.tween(g).to({alpha: 0}, 500, "Linear", true).onComplete.addOnce(function(obj, tween) {
+            this._game.world.remove(obj);
+            this._game.world.remove(tween);
+        }, this);
+    },
+
     update: function(dt) {
         // handle player coming\going
         this._addNewPlayers();

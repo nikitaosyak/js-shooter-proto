@@ -1,11 +1,11 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 100;       // milliseconds
+GameParams.serverUpdateTime = 50;       // milliseconds
 
 GameParams.rttCheckTimeout = 500;
 GameParams.rttMedianHistory = 11;
 
-GameParams.playerSpeed = 100;
+GameParams.playerSpeed = 60;
 GameParams.playerRadius = 32;
 
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds
@@ -15,6 +15,7 @@ GameParams.interpolatorHistoryLen = 10;
 
 GameParams.weapons = {
     railgun: {
+        name: 'railgun',
         instant: true,
         rayLength: 800,
         automatic: false,

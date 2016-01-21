@@ -48,6 +48,10 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     clients[m.cid].pointer.x = m.x;
                     clients[m.cid].pointer.y = m.y;
                     break;
+                case 'requestShot':
+                    // console.log(m.lerp, m.from, m.to);
+                    broadcast(SendMessage.shotAck(client.id, m.to, []));
+                    break;
                 case 'p':
                     client.send(SendMessage.pong(time_util.elapsed));
                     break;
@@ -66,7 +70,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
         queue.deleteClient(removingId);
         delete clients[removingId];
         client.purge();
-        broadcast(SendMessage.playerDeath(removingId));
+        broadcast(SendMessage.playerDeath([removingId]));
     });
 
     console.log('incoming connection: ', client.toString());

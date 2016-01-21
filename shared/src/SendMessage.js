@@ -27,6 +27,8 @@ SendMessage.pong = function(srvTime) {
     return JSON.stringify({id:"p_ack"});
 };
 
+SendMessage.rewrap = function(message) { return JSON.stringify(message); };
+
 //
 // Server messages
 //
@@ -51,8 +53,12 @@ SendMessage.positionBatch = function(stampsArray) {
     return JSON.stringify({'id': 'positionBatch', 'value': stampsArray});
 };
 
-SendMessage.playerDeath = function(clientId) {
-    return JSON.stringify({'id': 'playerDeath', 'value': clientId});
+SendMessage.playerDeath = function(clients) {
+    return JSON.stringify({'id': 'playerDeath', 'value': clients});
+};
+
+SendMessage.shotAck = function(clientId, to, hits) {
+    return JSON.stringify({id: 'shotAck', cid: clientId, to: to, hits: hits});
 };
 
 
@@ -67,6 +73,10 @@ SendMessage.medianRTT = function(clientId, value) {
 SendMessage.velocityDiff = function(clientId, x, y, timeDelta) {
     var m = {'id': 'vd', 'cid': clientId, 'x': x, 'y': y, 'dt': timeDelta};
     return JSON.stringify(m);
+};
+
+SendMessage.requestShot = function(lerp, from, to) {
+    return JSON.stringify({id: 'requestShot', lerp: lerp, from: from, to: to});
 };
 
 

@@ -43,6 +43,10 @@ Connection.prototype = {
         this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y));
     },
 
+    sendShot: function(lerpTime, from, to) {
+        this._socket.send(SendMessage.requestShot(lerpTime, from, to));
+    },
+
     _onOpen: function() {
         console.log('socket connected to ', this._host, ':', this._port);
         this._sync = new ServerSync(this._socket);

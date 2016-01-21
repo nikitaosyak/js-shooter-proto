@@ -52,7 +52,23 @@ Router.prototype = {
         }
     },
 
+    shotAck: function(m) {
+        if (m.cid == Facade.myId) return;
+        console.log(m.cid, m.to, m.hits);
+        var cp = Facade.networkState.interpolator[m.cid].pos.lerpValue;
+        var shotOrigin = new Phaser.Point(m.to.x - cp.x, m.to.y - cp.y).normalize();
+        var shotEnd = new Phaser.Point(m.to.x - cp.x, m.to.y - cp.y);
+        shotOrigin.setMagnitude(Facade.params.playerRadius+1);
+        // shotEnd.subtract(shotOrigin.x, shotOrigin.y);
+
+        var from = {x: cp.x + shotOrigin.x, y: cp.y + shotOrigin.y};
+        Facade.visualState.drawRay(from, shotEnd);
+        // console.log(clientPos, {x: to.x-clientPos.x, y: to.y-clientPos.y});
+    },
+
     playerDeath: function(m) {
-        Facade.networkState.removePlayerById(m.value);
+        for (var i = 0; i < m.value.length; i++) {
+            Facade.networkState.removePlayerById(m.value[i]);
+        }
     }
 };
