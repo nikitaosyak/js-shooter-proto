@@ -49,6 +49,8 @@ ActionQueue.prototype = {
         return null;
     },
 
+    getAllBodies: function() { return Matter.Composite.allBodies(this._engine.world); },
+
     deleteClient: function(clientId) {
         console.log('queue: removing client body and history', clientId);
         Matter.World.remove(this._world, this._bodies[clientId]);
@@ -59,10 +61,6 @@ ActionQueue.prototype = {
 
     ray: function(from, to) {
         var bs = Matter.Composite.allBodies(this._engine.world);
-        // var a = [];
-        // for (var k in this._bodies) {
-        //     a.push(this._bodies[k]);
-        // }
         return Matter.Query.ray(bs, from, to);
     },
 

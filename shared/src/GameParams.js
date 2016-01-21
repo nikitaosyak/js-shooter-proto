@@ -16,9 +16,9 @@ GameParams.interpolatorHistoryLen = 10;
 GameParams.weapons = {
     railgun: {
         instant: true,
-        rayLength: 400,
+        rayLength: 800,
         automatic: false,
-        recoilTime: 200,
+        recoilTime: 50,
         damage: 100
     }
 };

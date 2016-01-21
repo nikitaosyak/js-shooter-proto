@@ -34,46 +34,40 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         shotEnd.subtract(shotOrigin.x, shotOrigin.y);
         // shotOrigin.add(myP.x, myP.y);
 
-        var t = Date.now();
-        var shitres = ShitCast.cast(Facade.queue.ray, Facade.queue,
+        t = Date.now();
+        var bodies = Facade.queue.getAllBodies();
+        var shitres = ShitCast.complexCast(bodies, Matter.Query.ray,
+            function(bb) {
+                // console.log(bb);
+                if ('clientId' in bb) return true;
+                return false;
+            },
             {x:myP.x + shotOrigin.x, y:myP.y + shotOrigin.y}, 
-            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y}
+            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y},
+            1
         );
-        console.log('shit cast took:', Date.now() - t);
-        if ('clientId' in shitres) {
-            console.log('hit player', shitres.clientId);
-        } else {
-            console.log('hit wall');
+        // console.log('shit cast took:', Date.now() - t);
+        if (shitres.length != 0) {
+            shotEnd.setMagnitude(shitres[0].rayLen);
         }
-
+        
         var g = this._game.add.graphics(myP.x + shotOrigin.x, myP.y + shotOrigin.y);
         g.lineStyle(2, 0xCC0000);
         g.moveTo(0, 0);
         g.lineTo(shotEnd.x, shotEnd.y);
 
-        var result = Facade.queue.ray(
-            {x:myP.x + shotOrigin.x, y:myP.y + shotOrigin.y}, 
-            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y}
-        );
-        var walls = 0;
-        var players = 0;
-        for (var i = 0; i < result.length; i++) {
-            var c = result[i];
-            if (c.body.clientId == Facade.myId) continue;
-            if (c.body.isStatic) {
-                walls += 1;  
-            } else {
-                players += 1;
-            }
-        }
-        // console.log('hit', walls, 'walls and', players, 'players');
-        // console.log(result);
-
-        game.add.tween(g).to({alpha: 0}, 250, "Linear", true).onComplete.addOnce(function(obj, tween) {
+        game.add.tween(g).to({alpha: 0}, 400, "Linear", true).onComplete.addOnce(function(obj, tween) {
             // console.log('tween complete', obj, tween);
             this._game.world.remove(obj);
             this._game.world.remove(tween);
         }, this);
+
+        for (var i = 0; i < shitres.length; i++) {
+            var b = shitres[i].body;
+            if ('clientId' in b) {
+                Facade.networkState.removePlayerById(b.clientId);
+            }
+        }
         // console.log(vec);
     };
 
