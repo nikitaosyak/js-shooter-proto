@@ -43,8 +43,8 @@ Connection.prototype = {
         this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y));
     },
 
-    sendShot: function(lerpTime, from, to) {
-        this._socket.send(SendMessage.requestShot(lerpTime, from, to));
+    sendShot: function(lerpTime, moveTimeOffset, to) {
+        this._socket.send(SendMessage.requestShot(lerpTime, moveTimeOffset, to));
     },
 
     _onOpen: function() {

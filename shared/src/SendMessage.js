@@ -75,8 +75,8 @@ SendMessage.velocityDiff = function(clientId, x, y, timeDelta) {
     return JSON.stringify(m);
 };
 
-SendMessage.requestShot = function(lerp, from, to) {
-    return JSON.stringify({id: 'requestShot', lerp: lerp, from: from, to: to});
+SendMessage.requestShot = function(lerp, moveTimeOffset, to) {
+    return JSON.stringify({id: 'requestShot', lerp: lerp, time: moveTimeOffset, to: to});
 };
 
 

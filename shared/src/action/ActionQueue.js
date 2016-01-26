@@ -4,6 +4,7 @@ if ("undefined" !== typeof exports) {
 
 ActionQueue = function() {
     this._streamTimeline = {};
+    this._instantTimeline = {};
     this._history = {};
     this._bodies = {};
 
@@ -25,7 +26,7 @@ ActionQueue.prototype = {
         }
     },
 
-    addClient: function(clientId, x, y) {
+    addClient: function(clientId, x, y, currentTime) {
         // console.log('queue: adding client body', clientId, x, y);
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
         b.friction = 1;
@@ -39,6 +40,7 @@ ActionQueue.prototype = {
         var hist = [new StreamAction(clientId, 0, 0, -1)];
         hist[0].state.x = x;
         hist[0].state.y = y;
+        hist[0].startTime = hist[0].endTime = hist[0].simulationTime = currentTime;
         this._history[clientId] = hist;
     },
 
@@ -97,27 +99,78 @@ ActionQueue.prototype = {
         }
     },
 
-    simulateStream: function(currentTime, clientId, clientState) {
-        if (!this._hasCurrentStreamAction(clientId)) return false;
-
-        var startState = {x:clientState.x, y:clientState.y};
-        var timeline = this._streamTimeline[clientId];
-        var len = timeline.length;
-        if (len > 0) {
-            for (var i = 0; i < len; i++) {
-                this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState);
-            }
-
-            var clientHistory = this._history[clientId];
-            while(timeline.length > 0 && timeline[0].ended) {
-                clientHistory.push(timeline.shift());
-                if(clientHistory.length > 20) {
-                    clientHistory.shift();
-                }
-            }    
-            return startState.x != clientState.x || startState.y != clientState.y;
+    /**
+     * all numbers are integer
+     * @param {Number} currentTime  - server elapsed time
+     * @param {Number} clientId     - 
+     * @param {Number} clientLag    - half of rtt (last calculated)
+     * @param {Number} lerp         - current interpolation time on the client in the moment of action
+     * @param {Number} timeDiff     - time since last move action on client
+     * @param {x:Number, y:Number}  - crosshair point
+     */
+    addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
+        // console.log('adding')
+        var a = this._getLastStreamAction(clientId);
+        var h = null;
+        var len = 0;
+        if (a === null) {
+            h = this._history[clientId];
+            h = h[h.length-1];
+        } else {
+            len = this._streamTimeline[clientId].length;
         }
-        return false;
+
+        var elapsedToCurrent;
+        if (len > 0) {
+            a = this._streamTimeline[clientId][0];
+            var elapsedFromStart = a.wasSimulated ? a.simulationTime - a.startTime : 0;
+            elapsedToCurrent = currentTime - a.startTime;
+            console.log(clientId, 'moving. ', elapsedFromStart, elapsedToCurrent, timeDiff-clientLag, clientLag, 'since last moving started.', len);
+        } else {
+            // elapsedToCurrent = currentTime - h.endTime;
+            var elapsedShotTime = h.endTime + timeDiff - clientLag - lerp;
+            console.log(clientId, 'is standing still while shooting', clientLag, currentTime - elapsedShotTime);
+
+            if (!(clientId in this._instantTimeline)) {
+                this._instantTimeline[clientId] = [];
+            }
+            this._instantTimeline[clientId].push(new InstantAction(clientId, currentTime, elapsedShotTime));
+        }
+    },
+
+    simulate: function(currentTime, clientId, clientState) {
+        var stream = this._hasStreamActions(clientId);
+        var instant = this._hasInstantActions(clientId);
+        if (!stream && !instant) return {stream: false, instant: false};
+
+        var streamChange = false;
+
+        if (stream) {
+            var startState = {x:clientState.x, y:clientState.y};
+            var timeline = this._streamTimeline[clientId];
+            var len = timeline.length;
+            if (len > 0) {
+                for (var i = 0; i < len; i++) {
+                    this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState);
+                }
+
+                var clientHistory = this._history[clientId];
+                while(timeline.length > 0 && timeline[0].ended) {
+                    clientHistory.push(timeline.shift());
+                    if(clientHistory.length > 20) {
+                        clientHistory.shift();
+                    }
+                }    
+                streamChange = startState.x != clientState.x || startState.y != clientState.y;
+            }
+        }
+
+        if (instant) {
+            var ia = this._instantTimeline[clientId][0];
+            console.log(clientId, 'have instant actions to simulate', currentTime - ia.addTime, currentTime - ia.elapsedExecuteTime);
+        }
+
+        return {stream: streamChange, instant: instant};
     },
 
     _simulateStreamPiece: function(clientId, action, currentTime, clientState) {
@@ -225,9 +278,16 @@ ActionQueue.prototype = {
         return null;
     },
 
-    _hasCurrentStreamAction: function(clientId) {
+    _hasStreamActions: function(clientId) {
         if (clientId in this._streamTimeline) {
             return this._streamTimeline[clientId].length > 0;
+        }
+        return false;
+    },
+
+    _hasInstantActions: function(clientId) {
+        if (clientId in this._instantTimeline) {
+            return this._instantTimeline[clientId].length > 0;
         }
         return false;
     }

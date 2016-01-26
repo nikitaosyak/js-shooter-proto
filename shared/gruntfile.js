@@ -12,6 +12,7 @@ module.exports = function(grunt) {
         'src/LevelModel.js',
         'src/ShitCast.js',
         'src/action/StreamAction.js', 
+        'src/action/InstantAction.js', 
         'src/action/ActionQueue.js'
     ];
 

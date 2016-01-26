@@ -49,8 +49,9 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     clients[m.cid].pointer.y = m.y;
                     break;
                 case 'requestShot':
-                    // console.log(m.lerp, m.from, m.to);
-                    broadcast(SendMessage.shotAck(client.id, m.to, []));
+                    queue.addInstantAction(
+                        time_util.elapsed, client.id, clients[client.id].lag, m.lerp, m.time, m.to
+                        );
                     break;
                 case 'p':
                     client.send(SendMessage.pong(time_util.elapsed));
@@ -75,7 +76,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     console.log('incoming connection: ', client.toString());
 
-    queue.addClient(client.id, startPos.x, startPos.y);
+    queue.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
     client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, true));
     broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name), client.id);
     iterateClients(function(iterClientId, iterClient) {
@@ -95,13 +96,16 @@ time_util.onTimer(function(dt) {
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
-        var clientMoved = queue.simulateStream(currentTime, clientId, client.pos, GameParams.playerSpeedX, GameParams.playerSpeedY);
+        var simulateResult = queue.simulate(currentTime, clientId, client.pos, GameParams.playerSpeedX, GameParams.playerSpeedY);
         // if (!clientMoved) return;
-        if (!clientMoved && !addPointerToDiff) return;
+        if (!simulateResult.stream && !simulateResult.instant && !addPointerToDiff) return;
         var d = {clientId: clientId, time:currentTime};
-        if (clientMoved) {
+        if (simulateResult.stream) {
             d.x = client.pos.x;
             d.y = client.pos.y;
+        }
+        if (simulateResult.instant) {
+            // write instant action result here
         }
         if (addPointerToDiff) {
             d.px = client.pointer.x;

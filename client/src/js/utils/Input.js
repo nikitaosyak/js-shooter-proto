@@ -55,7 +55,9 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         var to = {x: myP.x + shotEnd.x, y: myP.y + shotEnd.y};
 
         Facade.visualState.drawRay(from, shotEnd);
-        Facade.connection.sendShot(0, from, to);
+        var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
+        Facade.connection.sendShot(0, timeOffset, to);
+        // console.log(timeOffset);
     };
 
     this._onVelocityChange = onVelocityChange;
@@ -75,7 +77,7 @@ Input.prototype = {
         this._lastX = 0;
         this._lastY = 0;
         this._lastVelStarted = 0;
-        this._lastVelEnded = 0;
+        this._lastVelEnded = Date.now();
         this._myVelocityUpdated = 0;
         this._lastPointerUpdated = 0;
         this._lastPointerPosition = null;
@@ -101,13 +103,13 @@ Input.prototype = {
         }
 
         // update move velocity
-        if (this._velocity.isZero()) {
-            if (this._lastVelEnded > 0) {
-                this._lastVelEnded = 0;
-                this._myVelocityUpdated = 0;
-            }
-            return;
-        }
+        // if (this._velocity.isZero()) {
+        //     if (this._lastVelEnded > 0) {
+        //         this._lastVelEnded = 0;
+        //         this._myVelocityUpdated = 0;
+        //     }
+        //     return;
+        // }
 
         // console.log('updating for current velocity: dt: ', dt, '; myDt: ', myDt);
         this._myVelocityUpdated = Date.now();

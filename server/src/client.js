@@ -37,7 +37,7 @@ Client.prototype =  {
 
     ackPong: function(currentTime) {
         if (this._sentPingTime === -1) {
-            console.error("wrong time");
+            console.error("wrong time on client", this._id);
             return;
         }
         var rtt = currentTime - this._sentPingTime;
