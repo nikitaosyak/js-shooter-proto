@@ -16,9 +16,10 @@ module.exports = function(grunt) {
         'src/action/ActionQueue.js'
     ];
 
+    //noinspection JSUnresolvedFunction
     grunt.initConfig({
         jshint: {
-            files: files,
+            files: files
         },
         uglify: {
             options: {
@@ -40,10 +41,10 @@ module.exports = function(grunt) {
                 options: {
                     reload: true,
                     spawn: false,
-                    atBegin: true,
-                },
-            },
-        },
+                    atBegin: true
+                }
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -51,4 +52,4 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['uglify', 'jshint']);
-}
+};

@@ -3,7 +3,15 @@ if ("undefined" !== typeof exports) {
 }
 
 ActionQueue = function() {
+    /**
+     * @type {Array.<StreamAction>}
+     * @private
+     */
     this._streamTimeline = {};
+    /**
+     * @type {Array.<InstantAction>}
+     * @private
+     */
     this._instantTimeline = {};
     this._history = {};
     this._bodies = {};
@@ -74,7 +82,7 @@ ActionQueue.prototype = {
         };
         var finalizeAction = function(la, cid, dt) {
             la.endTime = la.startTime + dt;
-    // console.log("finalizing last action [", cid, "] at [", la.endTime, "], action len: ", la.length);
+     //console.log("finalizing last action [", cid, "] at [", la.endTime, "], action len: ", la.length);
         };
 
         var lastAction = this._getLastStreamAction(clientId);
@@ -106,7 +114,7 @@ ActionQueue.prototype = {
      * @param {Number} clientLag    - half of rtt (last calculated)
      * @param {Number} lerp         - current interpolation time on the client in the moment of action
      * @param {Number} timeDiff     - time since last move action on client
-     * @param {x:Number, y:Number}  - crosshair point
+     * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
         // console.log('adding')

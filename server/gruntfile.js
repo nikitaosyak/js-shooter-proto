@@ -1,7 +1,8 @@
 var isWindows = process.platform == 'win32';
-var isLinux = process.platform == 'linux'
+var isLinux = process.platform == 'linux';
 
 module.exports = function(grunt) {
+    //noinspection JSUnresolvedFunction
     grunt.initConfig({
         if: {
             default: {
@@ -46,9 +47,9 @@ module.exports = function(grunt) {
                     interrupt: isWindows,
                     reload: isWindows,
                     atBegin: true
-                },
-            },
-        },
+                }
+            }
+        }
     });
 
     grunt.loadNpmTasks('grunt-if');
@@ -58,4 +59,4 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('default', ['watch']);
-}
+};
