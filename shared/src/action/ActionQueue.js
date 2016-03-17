@@ -137,7 +137,7 @@ ActionQueue.prototype = {
         } else {
             // elapsedToCurrent = currentTime - h.endTime;
             var elapsedShotTime = h.endTime + timeDiff - clientLag - lerp;
-            console.log(clientId, 'is standing still while shooting', clientLag, currentTime - elapsedShotTime);
+            console.log(clientId, 'is standing still while shooting', clientLag, currentTime - elapsedShotTime, lerp);
 
             if (!(clientId in this._instantTimeline)) {
                 this._instantTimeline[clientId] = [];
@@ -176,6 +176,7 @@ ActionQueue.prototype = {
         if (instant) {
             var ia = this._instantTimeline[clientId][0];
             console.log(clientId, 'have instant actions to simulate', currentTime - ia.addTime, currentTime - ia.elapsedExecuteTime);
+            this._instantTimeline[clientId].shift();
         }
 
         return {stream: streamChange, instant: instant};

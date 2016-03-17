@@ -56,8 +56,9 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
 
         Facade.visualState.drawRay(from, shotEnd);
         var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
+
         Facade.connection.sendShot(0, timeOffset, to);
-        // console.log(timeOffset);
+        console.log(Facade.networkState.interpolator.testLerpTime);
     };
 
     this._onVelocityChange = onVelocityChange;
