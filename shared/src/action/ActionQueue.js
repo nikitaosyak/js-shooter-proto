@@ -128,22 +128,21 @@ ActionQueue.prototype = {
             len = this._streamTimeline[clientId].length;
         }
 
-        var elapsedToCurrent;
+        var elapsedShotTime;
         if (len > 0) {
             a = this._streamTimeline[clientId][0];
-            var elapsedFromStart = a.wasSimulated ? a.simulationTime - a.startTime : 0;
-            elapsedToCurrent = currentTime - a.startTime;
-            console.log(clientId, 'moving. ', elapsedFromStart, elapsedToCurrent, timeDiff-clientLag, clientLag, 'since last moving started.', len);
+            var actionEndTime = a.wasSimulated ? a.simulationTime : a.startTime;
+            elapsedShotTime = a.startTime + timeDiff - clientLag - lerp;
+            console.log('%d is moving while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         } else {
-            // elapsedToCurrent = currentTime - h.endTime;
-            var elapsedShotTime = historyStreamAction.endTime + timeDiff - clientLag - lerp;
-            console.log('%d is standing still while shooting. lag %d, lerp %d', clientId, clientLag, lerp);
-
-            if (!(clientId in this._instantTimeline)) {
-                this._instantTimeline[clientId] = [];
-            }
-            this._instantTimeline[clientId].push(new InstantAction(clientId, elapsedShotTime, to));
+            elapsedShotTime = historyStreamAction.endTime + timeDiff - clientLag - lerp;
+            console.log('%d is standing still while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         }
+
+        if (!(clientId in this._instantTimeline)) {
+            this._instantTimeline[clientId] = [];
+        }
+        this._instantTimeline[clientId].push(new InstantAction(clientId, elapsedShotTime, to));
     },
 
     simulate: function(currentTime, clientId, clientState) {
@@ -158,7 +157,7 @@ ActionQueue.prototype = {
             var ia = this._instantTimeline[clientId][0];
             var addedTimeDiff = currentTime - ia.addTime;
             var backwardsTime = currentTime - ia.elapsedExecuteTime;
-            console.log('%d\'instant action. windback %d', clientId, backwardsTime);
+            console.log('%d\'instant action. windback %d, ct %d', clientId, backwardsTime, currentTime);
             instantData.push({id: clientId, to: ia.shotPoint, hits: []});
             this._instantTimeline[clientId].shift();
         }

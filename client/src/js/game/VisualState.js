@@ -41,7 +41,7 @@ VisualState.prototype = {
         g.moveTo(0, 0);
         g.lineTo(offset.x, offset.y);
 
-        game.add.tween(g).to({alpha: 0}, 500, "Linear", true).onComplete.addOnce(function(obj, tween) {
+        game.add.tween(g).to({alpha: 0}, 1000, "Linear", true).onComplete.addOnce(function(obj, tween) {
             this._game.world.remove(obj);
             this._game.world.remove(tween);
         }, this);
