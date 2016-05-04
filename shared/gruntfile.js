@@ -37,7 +37,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: files.concat(libs).concat('gruntfile.js'),
-                tasks: ['default'],
+                tasks: ['uglify', 'jshint'],
                 options: {
                     reload: true,
                     spawn: false,
@@ -51,5 +51,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['uglify', 'jshint']);
+    grunt.registerTask('default', 'watch');
 };
