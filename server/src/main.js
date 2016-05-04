@@ -93,23 +93,18 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;
     var streamDiff = [];
-    var instantDiff = [];
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
-        var simulateResult = queue.simulate(currentTime, clientId, client.pos, GameParams.playerSpeedX, GameParams.playerSpeedY);
-        // if (!clientMoved) return;
-        if (!simulateResult.stream && !simulateResult.instant && !addPointerToDiff) return;
+        var simulateResult = queue.simulateClientStream(currentTime, clientId, client.pos);
+        
+        if (!simulateResult && !addPointerToDiff) return;
         var d = {clientId: clientId, time:currentTime};
-        if (simulateResult.stream) {
+        if (simulateResult) {
             d.x = client.pos.x;
             d.y = client.pos.y;
         }
-        if (simulateResult.instant) {
-            for (var i = simulateResult.instantData.length - 1; i >= 0; i--) {
-                instantDiff.push(simulateResult.instantData[i]);
-            }
-        }
+
         if (addPointerToDiff) {
             d.px = client.pointer.x;
             d.py = client.pointer.y;
@@ -123,9 +118,10 @@ time_util.onTimer(function(dt) {
         broadcast(SendMessage.positionBatch(streamDiff));
     }
 
-    if (instantDiff.length !== 0) {
-        for (var i = instantDiff.length - 1; i >= 0; i--) {
-            var shotData = instantDiff[i];
+    var instantResult = queue.simulateInstantActions(currentTime);
+    if (instantResult.length !== 0) {
+        for (var i = instantResult.length - 1; i >= 0; i--) {
+            var shotData = instantResult[i];
             broadcast(SendMessage.shotAck(shotData.id, shotData.to, shotData.hits));
         }
     }

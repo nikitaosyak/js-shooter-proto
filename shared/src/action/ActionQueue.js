@@ -145,24 +145,32 @@ ActionQueue.prototype = {
         this._instantTimeline[clientId].push(new InstantAction(clientId, elapsedShotTime, to));
     },
 
-    simulate: function(currentTime, clientId, clientState) {
-        var stream = this._hasStreamActions(clientId);
-        var instant = this._hasInstantActions(clientId);
+    simulateInstantActions: function(currentTime) {
         var instantData = [];
-        if (!stream && !instant) return {stream: false, instant: false};
 
-        var streamChange = false;
+        for (var clientId in this._instantTimeline) {
+            var timeline = this._instantTimeline[clientId];
 
-        if (instant) {
-            var ia = this._instantTimeline[clientId][0];
-            var addedTimeDiff = currentTime - ia.addTime;
-            var backwardsTime = currentTime - ia.elapsedExecuteTime;
-            console.log('%d\'instant action. windback %d, ct %d', clientId, backwardsTime, currentTime);
-            instantData.push({id: clientId, to: ia.shotPoint, hits: []});
-            this._instantTimeline[clientId].shift();
+            while (timeline.length > 0) {
+                var ia = timeline[0];
+                timeline.shift();
+
+                var addedTimeDiff = currentTime - ia.addTime;
+                var backwardsTime = currentTime - ia.elapsedExecuteTime;
+                console.log('%d\'instant action. windback %d, ct %d', clientId, backwardsTime, currentTime);
+                instantData.push({id: clientId, to: ia.shotPoint, hits: []});
+            }
         }
 
-        if (stream) {
+        return instantData;
+    },
+
+    simulateClientStream: function(currentTime, clientId, clientState) {
+        var needToSimulate = this._hasStreamActions(clientId);
+        if (!needToSimulate) return false;
+
+        var streamStateChanged = false;
+        if (needToSimulate) {
             var startState = {x:clientState.x, y:clientState.y};
             var timeline = this._streamTimeline[clientId];
             var len = timeline.length;
@@ -178,11 +186,11 @@ ActionQueue.prototype = {
                         clientHistory.shift();
                     }
                 }    
-                streamChange = startState.x != clientState.x || startState.y != clientState.y;
+                streamStateChanged = startState.x != clientState.x || startState.y != clientState.y;
             }
         }
 
-        return {stream: streamChange, instant: instant, instantData: instantData};
+        return streamStateChanged;
     },
 
     _simulateStreamPiece: function(clientId, action, currentTime, clientState) {
@@ -297,12 +305,12 @@ ActionQueue.prototype = {
         return false;
     },
 
-    _hasInstantActions: function(clientId) {
-        if (clientId in this._instantTimeline) {
-            return this._instantTimeline[clientId].length > 0;
-        }
-        return false;
-    }
+    // _hasInstantActions: function(clientId) {
+    //     if (clientId in this._instantTimeline) {
+    //         return this._instantTimeline[clientId].length > 0;
+    //     }
+    //     return false;
+    // }
 };
 
 if (typeof module !== 'undefined') {
