@@ -92,7 +92,8 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
 time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;
-    var diff = [];
+    var streamDiff = [];
+    var instantDiff = [];
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
@@ -105,7 +106,9 @@ time_util.onTimer(function(dt) {
             d.y = client.pos.y;
         }
         if (simulateResult.instant) {
-            // write instant action result here
+            for (var i = simulateResult.instantData.length - 1; i >= 0; i--) {
+                instantDiff.push(simulateResult.instantData[i]);
+            }
         }
         if (addPointerToDiff) {
             d.px = client.pointer.x;
@@ -113,11 +116,19 @@ time_util.onTimer(function(dt) {
             client.lastSentPointer.x = client.pointer.x;
             client.lastSentPointer.y = client.pointer.y;
         }
-        diff.push(d);
+        streamDiff.push(d);
     });
-    if (diff.length === 0) return;
-    // console.log('outcoming diffs: ', diff);
-    broadcast(SendMessage.positionBatch(diff));
+
+    if (streamDiff.length !== 0) {
+        broadcast(SendMessage.positionBatch(streamDiff));
+    }
+
+    if (instantDiff.length !== 0) {
+        for (var i = instantDiff.length - 1; i >= 0; i--) {
+            var shotData = instantDiff[i];
+            broadcast(SendMessage.shotAck(shotData.id, shotData.to, shotData.hits));
+        }
+    }
 });
 
 time_util.onLongTimer(function() {
@@ -136,6 +147,13 @@ function broadcast(message, except) {
 
 function iterateClients(action) {
     for (var clientId in clients) {
+        action(clientId, clients[clientId]);
+    }
+}
+
+function iterateClientsExcept(exceptId, action) {
+    for (var clientId in clients) {
+        if (exceptId == clientId) continue;
         action(clientId, clients[clientId]);
     }
 }

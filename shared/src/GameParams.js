@@ -1,6 +1,6 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 100;       // milliseconds
+GameParams.serverUpdateTime = 50;       // milliseconds
 
 GameParams.rttCheckTimeout = 500;
 GameParams.rttMedianHistory = 11;

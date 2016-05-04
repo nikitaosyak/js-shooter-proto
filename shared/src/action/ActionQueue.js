@@ -113,17 +113,17 @@ ActionQueue.prototype = {
      * @param {Number} clientId     - 
      * @param {Number} clientLag    - half of rtt (last calculated)
      * @param {Number} lerp         - current interpolation time on the client in the moment of action
-     * @param {Number} timeDiff     - time since last move action on client
+     * @param {Number} timeDiff     - time since last stream action on client
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
         // console.log('adding')
         var a = this._getLastStreamAction(clientId);
-        var h = null;
+        var historyStreamAction = null;
         var len = 0;
         if (a === null) {
-            h = this._history[clientId];
-            h = h[h.length-1];
+            historyStreamAction = this._history[clientId];
+            historyStreamAction = historyStreamAction[historyStreamAction.length-1];
         } else {
             len = this._streamTimeline[clientId].length;
         }
@@ -136,22 +136,32 @@ ActionQueue.prototype = {
             console.log(clientId, 'moving. ', elapsedFromStart, elapsedToCurrent, timeDiff-clientLag, clientLag, 'since last moving started.', len);
         } else {
             // elapsedToCurrent = currentTime - h.endTime;
-            var elapsedShotTime = h.endTime + timeDiff - clientLag - lerp;
-            console.log(clientId, 'is standing still while shooting', clientLag, currentTime - elapsedShotTime, lerp);
+            var elapsedShotTime = historyStreamAction.endTime + timeDiff - clientLag - lerp;
+            console.log('%d is standing still while shooting. lag %d, lerp %d', clientId, clientLag, lerp);
 
             if (!(clientId in this._instantTimeline)) {
                 this._instantTimeline[clientId] = [];
             }
-            this._instantTimeline[clientId].push(new InstantAction(clientId, currentTime, elapsedShotTime));
+            this._instantTimeline[clientId].push(new InstantAction(clientId, elapsedShotTime, to));
         }
     },
 
     simulate: function(currentTime, clientId, clientState) {
         var stream = this._hasStreamActions(clientId);
         var instant = this._hasInstantActions(clientId);
+        var instantData = [];
         if (!stream && !instant) return {stream: false, instant: false};
 
         var streamChange = false;
+
+        if (instant) {
+            var ia = this._instantTimeline[clientId][0];
+            var addedTimeDiff = currentTime - ia.addTime;
+            var backwardsTime = currentTime - ia.elapsedExecuteTime;
+            console.log('%d\'instant action. windback %d', clientId, backwardsTime);
+            instantData.push({id: clientId, to: ia.shotPoint, hits: []});
+            this._instantTimeline[clientId].shift();
+        }
 
         if (stream) {
             var startState = {x:clientState.x, y:clientState.y};
@@ -173,13 +183,7 @@ ActionQueue.prototype = {
             }
         }
 
-        if (instant) {
-            var ia = this._instantTimeline[clientId][0];
-            console.log(clientId, 'have instant actions to simulate', currentTime - ia.addTime, currentTime - ia.elapsedExecuteTime);
-            this._instantTimeline[clientId].shift();
-        }
-
-        return {stream: streamChange, instant: instant};
+        return {stream: streamChange, instant: instant, instantData: instantData};
     },
 
     _simulateStreamPiece: function(clientId, action, currentTime, clientState) {

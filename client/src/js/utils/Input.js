@@ -58,7 +58,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
 
         Facade.connection.sendShot(0, timeOffset, to);
-        console.log(Facade.networkState.interpolator.testLerpTime);
+        // console.log(Facade.networkState.interpolator.testLerpTime);
     };
 
     this._onVelocityChange = onVelocityChange;
