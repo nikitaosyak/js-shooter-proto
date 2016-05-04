@@ -2,3 +2,4 @@
 node_modules
 *.gen.js
 platform_settings.json
+project.sublime-workspace
