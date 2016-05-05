@@ -1,6 +1,5 @@
 if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
-    var InstantTimeline = exports.InstantTimeline;
 }
 
 ActionQueue = function() {
@@ -137,27 +136,17 @@ ActionQueue.prototype = {
             console.log('%d is standing still while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         }
 
-        if (!(clientId in this._instantTimeline)) {
-            this._instantTimeline[clientId] = [];
-        }
-        this._instantTimeline[clientId].push(new InstantAction(clientId, elapsedShotTime, to));
+        this._instantTimeline.add(new InstantAction(clientId, elapsedShotTime, to));
     },
 
     simulateInstantActions: function(currentTime) {
         var instantData = [];
 
-        for (var clientId in this._instantTimeline) {
-            var timeline = this._instantTimeline[clientId];
-
-            while (timeline.length > 0) {
-                var ia = timeline[0];
-                timeline.shift();
-
-                var addedTimeDiff = currentTime - ia.addTime;
-                var backwardsTime = currentTime - ia.elapsedExecuteTime;
-                console.log('%d\'instant action. windback %d, ct %d', clientId, backwardsTime, currentTime);
-                instantData.push({id: clientId, to: ia.shotPoint, hits: []});
-            }
+        while (!this._instantTimeline.empty) {
+            var a = this._instantTimeline.shift();
+            var backwardsTime = currentTime - a.elapsedExecuteTime;
+            console.log('%d\'instant action. windback %d, ct %d', a.clientId, backwardsTime, currentTime);
+            instantData.push({id: a.clientId, to: a.shotPoint, hits: []});
         }
 
         return instantData;

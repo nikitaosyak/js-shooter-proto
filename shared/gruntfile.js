@@ -11,8 +11,10 @@ module.exports = function(grunt) {
         'src/SendMessage.js', 
         'src/LevelModel.js',
         'src/ShitCast.js',
-        'src/action/*.js'
-        'src/action/**/*.js', 
+        'src/action/timeline/InstantTimeline.js',
+        'src/action/InstantAction.js',
+        'src/action/StreamAction.js',
+        'src/action/ActionQueue.js'
     ];
 
     //noinspection JSUnresolvedFunction
