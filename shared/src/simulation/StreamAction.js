@@ -7,6 +7,9 @@ StreamAction = function(clientId, velocityX, velocityY, startTime) {
     this.velocityX = velocityX;
     this.velocityY = velocityY;
     this.state = {x:NaN, y:NaN};
+
+    this.startState = {};
+    this.endState = {x:NaN, y: NaN};
 };
 StreamAction.prototype.constructor = StreamAction;
 

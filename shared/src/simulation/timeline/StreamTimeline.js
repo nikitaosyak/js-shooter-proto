@@ -94,6 +94,10 @@ StreamTimeline.prototype = {
         }
         return null;
     },
+
+    iterateStatesAtPoint: function(time, iterator) {
+        
+    },
 };
 
 Object.defineProperty(StreamTimeline.prototype, "empty", {

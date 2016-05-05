@@ -178,6 +178,7 @@ ActionQueue.prototype = {
             }
         } else {
             startTime = action.startTime;
+            // action.startState = {x: clientState.x, y: clientState.y};
             action.simulationTime = action.startTime;
             if (action.ended) {
                 endTime = action.endTime;
