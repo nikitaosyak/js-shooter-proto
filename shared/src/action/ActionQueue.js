@@ -1,5 +1,6 @@
 if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
+    var InstantTimeline = exports.InstantTimeline;
 }
 
 ActionQueue = function() {
@@ -8,12 +9,9 @@ ActionQueue = function() {
      * @private
      */
     this._streamTimeline = {};
-    /**
-     * @type {Array.<InstantAction>}
-     * @private
-     */
-    this._instantTimeline = {};
     this._history = {};
+
+    this._instantTimeline = new InstantTimeline();
     this._bodies = {};
 
     this._engine = Matter.Engine.create();
@@ -131,7 +129,7 @@ ActionQueue.prototype = {
         var elapsedShotTime;
         if (len > 0) {
             a = this._streamTimeline[clientId][0];
-            var actionEndTime = a.wasSimulated ? a.simulationTime : a.startTime;
+            // var actionEndTime = a.wasSimulated ? a.simulationTime : a.startTime;
             elapsedShotTime = a.startTime + timeDiff - clientLag - lerp;
             console.log('%d is moving while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         } else {
@@ -303,14 +301,7 @@ ActionQueue.prototype = {
             return this._streamTimeline[clientId].length > 0;
         }
         return false;
-    },
-
-    // _hasInstantActions: function(clientId) {
-    //     if (clientId in this._instantTimeline) {
-    //         return this._instantTimeline[clientId].length > 0;
-    //     }
-    //     return false;
-    // }
+    }
 };
 
 if (typeof module !== 'undefined') {
