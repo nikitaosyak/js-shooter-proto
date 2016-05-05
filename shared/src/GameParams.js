@@ -11,7 +11,9 @@ GameParams.playerRadius = 32;
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds
 GameParams.dStep = 5;
 
+// histories
 GameParams.interpolatorHistoryLen = 10;
+GameParams.streamingActionsHistoryLen = 50;
 
 GameParams.weapons = {
     railgun: {

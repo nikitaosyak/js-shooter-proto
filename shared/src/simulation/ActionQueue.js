@@ -3,16 +3,10 @@ if ("undefined" !== typeof exports) {
 }
 
 ActionQueue = function() {
-    /**
-     * @type {Array.<StreamAction>}
-     * @private
-     */
-    this._streamTimeline = {};
-    this._history = {};
-
     this._instantTimeline = new InstantTimeline();
-    this._bodies = {};
+    this._streamTimeline = new StreamTimeline();
 
+    this._bodies = {};
     this._engine = Matter.Engine.create();
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
@@ -32,7 +26,6 @@ ActionQueue.prototype = {
     },
 
     addClient: function(clientId, x, y, currentTime) {
-        // console.log('queue: adding client body', clientId, x, y);
         var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
         b.friction = 1;
         b.frictionAir = 1;
@@ -42,11 +35,7 @@ ActionQueue.prototype = {
         Matter.World.add(this._world, b);
         this._bodies[clientId] = b;
 
-        var hist = [new StreamAction(clientId, 0, 0, -1)];
-        hist[0].state.x = x;
-        hist[0].state.y = y;
-        hist[0].startTime = hist[0].endTime = hist[0].simulationTime = currentTime;
-        this._history[clientId] = hist;
+        this._streamTimeline.addClient(clientId, x, y, currentTime);
     },
 
     getClientBody: function(clientId) {
@@ -60,10 +49,10 @@ ActionQueue.prototype = {
 
     deleteClient: function(clientId) {
         console.log('queue: removing client body and history', clientId);
+        this._streamTimeline.delete(clientId);
+
         Matter.World.remove(this._world, this._bodies[clientId]);
         delete this._bodies[clientId];
-        delete this._history[clientId];
-        delete this._streamTimeline[clientId];
     },
 
     ray: function(from, to) {
@@ -72,36 +61,35 @@ ActionQueue.prototype = {
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
-        var addBrandNew = function(_timeline, _cid, _action, _currentTime, _clientLag) {
-            _action.startTime = _currentTime - _clientLag;
-            // console.log("adding brand new action [", _cid, "] at [", _action.startTime, "]");
-            _timeline.push(_action);
-        };
-        var finalizeAction = function(la, cid, dt) {
-            la.endTime = la.startTime + dt;
-     //console.log("finalizing last action [", cid, "] at [", la.endTime, "], action len: ", la.length);
-        };
+        this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
+        // var addBrandNew = function(_timeline, _cid, _action, _currentTime, _clientLag) {
+        //     _action.startTime = _currentTime - _clientLag;
+        //     _timeline.push(_action);
+        // };
+        // var finalizeAction = function(la, cid, dt) {
+        //     la.endTime = la.startTime + dt;
+        // };
 
-        var lastAction = this._getLastStreamAction(clientId);
-        var timeline = this._streamTimeline[clientId];
-        var startTime = -1;
-        var currentAction = new StreamAction(clientId, velX, velY, startTime);
+        // var lastAction = this._getLastStreamAction(clientId);
+        // var timeline = this._streamTimeline[clientId];
+        // var startTime = -1;
+        // var currentAction = new StreamAction(clientId, velX, velY, startTime);
 
-        if (lastAction) {
-            if (lastAction.ended) {
-                addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
-            } else {
-                if (currentAction.isZeroVelocity) {
-                    finalizeAction(lastAction, clientId, dt);
-                } else {
-                    finalizeAction(lastAction, clientId, dt);
-                    // console.log("adding streaming action: client: ", clientId);
-                    addBrandNew(timeline, clientId, currentAction, lastAction.endTime, 0);
-                }
-            }
-        } else {
-            addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
-        }
+        // if (lastAction) {
+        //     if (lastAction.ended) {
+        //         addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
+        //     } else {
+        //         if (currentAction.isZeroVelocity) {
+        //             finalizeAction(lastAction, clientId, dt);
+        //         } else {
+        //             finalizeAction(lastAction, clientId, dt);
+        //             // console.log("adding streaming action: client: ", clientId);
+        //             addBrandNew(timeline, clientId, currentAction, lastAction.endTime, 0);
+        //         }
+        //     }
+        // } else {
+        //     addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
+        // }
     },
 
     /**
@@ -114,29 +102,19 @@ ActionQueue.prototype = {
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
-        // console.log('adding')
-        var a = this._getLastStreamAction(clientId);
-        var historyStreamAction = null;
-        var len = 0;
-        if (a === null) {
-            historyStreamAction = this._history[clientId];
-            historyStreamAction = historyStreamAction[historyStreamAction.length-1];
-        } else {
-            len = this._streamTimeline[clientId].length;
-        }
+        var elapsedActionTime;
 
-        var elapsedShotTime;
-        if (len > 0) {
-            a = this._streamTimeline[clientId][0];
-            // var actionEndTime = a.wasSimulated ? a.simulationTime : a.startTime;
-            elapsedShotTime = a.startTime + timeDiff - clientLag - lerp;
+        if (this._streamTimeline.hasCurrentActions(clientId)) {
+            var lastStreamAction = this._streamTimeline.getLastStreamAction(clientId);
+            elapsedActionTime = lastStreamAction.startTime + timeDiff - clientLag - lerp;
             console.log('%d is moving while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         } else {
-            elapsedShotTime = historyStreamAction.endTime + timeDiff - clientLag - lerp;
+            var historyAction = this._streamTimeline.getLastCompletedStreamAction(clientId);
+            elapsedActionTime = historyAction.endTime + timeDiff - clientLag - lerp;
             console.log('%d is standing still while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
         }
 
-        this._instantTimeline.add(new InstantAction(clientId, elapsedShotTime, to));
+        this._instantTimeline.add(new InstantAction(clientId, elapsedActionTime, to));
     },
 
     simulateInstantActions: function(currentTime) {
@@ -153,26 +131,21 @@ ActionQueue.prototype = {
     },
 
     simulateClientStream: function(currentTime, clientId, clientState) {
-        var needToSimulate = this._hasStreamActions(clientId);
+        var needToSimulate = this._streamTimeline.hasCurrentActions(clientId);
         if (!needToSimulate) return false;
 
         var streamStateChanged = false;
         if (needToSimulate) {
             var startState = {x:clientState.x, y:clientState.y};
-            var timeline = this._streamTimeline[clientId];
+            var timeline = this._streamTimeline.getTimeline(clientId);
             var len = timeline.length;
             if (len > 0) {
                 for (var i = 0; i < len; i++) {
                     this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState);
                 }
 
-                var clientHistory = this._history[clientId];
-                while(timeline.length > 0 && timeline[0].ended) {
-                    clientHistory.push(timeline.shift());
-                    if(clientHistory.length > 20) {
-                        clientHistory.shift();
-                    }
-                }    
+                this._streamTimeline.archiveCompletedActions(clientId);
+
                 streamStateChanged = startState.x != clientState.x || startState.y != clientState.y;
             }
         }
@@ -271,26 +244,6 @@ ActionQueue.prototype = {
         state.x = body.position.x;
         state.y = body.position.y;
     },
-
-    _getLastStreamAction: function(clientId) {
-        if (clientId in this._streamTimeline) {
-            var timeline = this._streamTimeline[clientId];
-            var timelineLen = timeline.length;
-            if (timelineLen > 0) {
-                return timeline[timeline.length-1];
-            }
-            return null;
-        } 
-        this._streamTimeline[clientId] = [];
-        return null;
-    },
-
-    _hasStreamActions: function(clientId) {
-        if (clientId in this._streamTimeline) {
-            return this._streamTimeline[clientId].length > 0;
-        }
-        return false;
-    }
 };
 
 if (typeof module !== 'undefined') {

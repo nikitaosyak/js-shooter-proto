@@ -25,7 +25,7 @@ Object.defineProperty(StreamAction.prototype, "ended", {
     }
 });
 
-Object.defineProperty(StreamAction.prototype, "length", {
+Object.defineProperty(StreamAction.prototype, "duration", {
     get: function() {
         if (this.ended) return this.endTime - this.startTime;
         return -1;
