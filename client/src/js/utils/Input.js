@@ -35,7 +35,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         // shotOrigin.add(myP.x, myP.y);
 
         t = Date.now();
-        var bodies = Facade.simulation.getAllBodies();
+        var bodies = Facade.simulation.physics.getAllBodies();
         var shitres = ShitCast.complexCast(bodies, Matter.Query.ray,
             function(bb) {
                 // console.log(bb);

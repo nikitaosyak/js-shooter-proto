@@ -15,6 +15,7 @@ module.exports = function(grunt) {
         'src/simulation/timeline/StreamTimeline.js',
         'src/simulation/InstantAction.js',
         'src/simulation/StreamAction.js',
+        'src/simulation/Physics.js',
         'src/simulation/Simulation.js'
     ];
 

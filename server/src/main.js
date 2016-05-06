@@ -11,7 +11,7 @@ var LevelModel = shared.LevelModel;
 
 var levelRaw = fs.readFileSync('src/assets/map_draft.json');
 var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
-simulation.addStaticBodies(level.bodies);
+simulation.physics.addStaticBodies(level.bodies);
 
 var spawnPositions = level.respawns;
 var currentSpawnPos = 0;
@@ -96,13 +96,14 @@ time_util.onTimer(function(dt) {
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
-        var simulateResult = simulation.simulateClientStream(currentTime, clientId, client.pos);
+        var simulationResult = simulation.simulateClientStream(currentTime, clientId, client.pos);
         
-        if (!simulateResult && !addPointerToDiff) return;
+        if (!simulationResult.change && !addPointerToDiff) return;
+        
         var d = {clientId: clientId, time:currentTime};
-        if (simulateResult) {
-            d.x = client.pos.x;
-            d.y = client.pos.y;
+        if (simulationResult.change) {
+            client.pos.x = d.x = simulationResult.state.x;
+            client.pos.y = d.y = simulationResult.state.y;
         }
 
         if (addPointerToDiff) {

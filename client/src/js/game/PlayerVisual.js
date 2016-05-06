@@ -51,11 +51,11 @@ PlayerVisual.prototype = {
 
         if (this.isMe) return;
 
-        var b = Facade.simulation.getClientBody(this.id);
-        Matter.Body.translate(b, {
-            x: newPos.x - prevPos.x,
-            y: newPos.y - prevPos.y
-        });
+        Facade.simulation.physics.setActorBodyPosition(
+            this.id,
+            newPos.x,
+            newPos.y
+        );
     },
 
     updateArrowAngle: function(newPointerPos) {
