@@ -62,34 +62,6 @@ ActionQueue.prototype = {
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
         this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
-        // var addBrandNew = function(_timeline, _cid, _action, _currentTime, _clientLag) {
-        //     _action.startTime = _currentTime - _clientLag;
-        //     _timeline.push(_action);
-        // };
-        // var finalizeAction = function(la, cid, dt) {
-        //     la.endTime = la.startTime + dt;
-        // };
-
-        // var lastAction = this._getLastStreamAction(clientId);
-        // var timeline = this._streamTimeline[clientId];
-        // var startTime = -1;
-        // var currentAction = new StreamAction(clientId, velX, velY, startTime);
-
-        // if (lastAction) {
-        //     if (lastAction.ended) {
-        //         addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
-        //     } else {
-        //         if (currentAction.isZeroVelocity) {
-        //             finalizeAction(lastAction, clientId, dt);
-        //         } else {
-        //             finalizeAction(lastAction, clientId, dt);
-        //             // console.log("adding streaming action: client: ", clientId);
-        //             addBrandNew(timeline, clientId, currentAction, lastAction.endTime, 0);
-        //         }
-        //     }
-        // } else {
-        //     addBrandNew(timeline, clientId, currentAction, currentTime, clientLag);
-        // }
     },
 
     /**
@@ -161,7 +133,8 @@ ActionQueue.prototype = {
             startTime = action.simulationTime;
             if (action.ended) {
                 if (action.simulationTime > action.endTime) { // rollback
-                    var prevState = this._history[clientId][this._history[clientId].length-1].state;
+                    var lastCompletedAction = this._streamTimeline.getLastCompletedStreamAction(clientId);
+                    var prevState = lastCompletedAction.state;
                     var body = this._bodies[clientId];
                     Matter.Body.translate(body, {x: prevState.x - body.position.x, y: prevState.y - body.position.y});
                     clientState.x = prevState.x;
