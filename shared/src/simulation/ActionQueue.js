@@ -132,13 +132,18 @@ ActionQueue.prototype = {
         if (action.wasSimulated) {
             startTime = action.simulationTime;
             if (action.ended) {
-                if (action.simulationTime > action.endTime) { // rollback
-                    var lastCompletedAction = this._streamTimeline.getLastCompletedStreamAction(clientId);
-                    var prevState = lastCompletedAction.state;
-                    var body = this._bodies[clientId];
-                    Matter.Body.translate(body, {x: prevState.x - body.position.x, y: prevState.y - body.position.y});
-                    clientState.x = prevState.x;
-                    clientState.y = prevState.y;
+                if (action.simulationTime >= action.endTime) { // rollback
+                    // to rollback, we bring body to the start position of action and
+                    // play it from the start
+                    Matter.Body.translate(
+                        this._bodies[clientId], 
+                        {
+                            x: action.startState.x - action.currentState.x, 
+                            y: action.startState.y - action.currentState.y
+                        }
+                    );
+                    clientState.x = action.startState.x; 
+                    clientState.y = action.startState.y;
                     startTime = action.startTime;
                     endTime = action.endTime;
                     // console.log('rolling back: simulating whole action from start: ', (endTime-startTime));
@@ -151,7 +156,9 @@ ActionQueue.prototype = {
             }
         } else {
             startTime = action.startTime;
-            // action.startState = {x: clientState.x, y: clientState.y};
+            // console.log('remembered start state of %i:%i', clientState.x, clientState.y);
+            action.startState.x = clientState.x;
+            action.startState.y = clientState.y;
             action.simulationTime = action.startTime;
             if (action.ended) {
                 endTime = action.endTime;
@@ -170,8 +177,6 @@ ActionQueue.prototype = {
                 endTime = currentTime - extra;
                 action.simulationTime = endTime;
             }
-            // endTime = currentTime;
-            // action.simulationTime = currentTime;
         }
 
         if (startTime == endTime) {
@@ -179,11 +184,12 @@ ActionQueue.prototype = {
             return;
         }
 
-        // console.log(startTime, endTime);
         this._simulateTimeSpan(clientId, endTime - startTime, clientState, action.velocityX, action.velocityY);
+        action.currentState.x = clientState.x;
+        action.currentState.y = clientState.y;
         if (action.ended) {
-            action.state.x = clientState.x;
-            action.state.y = clientState.y;
+            action.endState.x = clientState.x;
+            action.endState.y = clientState.y;
         }
     },
 

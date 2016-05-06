@@ -8,8 +8,8 @@ StreamTimeline.prototype.constructor = StreamTimeline;
 StreamTimeline.prototype = {
     addClient: function(clientId, x, y, currentTime) {
         var h = [new StreamAction(clientId, 0, 0, -1)];
-        h[0].state.x = x;
-        h[0].state.y = y;
+        h[0].startState.x = h[0].currentState.x = h[0].endState.x = x;
+        h[0].startState.y = h[0].currentState.y = h[0].endState.y = y;
         h[0].startTime = h[0].endTime = h[0].simulationTime = currentTime;
         this._history[clientId] = h;
     },
