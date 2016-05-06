@@ -13,8 +13,8 @@ module.exports = function(grunt) {
         'src/ShitCast.js',
         'src/simulation/timeline/InstantTimeline.js',
         'src/simulation/timeline/StreamTimeline.js',
-        'src/simulation/InstantAction.js',
-        'src/simulation/StreamAction.js',
+        'src/simulation/action/InstantAction.js',
+        'src/simulation/action/StreamAction.js',
         'src/simulation/Physics.js',
         'src/simulation/Simulation.js'
     ];
