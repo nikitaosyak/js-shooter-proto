@@ -51,7 +51,7 @@ PlayerVisual.prototype = {
 
         if (this.isMe) return;
 
-        var b = Facade.queue.getClientBody(this.id);
+        var b = Facade.simulation.getClientBody(this.id);
         Matter.Body.translate(b, {
             x: newPos.x - prevPos.x,
             y: newPos.y - prevPos.y

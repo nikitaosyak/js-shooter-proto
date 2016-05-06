@@ -70,7 +70,7 @@ VisualState.prototype = {
 
         // client prediction for myself:
         var state = {x: this._visualMe.view.position.x, y: this._visualMe.view.position.y};
-        Facade.queue.simulateClientStream(Date.now(), Facade.myId, state);
+        Facade.simulation.simulateClientStream(Date.now(), Facade.myId, state);
         this._visualMe.updatePos(state);
         var pointerState = {
             x: this._game.input.mousePointer.worldX,

@@ -30,7 +30,7 @@ Router.prototype = {
             var other = new Player(m.clientId, m.startX, m.startY, m.name, false);
             Facade.networkState.addPlayer(other, {'pos': {x: m.startX, y: m.startY}, 'pointer_pos': {x: 0, y: 0}});
         }
-        Facade.queue.addClient(m.clientId, m.startX, m.startY);
+        Facade.simulation.addClient(m.clientId, m.startX, m.startY);
     },
 
     srvTime: function(m) {

@@ -35,7 +35,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         // shotOrigin.add(myP.x, myP.y);
 
         t = Date.now();
-        var bodies = Facade.queue.getAllBodies();
+        var bodies = Facade.simulation.getAllBodies();
         var shitres = ShitCast.complexCast(bodies, Matter.Query.ray,
             function(bb) {
                 // console.log(bb);
@@ -171,7 +171,7 @@ Input.prototype = {
                 ts = now - this._lastVelStarted;
             }
             this._onVelocityChange.call(this._velocityContext, this._velocity, ts);
-            Facade.queue.addStreamAction(Date.now(), 0, Facade.myId, this._velocity.x, this._velocity.y, ts);
+            Facade.simulation.addStreamAction(Date.now(), 0, Facade.myId, this._velocity.x, this._velocity.y, ts);
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;
 

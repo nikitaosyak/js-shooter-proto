@@ -2,7 +2,7 @@ if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
 }
 
-ActionQueue = function() {
+Simulation = function() {
     this._instantTimeline = new InstantTimeline();
     this._streamTimeline = new StreamTimeline();
 
@@ -11,9 +11,9 @@ ActionQueue = function() {
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
 };
-ActionQueue.prototype.constructor = ActionQueue;
+Simulation.prototype.constructor = Simulation;
 
-ActionQueue.prototype = {
+Simulation.prototype = {
     addStaticBody: function(b) {
         Matter.Body.setStatic(b, true);
         Matter.World.add(this._world, b);
@@ -227,5 +227,5 @@ ActionQueue.prototype = {
 };
 
 if (typeof module !== 'undefined') {
-    module.exports.queue = new ActionQueue();
+    module.exports.Simulation = new Simulation();
 }

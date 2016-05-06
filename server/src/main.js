@@ -6,12 +6,12 @@ var Client = require('./client.js');
 var shared = require('./shared.gen.js');
 var SendMessage = shared.SendMessage;
 var GameParams = shared.GameParams;
-var queue = shared.queue;
+var simulation = shared.Simulation;
 var LevelModel = shared.LevelModel;
 
 var levelRaw = fs.readFileSync('src/assets/map_draft.json');
 var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
-queue.addStaticBodies(level.bodies);
+simulation.addStaticBodies(level.bodies);
 
 var spawnPositions = level.respawns;
 var currentSpawnPos = 0;
@@ -40,7 +40,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     break;
                 case 'vd':
                     // console.log('velocitydiff: ', rawMessage);
-                    queue.addStreamAction(
+                    simulation.addStreamAction(
                         time_util.elapsed, clients[m.cid].lag, m.cid, m.x, m.y, m.dt
                     );
                     break;
@@ -49,7 +49,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     clients[m.cid].pointer.y = m.y;
                     break;
                 case 'requestShot':
-                    queue.addInstantAction(
+                    simulation.addInstantAction(
                         time_util.elapsed, client.id, clients[client.id].lag, m.lerp, m.time, m.to
                         );
                     break;
@@ -68,7 +68,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     socket.on('close', function() {
         console.log('client', client.toString(), 'leaving: removing from clients');
         var removingId = client.id;
-        queue.deleteClient(removingId);
+        simulation.deleteClient(removingId);
         delete clients[removingId];
         client.purge();
         broadcast(SendMessage.playerDeath([removingId]));
@@ -76,7 +76,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     console.log('incoming connection: ', client.toString());
 
-    queue.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
+    simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
     client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, true));
     broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name), client.id);
     iterateClients(function(iterClientId, iterClient) {
@@ -96,7 +96,7 @@ time_util.onTimer(function(dt) {
     iterateClients(function(clientId, client) {
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
-        var simulateResult = queue.simulateClientStream(currentTime, clientId, client.pos);
+        var simulateResult = simulation.simulateClientStream(currentTime, clientId, client.pos);
         
         if (!simulateResult && !addPointerToDiff) return;
         var d = {clientId: clientId, time:currentTime};
@@ -118,7 +118,7 @@ time_util.onTimer(function(dt) {
         broadcast(SendMessage.positionBatch(streamDiff));
     }
 
-    var instantResult = queue.simulateInstantActions(currentTime);
+    var instantResult = simulation.simulateInstantActions(currentTime);
     if (instantResult.length !== 0) {
         for (var i = instantResult.length - 1; i >= 0; i--) {
             var shotData = instantResult[i];
