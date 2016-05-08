@@ -6,6 +6,10 @@ SharedUtils.sortAcc = function(a, b) {
     return 0;
 };
 
+SharedUtils.lerp = function(a, b, t) {
+    return a + (b-a)*t;
+};
+
 if (typeof module !== 'undefined') {
     module.exports.SharedUtils = SharedUtils;
 }

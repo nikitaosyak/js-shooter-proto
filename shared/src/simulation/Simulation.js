@@ -56,11 +56,19 @@ Simulation.prototype = {
     simulateInstantActions: function(currentTime) {
         var instantData = [];
 
-        while (!this._instantTimeline.empty) {
+        while (!this._instantTimeline.isEmpty) {
             var a = this._instantTimeline.shift();
             var backwardsTime = currentTime - a.elapsedExecuteTime;
             console.log('%d\'instant action. windback %d, ct %d', a.clientId, backwardsTime, currentTime);
+            
+            var windbackState = this._streamTimeline.getCompleteStateAtTime(a.elapsedExecuteTime);
+            // var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
+
+            // shoot and determine result here
             instantData.push({id: a.clientId, to: a.shotPoint, hits: []});
+
+            // return to the original state
+            // this._physics.setActorBodyPositionMass(currentState);
         }
 
         return instantData;
@@ -95,7 +103,7 @@ Simulation.prototype = {
         var endTime;
         var rollback = false;
 
-        if (action.wasSimulated) {
+        if (action.simulationStarted) {
             startTime = action.simulationTime;
             if (action.ended) {
                 if (action.simulationTime > action.endTime) { // rollback

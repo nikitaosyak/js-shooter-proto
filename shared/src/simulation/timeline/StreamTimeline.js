@@ -7,11 +7,9 @@ StreamTimeline.prototype.constructor = StreamTimeline;
 
 StreamTimeline.prototype = {
     addClient: function(clientId, x, y, currentTime) {
-        var h = [new StreamAction(clientId, 0, 0, -1)];
-        h[0].startState.x = h[0].currentState.x = h[0].endState.x = x;
-        h[0].startState.y = h[0].currentState.y = h[0].endState.y = y;
-        h[0].startTime = h[0].endTime = h[0].simulationTime = currentTime;
-        this._history[clientId] = h;
+        var a = new ConstantAction(clientId, currentTime, {x: x, y: y});
+        a.end(currentTime);
+        this._history[clientId] = [a];
     },
 
     delete: function(clientId) {
@@ -31,13 +29,13 @@ StreamTimeline.prototype = {
         }
         var timeline = this._current[clientId];                 // timeline of the client
         var lastAction = this.getLastStreamAction(clientId);    // previous action that is still running (or just ended)
-        var newAction = new StreamAction(clientId, vx, vy, -1); // new (current) action that we need to add
+        var newAction = new MoveAction(clientId, NaN, vx, vy);  // new (current) action that we need to add
 
         if (lastAction) {
             if (lastAction.ended) {
                 addNew(timeline, newAction, currentTime, lag);
             } else {
-                lastAction.endTime = lastAction.startTime + dt;
+                lastAction.end(lastAction.startTime + dt);
                 // console.log('finalizing action on client %s at time %i, action len: %i', lastAction.clientId, lastAction.endTime, lastAction.duration);
 
                 if (!newAction.isZeroVelocity) { // seamlessly add next action to stream - direction change
@@ -95,8 +93,29 @@ StreamTimeline.prototype = {
         return null;
     },
 
-    iterateStatesAtPoint: function(time, iterator) {
-        
+    getCompleteStateAtTime: function(time) {
+        // var result = {};
+        // for (var clientId in this._current) {
+
+        //     var found = false;
+        //     var currentTimeline = this._current[clientId];
+
+        //     for (var i = currentTimeline.length-1; i >= 0; --i) {
+        //         var a = currentTimeline[i];
+        //         if (!a.contains(time)) continue;
+
+        //         var stateAtTime = a.lerpState(time);
+        //         result[clientId] = stateAtTime;
+        //         found = true;
+        //         break;
+        //     }
+
+        //     if (found) continue;
+
+        //     var historyTimeline = this._history[clientId];
+
+        // }
+        return {};
     },
 };
 

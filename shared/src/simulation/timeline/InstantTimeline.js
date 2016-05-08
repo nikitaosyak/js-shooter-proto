@@ -34,7 +34,7 @@ Object.defineProperty(InstantTimeline.prototype, "maximumEET", {
     }
 });
 
-Object.defineProperty(InstantTimeline.prototype, "empty", {
+Object.defineProperty(InstantTimeline.prototype, "isEmpty", {
     get: function() {
         return this._timeline.length === 0;
     }
