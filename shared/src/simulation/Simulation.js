@@ -38,16 +38,14 @@ Simulation.prototype = {
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
-        var elapsedActionTime;
 
-        if (this._streamTimeline.hasCurrentActions(clientId)) {
-            var lastStreamAction = this._streamTimeline.getLastStreamAction(clientId);
-            elapsedActionTime = lastStreamAction.startTime + timeDiff - clientLag - lerp;
-            console.log('%d is moving while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
+        var lastAction = this._streamTimeline.getLastAction(clientId);
+        var elapsedActionTime = currentTime - clientLag - lerp;
+        // var elapsedActionTime = lastAction.startTime + timeDiff - clientLag - lerp;
+        if (lastAction.type == StreamActionBase.ActionType.MOVE_ACTION) {
+            console.log('%d is moving while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);
         } else {
-            var historyAction = this._streamTimeline.getLastCompletedStreamAction(clientId);
-            elapsedActionTime = historyAction.endTime + timeDiff - clientLag - lerp;
-            console.log('%d is standing still while shooting. lag %d, lerp %d, ct %d', clientId, clientLag, lerp, currentTime);
+            console.log('%d is standing still while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);
         }
 
         this._instantTimeline.add(new InstantAction(clientId, elapsedActionTime, to));
@@ -75,30 +73,23 @@ Simulation.prototype = {
     },
 
     simulateClientStream: function(currentTime, clientId, clientState) {
-        var needToSimulate = this._streamTimeline.hasCurrentActions(clientId);
-        if (!needToSimulate) return false;
+        // var needToSimulate = this._streamTimeline.hasCurrentActions(clientId);
+        var actions = this._streamTimeline.getCurrentActions(clientId);
+        if (actions.length === 0) return { change: false, state: null };
 
         var stateChanged = false;
         var resultState = clientState;
-        if (needToSimulate) {
-            var startState = {x:clientState.x, y:clientState.y};
-            var timeline = this._streamTimeline.getTimeline(clientId);
-            var len = timeline.length;
-            if (len > 0) {
-                for (var i = 0; i < len; i++) {
-                    resultState = this._simulateStreamPiece(clientId, timeline[i], currentTime, clientState);
-                }
 
-                this._streamTimeline.archiveCompletedActions(clientId);
-
-                stateChanged = startState.x != resultState.x || startState.y != resultState.y;
-            }
+        for (var i = 0; i < actions.length; ++i) {
+            resultState = this._simulateAction(clientId, actions[i], currentTime, clientState);
         }
+
+        stateChanged = clientState.x != resultState.x || clientState.y != resultState.y;
 
         return { change: stateChanged, state: resultState };
     },
 
-    _simulateStreamPiece: function(clientId, action, currentTime, startSimState) {
+    _simulateAction: function(clientId, action, currentTime, startSimState) {
         var startTime;
         var endTime;
         var rollback = false;

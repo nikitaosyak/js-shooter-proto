@@ -1,6 +1,6 @@
 function GameParams() {}
 
-GameParams.serverUpdateTime = 50;       // milliseconds
+GameParams.serverUpdateTime = 40;       // milliseconds
 
 GameParams.rttCheckTimeout = 500;
 GameParams.rttMedianHistory = 11;
@@ -13,7 +13,7 @@ GameParams.dStep = 5;
 
 // histories
 GameParams.interpolatorHistoryLen = 10;
-GameParams.streamingActionsHistoryLen = 50;
+GameParams.streamingActionsHistoryLen = 10;
 
 GameParams.weapons = {
     railgun: {

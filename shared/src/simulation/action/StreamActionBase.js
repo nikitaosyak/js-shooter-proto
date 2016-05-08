@@ -51,6 +51,12 @@ Object.defineProperty(StreamActionBase.prototype, "simulationStarted", {
     }
 });
 
+Object.defineProperty(StreamActionBase.prototype, "simulationEnded", {
+    get: function() {
+        return this.simulationTime === this.endTime;
+    }
+});
+
 Object.defineProperty(StreamActionBase.prototype, "ended", {
     get: function() {
         return !isNaN(this.endTime);

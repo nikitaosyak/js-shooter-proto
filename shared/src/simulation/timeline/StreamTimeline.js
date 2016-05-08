@@ -1,129 +1,95 @@
 
 StreamTimeline = function() {
     this._current = {};
-    this._history = {};
 };
 StreamTimeline.prototype.constructor = StreamTimeline;
 
 StreamTimeline.prototype = {
     addClient: function(clientId, x, y, currentTime) {
         var a = new ConstantAction(clientId, currentTime, {x: x, y: y});
-        a.end(currentTime);
-        this._history[clientId] = [a];
+        this._current[clientId] = [a];
     },
 
     delete: function(clientId) {
         delete this._current[clientId];
-        delete this._history[clientId];
     },
 
     addAction: function(clientId, currentTime, lag, vx, vy, dt) {
-        var addNew = function(onTimeline, _newAction, _currentTime, _lag) {
-            _newAction.startTime = _currentTime - _lag;
-            // console.log('adding new action on client %s at time %i', _newAction.clientId, _newAction.startTime);
-            onTimeline.push(_newAction);
-        };
-
         if (!(clientId in this._current)) {
-            this._current[clientId] = [];
+            throw 'unexpected turn of events - client ' + clientId + ' is not in timeline';
         }
+
         var timeline = this._current[clientId];                 // timeline of the client
-        var lastAction = this.getLastStreamAction(clientId);    // previous action that is still running (or just ended)
-        var newAction = new MoveAction(clientId, NaN, vx, vy);  // new (current) action that we need to add
+        var lastAction = this.getLastAction(clientId);          // previous action that is still running (or just ended)
+        var endTime = NaN;
+        // console.log('adding new action. ct: %s, lag: %s, v: %s:%s, dt: %s', currentTime, lag, vx, vy, dt);
 
-        if (lastAction) {
-            if (lastAction.ended) {
-                addNew(timeline, newAction, currentTime, lag);
-            } else {
-                lastAction.end(lastAction.startTime + dt);
-                // console.log('finalizing action on client %s at time %i, action len: %i', lastAction.clientId, lastAction.endTime, lastAction.duration);
-
-                if (!newAction.isZeroVelocity) { // seamlessly add next action to stream - direction change
-                    // console.log('adding streaming action on clinet %s', clientId);
-                    addNew(timeline, newAction, lastAction.endTime, 0);
-                }
-            }
+        if (vx === 0 && vy === 0) {
+            endTime = lastAction.startTime + dt;
+            timeline.push(new ConstantAction(clientId, endTime, lastAction.endState));
         } else {
-            addNew(timeline, newAction, currentTime, lag);
-        }
-    },
-
-    archiveCompletedActions: function(clientId) {
-        var timeline = this._current[clientId];
-        var history = this._history[clientId];
-        while (timeline.length > 0 && timeline[0].ended) {
-            history.push(timeline.shift());
-            if (history.length > GameParams.streamingActionsHistoryLen) {
-                history.shift();
+            if (lastAction.type == StreamActionBase.ActionType.CONSTANT_ACTION) {
+                endTime = currentTime - lag;
+                timeline.push(new MoveAction(clientId, endTime, vx, vy));
+            } else {
+                endTime = lastAction.startTime + dt;
+                timeline.push(new MoveAction(clientId, endTime, vx, vy));
             }
+        }
+        lastAction.end(endTime);
+
+        // var str = '';
+        // for (var i = 0; i < timeline.length; ++i) {
+        //     str += '[' + timeline[i].startTime + '-' + timeline[i].endTime + ']';
+        // }
+        // console.log(str);
+
+        while (timeline.length > GameParams.streamingActionsHistoryLen) {
+            timeline.shift();
         }
     },
 
     hasCurrentActions: function(clientId) {
-        if (clientId in this._current) {
-            return this._current[clientId].length > 0;
-        }
-        return false;
+        var a = this.getLastAction(clientId);
+        if (a.type == StreamActionBase.ActionType.CONSTANT_ACTION) return false;
+        return !a.simulationEnded;
     },
 
-    getLastStreamAction: function(clientId) {
-        if (clientId in this._current) {
-            var timeline = this._current[clientId];
-            if (timeline.length > 0) {
-                return timeline[timeline.length-1];
-            } else {
-                return null;
-            }
+    getCurrentActions: function(clientId) {
+        var result = [];
+        var t = this._current[clientId];
+        var idx = t.length-1;
+        while (idx >= 0) {
+            if (t[idx].type == StreamActionBase.ActionType.CONSTANT_ACTION) {
+                idx -= 1;
+                continue;  
+            } 
+            if (t[idx].simulationEnded) break;
+            result.unshift(t[idx]);
+            idx -= 1;
         }
-        return null;
+        return result;
+    },
+
+    getLastAction: function(clientId) {
+        var t = this._current[clientId];
+        return t[t.length-1];
     },
 
     getTimeline: function(clientId) {
-        if (clientId in this._current) {
-            return this._current[clientId];
-        }
-        return null;
+        return this._current[clientId];
     },
 
-    getLastCompletedStreamAction: function(clientId) {
-        if (clientId in this._history) {
-            var h = this._history[clientId];
-            return h[h.length-1];
-        }
-        return null;
+    getLastEndedAction: function(clientId) {
+        var t = this._current[clientId];
+        if (!t[t.length-1].ended) return t[t.length-2];
+        return t[t.length-1];
     },
 
     getCompleteStateAtTime: function(time) {
-        // var result = {};
-        // for (var clientId in this._current) {
-
-        //     var found = false;
-        //     var currentTimeline = this._current[clientId];
-
-        //     for (var i = currentTimeline.length-1; i >= 0; --i) {
-        //         var a = currentTimeline[i];
-        //         if (!a.contains(time)) continue;
-
-        //         var stateAtTime = a.lerpState(time);
-        //         result[clientId] = stateAtTime;
-        //         found = true;
-        //         break;
-        //     }
-
-        //     if (found) continue;
-
-        //     var historyTimeline = this._history[clientId];
-
-        // }
         return {};
     },
 };
-
-Object.defineProperty(StreamTimeline.prototype, "empty", {
-    get: function() {
-        return this._timeline.length === 0;
-    }
-});
 
 if (typeof module !== 'undefined') {
     module.exports.StreamTimeline = StreamTimeline;

@@ -66,10 +66,18 @@ Physics.prototype = {
         Matter.Body.translate(b, {x: x - b.position.x, y: y - b.position.y});
     },
 
-    // ray: function(from, to) {
-    //     var bs = Matter.Composite.allBodies(this._engine.world);
-    //     return Matter.Query.ray(bs, from, to);
-    // },
+    setActorBodyPositionMass: function(data, needOldPositions) {
+        var oldPositions = {};
+        for (var clientId in this._bodies) {
+            var b = this._bodies[clientId];
+            var d = data[clientId];
+            if (needOldPositions) {
+                oldPositions[clientId] = {clientId: clientId, x: b.position.x, y: b.position.y};
+            }
+            Matter.Body.translate(b, {x: d.x - b.position.x, y: d.y - b.position.y});
+        }
+        return oldPositions;
+    },
 
     simulateTimeSpan: function (clientId, timespan, vX, vY) {
         var isAngle = vX !== 0 && vY !== 0;
