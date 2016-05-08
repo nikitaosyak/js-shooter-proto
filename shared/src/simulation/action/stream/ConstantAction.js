@@ -8,7 +8,7 @@ ConstantAction.prototype = Object.create(StreamActionBase.prototype);
 ConstantAction.prototype.constructor = ConstantAction;
 
 ConstantAction.prototype.getStateAtTime = function(time) {
-    return state;
+    return this.state;
 };
 
 if (typeof module !== 'undefined') {

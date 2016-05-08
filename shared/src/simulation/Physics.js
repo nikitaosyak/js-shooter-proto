@@ -67,14 +67,23 @@ Physics.prototype = {
     },
 
     setActorBodyPositionMass: function(data, needOldPositions) {
-        var oldPositions = {};
-        for (var clientId in this._bodies) {
-            var b = this._bodies[clientId];
-            var d = data[clientId];
+        var oldPositions = [];
+        for (var i = 0; i < data.length; i++) {
+            var clientId = data[i].clientId;
+            var state = data[i].state;
+
+            var body = this._bodies[clientId];
             if (needOldPositions) {
-                oldPositions[clientId] = {clientId: clientId, x: b.position.x, y: b.position.y};
+                oldPositions.push({clientId: clientId, state: {x: body.position.x, y: body.position.y }});
             }
-            Matter.Body.translate(b, {x: d.x - b.position.x, y: d.y - b.position.y});
+            
+            Matter.Body.translate(
+                body, 
+                {
+                    x: state.x - body.position.x,
+                    y: state.y - body.position.y
+                }
+            );
         }
         return oldPositions;
     },
@@ -91,7 +100,6 @@ Physics.prototype = {
         }
 
         var body = this._bodies[clientId];
-        // Matter.Body.update(timespan);
 
         var extrasim = timespan % GameParams.dStep;
         var simulations = Math.floor(timespan/GameParams.dStep);
@@ -115,10 +123,6 @@ Physics.prototype = {
                 return {x: NaN, y: NaN};
             }
         }
-        // state.x = body.position.x;
-        // state.y = body.position.y;
-        // console.log(body.position);
-
         return {x: body.position.x, y: body.position.y};
     }
 };

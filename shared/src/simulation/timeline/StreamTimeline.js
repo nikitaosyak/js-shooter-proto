@@ -86,8 +86,19 @@ StreamTimeline.prototype = {
         return t[t.length-1];
     },
 
-    getCompleteStateAtTime: function(time) {
-        return {};
+    getCompleteStateAtTime: function(time, exceptId) {
+        var state = [];
+        for (var clientId in this._current) {
+            if (clientId == exceptId) continue;
+            var t = this._current[clientId];
+            for (var i = t.length-1; i >= 0; i--) {
+                var a = t[i];
+                if (!a.containsTime(time)) continue;
+                state.push({clientId: clientId, state: a.getStateAtTime(time)});
+                break;
+            }
+        }
+        return state;
     },
 };
 

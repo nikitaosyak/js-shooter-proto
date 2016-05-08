@@ -59,14 +59,20 @@ Simulation.prototype = {
             var backwardsTime = currentTime - a.elapsedExecuteTime;
             console.log('%d\'instant action. windback %d, ct %d', a.clientId, backwardsTime, currentTime);
             
-            var windbackState = this._streamTimeline.getCompleteStateAtTime(a.elapsedExecuteTime);
-            // var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
+            var windbackState = this._streamTimeline.getCompleteStateAtTime(a.elapsedExecuteTime, a.clientId);
+            console.log('windbackState: ', windbackState);
+            
+            var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
 
             // shoot and determine result here
+            // SRSLY
+            // TODO
+            // HERE
+            // CAST AND MAKE IT
             instantData.push({id: a.clientId, to: a.shotPoint, hits: []});
 
             // return to the original state
-            // this._physics.setActorBodyPositionMass(currentState);
+            this._physics.setActorBodyPositionMass(currentState);
         }
 
         return instantData;
@@ -75,7 +81,11 @@ Simulation.prototype = {
     simulateClientStream: function(currentTime, clientId, clientState) {
         // var needToSimulate = this._streamTimeline.hasCurrentActions(clientId);
         var actions = this._streamTimeline.getCurrentActions(clientId);
-        if (actions.length === 0) return { change: false, state: null };
+        if (actions.length === 0) {
+            var constAction = this._streamTimeline.getLastAction(clientId);
+            constAction.update(currentTime);
+            return { change: false, state: null };
+        } 
 
         var stateChanged = false;
         var resultState = clientState;
