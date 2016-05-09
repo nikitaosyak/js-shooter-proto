@@ -9,7 +9,7 @@ GameParams.playerSpeed = 60;
 GameParams.playerRadius = 32;
 
 GameParams.pointerSendRate = GameParams.serverUpdateTime * 0.8;       // milliseconds
-GameParams.dStep = 5;
+GameParams.dStep = 7;
 
 // histories
 GameParams.interpolatorHistoryLen = 10;

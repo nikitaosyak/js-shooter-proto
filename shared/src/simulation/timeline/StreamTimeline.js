@@ -25,13 +25,16 @@ StreamTimeline.prototype = {
         // console.log('adding new action. ct: %s, lag: %s, v: %s:%s, dt: %s', currentTime, lag, vx, vy, dt);
 
         if (vx === 0 && vy === 0) {
+            // console.log('adding stop action');
             endTime = lastAction.startTime + dt;
             timeline.push(new ConstantAction(clientId, endTime, lastAction.endState));
         } else {
             if (lastAction.type == StreamActionBase.ActionType.CONSTANT_ACTION) {
+                // console.log('started moving', vx, vy);
                 endTime = currentTime - lag;
                 timeline.push(new MoveAction(clientId, endTime, vx, vy));
             } else {
+                // console.log('change direction', vx, vy);
                 endTime = lastAction.startTime + dt;
                 timeline.push(new MoveAction(clientId, endTime, vx, vy));
             }
@@ -40,7 +43,7 @@ StreamTimeline.prototype = {
 
         // var str = '';
         // for (var i = 0; i < timeline.length; ++i) {
-        //     str += '[' + timeline[i].startTime + '-' + timeline[i].endTime + ']';
+        //     str += '[' + timeline[i].simulationTime + '-' + timeline[i].endTime + ']';
         // }
         // console.log(str);
 

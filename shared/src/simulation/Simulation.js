@@ -91,7 +91,8 @@ Simulation.prototype = {
         var resultState = clientState;
 
         for (var i = 0; i < actions.length; ++i) {
-            resultState = this._simulateAction(clientId, actions[i], currentTime, clientState);
+            // srsly, break a fucking leg, programming. if only i could do music
+            resultState = this._simulateAction(clientId, actions[i], currentTime, resultState);
         }
 
         stateChanged = clientState.x != resultState.x || clientState.y != resultState.y;
@@ -107,11 +108,12 @@ Simulation.prototype = {
         if (action.simulationStarted) {
             startTime = action.simulationTime;
             if (action.ended) {
-                if (action.simulationTime > action.endTime) { // rollback
+                if (action.simulationTime > action.endTime ) { // rollback
                     rollback = true;
                     // to rollback, we bring body to the start position of action and
                     // play it from the start
                     // console.log('rollback. time: ', action.startTime, action.endTime, action.startState.x - action.currentState.x, action.startState.y - action.currentState.y);
+                    // console.log('rollback. ', action.startState);
                     this._physics.setActorBodyPosition(
                         clientId, 
                         action.startState.x,
@@ -119,12 +121,13 @@ Simulation.prototype = {
                     );
                     startTime = action.startTime;
                     endTime = action.endTime;
+                    action.simulationTime = action.endTime;
                     // console.log('rolling back: simulating whole action from start: ', (endTime-startTime));
                 } else {
                     // ended in a nick of time, all ok
                     endTime = action.endTime;
                     action.simulationTime = action.endTime;
-                    // console.log('ended in a nick of time. simulating for', (endTime - startTime));
+                    // console.log('ended in a nick of time. simulating for', (action.endTime - action.startTime));
                 }
             }
         } else {
