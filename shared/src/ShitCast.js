@@ -19,7 +19,7 @@ ShitCast.cast = function(bodies, rayCall, from, to, accuracy) {
     var castV = {x: to.x-from.x, y: to.y-from.y};
     var offsetV = from;
 
-    var originalLen = ShitCast.getMagnitude(castV);
+    var originalLen = SharedUtils.getMagnitude(castV);
     var currentLen = originalLen;
     var nextStep = currentLen/2;
     while (true) {
@@ -41,7 +41,7 @@ ShitCast.cast = function(bodies, rayCall, from, to, accuracy) {
                     currentLen += nextStep;
                     nextStep /= 2;
                 }
-                ShitCast.setMagnitude(castV, currentLen);
+                SharedUtils.setMagnitude(castV, currentLen);
             }
         }
         if (result.length > 1) {
@@ -63,27 +63,6 @@ ShitCast.cast = function(bodies, rayCall, from, to, accuracy) {
             }
         }
 
-        ShitCast.setMagnitude(castV, currentLen);
+        SharedUtils.setMagnitude(castV, currentLen);
     }
-};
-
-ShitCast.setMagnitude = function(pt, m) {
-    pt = ShitCast.normalize(pt);
-    pt.x *= m;
-    pt.y *= m;
-    return pt;
-};
-
-ShitCast.getMagnitude = function(pt) {
-    return Math.sqrt((pt.x * pt.x) + (pt.y * pt.y));
-};
-
-ShitCast.normalize = function(pt) {
-    if (pt.x !== 0 && pt.y !== 0) {
-        var m = ShitCast.getMagnitude(pt);
-        pt.x /= m;
-        pt.y /= m;    
-    }
-    
-    return pt;
 };

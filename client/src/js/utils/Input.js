@@ -25,39 +25,29 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
             return;
         this._railgunShotAt = t;
 
-        var p = this._game.input.mousePointer;
-        var myP = Facade.visualState.me.view.position;
-        var shotOrigin = new Phaser.Point(p.worldX - myP.x, p.worldY - myP.y).normalize();
-        var shotEnd = new Phaser.Point(shotOrigin.x, shotOrigin.y);
-        shotEnd.setMagnitude(Facade.params.weapons.railgun.rayLength);
-        shotOrigin.setMagnitude(Facade.params.playerRadius+1);
-        shotEnd.subtract(shotOrigin.x, shotOrigin.y);
-        // shotOrigin.add(myP.x, myP.y);
+        var physics = Facade.simulation.physics;
+        var pointerPos = {x: this._game.input.mousePointer.worldX, y: this._game.input.mousePointer.worldY};
+        var myPosition = Facade.visualState.me.view.position;
+        var startOffset = Facade.params.playerRadius+1;
+        var rayMaxLen = Facade.params.weapons.railgun.rayLength;
 
-        t = Date.now();
-        var bodies = Facade.simulation.physics.getAllBodies();
-        var shitres = ShitCast.complexCast(bodies, Matter.Query.ray,
-            function(bb) {
-                // console.log(bb);
-                if ('clientId' in bb) return true;
-                return false;
-            },
-            {x:myP.x + shotOrigin.x, y:myP.y + shotOrigin.y}, 
-            {x:myP.x + shotOrigin.x + shotEnd.x, y:myP.y + shotOrigin.y + shotEnd.y},
-            1
+        var result = SharedUtils.shootRay(
+            myPosition, 
+            pointerPos, 
+            startOffset, 
+            rayMaxLen, 
+            physics.getAllBodies,
+            physics
         );
-        // console.log('shit cast took:', Date.now() - t);
-        if (shitres.length !== 0) {
-            shotEnd.setMagnitude(shitres[0].rayLen);
-        }
-
-        var from = {x: myP.x + shotOrigin.x, y: myP.y + shotOrigin.y};
-        var to = {x: myP.x + shotEnd.x, y: myP.y + shotEnd.y};
-
-        Facade.visualState.drawRay(from, shotEnd);
+        
+        Facade.visualState.drawRay(result.start, result.end);
         var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
 
-        Facade.connection.sendShot(0, timeOffset, to);
+        Facade.connection.sendShot(0, timeOffset, result.end);
+        // console.log('client hit: ', result.hits.join(', '));
+        // for (var h in result.hits) {
+        //     console.log(result.hits[h].body);
+        // }
         // console.log(Facade.networkState.interpolator.testLerpTime);
     };
 
