@@ -3,7 +3,7 @@
         {
          "color":"#ff0000",
          "draworder":"topdown",
-         "height":10,
+         "height":0,
          "name":"bounds",
          "objects":[
                 {
@@ -18,13 +18,13 @@
                  "y":-30
                 }, 
                 {
-                 "height":676.717305028273,
+                 "height":676.717,
                  "id":6,
                  "name":"left_bound",
                  "rotation":-1,
                  "type":"",
                  "visible":true,
-                 "width":35.1950149207467,
+                 "width":35.195,
                  "x":-30,
                  "y":1
                 }, 
@@ -36,8 +36,8 @@
                  "type":"",
                  "visible":true,
                  "width":35.195,
-                 "x":634.4025,
-                 "y":-3.35849999999999
+                 "x":634.403,
+                 "y":-3.3585
                 }, 
                 {
                  "height":34,
@@ -53,48 +53,48 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":10,
+         "width":0,
          "x":0,
          "y":0
         }, 
         {
          "draworder":"topdown",
-         "height":10,
+         "height":0,
          "name":"walls_fixed",
          "objects":[
                 {
-                 "height":37.8015670722712,
+                 "height":37.8016,
                  "id":13,
                  "name":"",
-                 "rotation":80.7877600063126,
+                 "rotation":80.7878,
                  "type":"",
                  "visible":true,
-                 "width":177.879928762317,
-                 "x":326.52283502899,
-                 "y":220.414351008686
+                 "width":177.88,
+                 "x":322.523,
+                 "y":226.414
                 }, 
                 {
-                 "height":33.5929920158058,
+                 "height":33.593,
                  "id":15,
                  "name":"",
                  "rotation":-6.52467,
                  "type":"",
                  "visible":true,
-                 "width":179.362559569409,
-                 "x":227.799167897535,
-                 "y":310.381148477921
+                 "width":179.363,
+                 "x":227.799,
+                 "y":310.381
                 }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":10,
+         "width":0,
          "x":0,
          "y":0
         }, 
         {
          "color":"#00ff00",
          "draworder":"topdown",
-         "height":10,
+         "height":0,
          "name":"respawns",
          "objects":[
                 {
@@ -148,7 +148,7 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":10,
+         "width":0,
          "x":0,
          "y":0
         }],

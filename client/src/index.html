@@ -63,7 +63,7 @@ function create() {
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
 
-    loadJson('assets/small_map.json', function(data) {
+    loadJson('assets/' + Facade.params.startMap, function(data) {
         Facade.level = new LevelModel().fromTiledDescriptor(data);
         Facade.simulation.physics.addStaticBodies(Facade.level.bodies);
         visualState = Facade.visualState = new VisualState(game, networkState, Facade.level);

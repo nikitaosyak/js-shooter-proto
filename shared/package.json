@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "devDependencies": {
     "grunt": "*",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*"

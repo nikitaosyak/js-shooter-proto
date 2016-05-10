@@ -40,7 +40,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ["src/*.*"],
+                files: ['src/*.*', 'assets/*.*', 'gruntfile.js'],
                 tasks: ['jshint', 'if'],
                 options: {
                     spawn: isWindows,
