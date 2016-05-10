@@ -17,6 +17,11 @@ State.prototype = {
         this.addPlayer(me, startState);
     },
 
+    removeMe: function() {
+        this.removePlayerById(this._me.id);
+        this._me = null;
+    },
+
     addPlayer: function(player, startState) {
         this._players[player.id] = player;
         this.newPlayers.push(player.id);
@@ -52,6 +57,13 @@ Object.defineProperty(State.prototype, "me", {
 
 Object.defineProperty(State.prototype, "myClientId", {
     get: function() {
+        if (this.isDead) return -1;
         return this._me.id;
+    }
+});
+
+Object.defineProperty(State.prototype, "isDead", {
+    get: function() {
+        return this._me === null;
     }
 });

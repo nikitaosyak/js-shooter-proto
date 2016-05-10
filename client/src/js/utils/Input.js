@@ -20,6 +20,11 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
     this._game.input.mouse.callbackContext = this;
     this._railgunShotAt = 0;
     this._game.input.mouse.mouseDownCallback = function(e) {
+        if (Facade.networkState.isDead) {
+            console.log('will not shoot - dead');
+            return;
+        }
+
         var t = Date.now();
         if (t - this._railgunShotAt < Facade.params.weapons.railgun.recoilTime) 
             return;
@@ -29,7 +34,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         var pointerPos = {x: this._game.input.mousePointer.worldX, y: this._game.input.mousePointer.worldY};
         var myPosition = Facade.visualState.me.view.position;
         var startOffset = Facade.params.playerRadius+1;
-        var rayMaxLen = Facade.params.weapons.railgun.rayLength;
+        var rayMaxLen = Facade.params.weapons.rayCast.rayLength;
 
         var result = SharedUtils.shootRay(
             myPosition, 
@@ -43,7 +48,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
         Facade.visualState.drawRay(result.start, result.end);
         var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
 
-        Facade.connection.sendShot(0, timeOffset, result.end);
+        Facade.connection.sendShot(0, timeOffset, pointerPos);
         // console.log('client hit: ', result.hits.join(', '));
         // for (var h in result.hits) {
         //     console.log(result.hits[h].body);
@@ -80,6 +85,9 @@ Input.prototype = {
     },
     
     update: function(dt) {
+        if (Facade.networkState.isDead) {
+            return;
+        }
 
         // update mouse position
         var p = this._game.input.mousePointer;
@@ -113,6 +121,10 @@ Input.prototype = {
     },
 
     _onKeyDown: function(e) {
+        if (Facade.networkState.isDead) {
+            return;
+        }
+
         if (!(e.keyCode in _KEY_TO_VEL)) return;
         if (this._downKeys[e.keyCode]) return;
         this._downKeys[e.keyCode] = true;
@@ -127,6 +139,10 @@ Input.prototype = {
     },
 
     _onKeyUp: function(e) {
+        if (Facade.networkState.isDead) {
+            return;
+        }
+
         if (!(e.keyCode in _KEY_TO_VEL)) return;
         if (!this._downKeys[e.keyCode]) return;
         this._downKeys[e.keyCode] = false;

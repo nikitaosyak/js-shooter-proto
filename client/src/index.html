@@ -78,7 +78,7 @@ function create() {
                 game.world.remove(loadingSprite);
             });
 
-            input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+            input = Facade.input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
         });    
     });
 
@@ -92,6 +92,7 @@ function update() {
     }
     var dt = game.time.elapsed;
     connection.sync.update();
+    
     input.update(dt);
     networkState.interpolator.update(dt);
     visualState.update(dt);

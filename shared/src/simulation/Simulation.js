@@ -55,21 +55,46 @@ Simulation.prototype = {
         var instantData = [];
 
         while (!this._instantTimeline.isEmpty) {
-            var a = this._instantTimeline.shift();
-            var backwardsTime = currentTime - a.elapsedExecuteTime;
-            console.log('%d\'instant action. windback %d, ct %d', a.clientId, backwardsTime, currentTime);
-            
-            var windbackState = this._streamTimeline.getCompleteStateAtTime(a.elapsedExecuteTime, a.clientId);
+            //
+            // windback state to approx time of shot
+            var action = this._instantTimeline.shift();
+            var backwardsTime = currentTime - action.elapsedExecuteTime;
+            // console.log('%d\'instant action. windback %d, ct %d', action.clientId, backwardsTime, currentTime);
+            var windbackState = this._streamTimeline.getCompleteStateAtTime(
+                action.elapsedExecuteTime, 
+                action.clientId
+            );
             console.log('windbackState: ', windbackState);
             
             var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
 
-            // shoot and determine result here
-            // SRSLY
-            // TODO
-            // HERE
-            // CAST AND MAKE IT
-            instantData.push({id: a.clientId, to: a.shotPoint, hits: []});
+            //
+            // make a raycast
+            var myPosition = this._physics.getActorBody(action.clientId).position;
+            var startOffset = GameParams.playerRadius + 1;
+            var rayLen = GameParams.weapons.rayCast.rayLength;
+
+            var result = SharedUtils.shootRay(
+                myPosition,
+                action.shotPoint,
+                startOffset,
+                rayLen,
+                this._physics.getAllBodies,
+                this._physics
+            );
+
+            var hits = [];
+            for (var i in result.hits) {
+                var b = result.hits[i].body;
+                if ('clientId' in b) {
+                    hits.push(b.clientId);
+                }
+            }
+            console.log(hits);
+
+            //
+            // add result to pending data
+            instantData.push({id: action.clientId, to: result.end, hits: hits});
 
             // return to the original state
             this._physics.setActorBodyPositionMass(currentState);

@@ -28,6 +28,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             socket.send('pong');
         } else {
             var m = JSON.parse(rawMessage);
+            // console.log(m, 'from ', client.id);
             switch(m.id) {
                 case 'medianRTT':
                     if (m.clientId in clients) {
@@ -71,7 +72,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
         simulation.deleteClient(removingId);
         delete clients[removingId];
         client.purge();
-        broadcast(SendMessage.playerDeath([removingId]));
+        broadcast(SendMessage.playerDeath(null, [removingId]));
     });
 
     console.log('incoming connection: ', client.toString());
@@ -94,6 +95,7 @@ time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;
     var streamDiff = [];
     iterateClients(function(clientId, client) {
+        if (!client.alive) return;
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
         var simulationResult = simulation.simulateClientStream(currentTime, clientId, client.pos);
@@ -121,9 +123,17 @@ time_util.onTimer(function(dt) {
 
     var instantResult = simulation.simulateInstantActions(currentTime);
     if (instantResult.length !== 0) {
+        broadcast(SendMessage.shotAck(instantResult));
         for (var i = instantResult.length - 1; i >= 0; i--) {
             var shotData = instantResult[i];
-            broadcast(SendMessage.shotAck(shotData.id, shotData.to, shotData.hits));
+            broadcast(SendMessage.playerDeath(shotData.id, shotData.hits));
+
+            for (var j = shotData.hits.length - 1; j >= 0; j--) {
+                var cid = shotData.hits[j];
+                console.log('client', cid, ' is dead, will remove from simulation');
+                simulation.deleteClient(cid);
+                clients[cid].alive = false;
+            }
         }
     }
 });

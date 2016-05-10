@@ -16,10 +16,12 @@ GameParams.interpolatorHistoryLen = 10;
 GameParams.streamingActionsHistoryLen = 10;
 
 GameParams.weapons = {
+    rayCast: {
+        rayLength: 800,
+    },
     railgun: {
         name: 'railgun',
-        instant: true,
-        rayLength: 800,
+        type: 'rayCast',
         automatic: false,
         recoilTime: 50,
         damage: 100

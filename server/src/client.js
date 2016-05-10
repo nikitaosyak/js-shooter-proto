@@ -14,6 +14,8 @@ Client = function(socket, pos) {
     this.lastSentPointer = {x:-1, y:-1};
     this.pointer = {x:-1, y:-1};
 
+    this.alive = true;
+
     this._sentPingTime = -1;
     this._rttHistory = [];
 };

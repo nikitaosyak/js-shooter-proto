@@ -33,14 +33,14 @@ Connection.prototype = {
     },
 
     sendVelocity: function(v, td) {
-        var m = SendMessage.velocityDiff(Facade.networkState.myClientId, v.x, v.y, td);
+        var m = SendMessage.velocityDiff(Facade.myId, v.x, v.y, td);
         this._socket.send(m);
     },
 
     sendPointer: function(x, y) {
         x = Math.round(x);
         y = Math.round(y);
-        this._socket.send(SendMessage.pointer(Facade.networkState.myClientId, x, y));
+        this._socket.send(SendMessage.pointer(Facade.myId, x, y));
     },
 
     sendShot: function(lerpTime, moveTimeOffset, to) {

@@ -53,12 +53,14 @@ SendMessage.positionBatch = function(stampsArray) {
     return JSON.stringify({'id': 'positionBatch', 'value': stampsArray});
 };
 
-SendMessage.playerDeath = function(clients) {
-    return JSON.stringify({'id': 'playerDeath', 'value': clients});
+SendMessage.playerDeath = function(killer, victims) {
+    return JSON.stringify({'id': 'playerDeath', killer: killer, 'victims': victims});
 };
 
-SendMessage.shotAck = function(clientId, to, hits) {
-    return JSON.stringify({id: 'shotAck', cid: clientId, to: to, hits: hits});
+//
+// value = [id, to, hits[]]
+SendMessage.shotAck = function(value) {
+    return JSON.stringify({id: 'shotAck', value: value});
 };
 
 

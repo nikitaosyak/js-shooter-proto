@@ -68,6 +68,8 @@ VisualState.prototype = {
             playerVisual.updateArrowAngle(lerp[clientId].pointer_pos.lerpValue);
         }
 
+        if (this._visualMe === null) return;
+
         // client prediction for myself:
         var state = {x: this._visualMe.view.position.x, y: this._visualMe.view.position.y};
         var newState = Facade.simulation.simulateClientStream(Date.now(), Facade.myId, state);
@@ -104,7 +106,13 @@ VisualState.prototype = {
         if (leftPlayersLen > 0) {
             for (var i = 0; i < leftPlayersLen; i++) {
                 var leftPlayerId = this._networkState.removedPlayers[i];
-                console.log('removing visual player', leftPlayerId);
+                if (leftPlayerId == Facade.myId) {
+                    console.log('removing self', leftPlayerId);
+                    this._visualMe = null;
+                    this._game.camera.unfollow();
+                } else {
+                    console.log('removing visual player', leftPlayerId);
+                }
                 var leftPlayer = this._visuals[leftPlayerId];
                 delete this._visuals[leftPlayerId];
                 leftPlayer.purge();

@@ -54,14 +54,27 @@ Router.prototype = {
 
     shotAck: function(m) {
         if (m.cid == Facade.myId) return;
-        var shooterPosition = Facade.networkState.interpolator[m.cid].pos.lerpValue;
-        var ray = SharedUtils.truncateRay(shooterPosition, m.to, Facade.params.playerRadius + 1);
-        Facade.visualState.drawRay(ray.start, ray.end);
+
+        for (var i = 0; i < m.value.length; ++i) {
+            var data = m.value[i];
+            var shooterPosition = Facade.networkState.interpolator[data.id].pos.lerpValue;
+            var ray = SharedUtils.truncateRay(shooterPosition, data.to, Facade.params.playerRadius + 1);
+            if (data.id == Facade.myId) continue;
+            Facade.visualState.drawRay(ray.start, ray.end);    
+        }
     },
 
     playerDeath: function(m) {
-        for (var i = 0; i < m.value.length; i++) {
-            Facade.networkState.removePlayerById(m.value[i]);
+        for (var i = 0; i < m.victims.length; i++) {
+            var deadId = m.victims[i];
+            if (Facade.myId == deadId) {
+                console.log('I was killed by ', m.killer);
+                Facade.networkState.removeMe();
+                Facade.input.reset();
+            } else {
+                console.log('%d was killed by %d', deadId, m.killer);
+                Facade.networkState.removePlayerById(deadId);
+            }
         }
     }
 };
