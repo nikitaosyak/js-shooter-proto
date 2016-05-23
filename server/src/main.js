@@ -20,7 +20,7 @@ var clients = {};
 
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     var startPos = spawnPositions[currentSpawnPos];
-    var client = new Client(socket, startPos);
+    var client = new Client(socket);
     clients[client.id] = client;
 
     socket.on('message', function(rawMessage) {
@@ -28,6 +28,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             socket.send('pong');
         } else {
             var m = JSON.parse(rawMessage);
+            var player = simulation.registry.getPlayer(client.id);
             // console.log(m, 'from ', client.id);
             switch(m.id) {
                 case 'medianRTT':
@@ -46,8 +47,8 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     );
                     break;
                 case 'pointer':
-                    clients[m.cid].pointer.x = m.x;
-                    clients[m.cid].pointer.y = m.y;
+                    player.pointer.x = m.x;
+                    player.pointer.y = m.y;
                     break;
                 case 'requestShot':
                     simulation.addInstantAction(
@@ -79,12 +80,18 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
     client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, true));
-    broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name), client.id);
-    iterateClients(function(iterClientId, iterClient) {
-        if (iterClientId == client.id) return;
-        // console.log('sending client', client.id, ' position of', iterClientId);
-        client.send(SendMessage.welcome(iterClient.id, iterClient.pos.x, iterClient.pos.y, iterClient.name));
-    });
+    broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
+    
+    simulation.registry.iteratePlayers(
+        function (playerId, player) {
+            if (playerId === client.id) return;
+
+            var playerClient = clients[playerId];
+            if (playerClient) {
+                client.send(SendMessage.welcome(playerId, player.pos.x, player.pos.y, playerClient.name, false));
+            }
+        }
+    );
 
     currentSpawnPos += 1;
     if (currentSpawnPos > spawnPositions.length-1) currentSpawnPos = 0;
@@ -94,25 +101,26 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;
     var streamDiff = [];
-    iterateClients(function(clientId, client) {
-        if (!client.alive) return;
+    
+    simulation.registry.iteratePlayers(function(playerId, player) {
+        if (!player.alive) return;
         // console.log('moving client', clientId, client.pos);
-        var addPointerToDiff = client.pointer.x !== client.lastSentPointer.x || client.pointer.y !== client.lastSentPointer.y;
-        var simulationResult = simulation.simulateClientStream(currentTime, clientId, client.pos);
+        var addPointerToDiff = player.pointer.x !== player.lastSentPointer.x || player.pointer.y !== player.lastSentPointer.y;
+        var simulationResult = simulation.simulateClientStream(currentTime, playerId, player.pos);
         
         if (!simulationResult.change && !addPointerToDiff) return;
         
         var d = {clientId: clientId, time:currentTime};
         if (simulationResult.change) {
-            client.pos.x = d.x = simulationResult.state.x;
-            client.pos.y = d.y = simulationResult.state.y;
+            player.pos.x = d.x = simulationResult.state.x;
+            player.pos.y = d.y = simulationResult.state.y;
         }
 
         if (addPointerToDiff) {
-            d.px = client.pointer.x;
-            d.py = client.pointer.y;
-            client.lastSentPointer.x = client.pointer.x;
-            client.lastSentPointer.y = client.pointer.y;
+            d.px = player.pointer.x;
+            d.py = player.pointer.y;
+            player.lastSentPointer.x = client.pointer.x;
+            player.lastSentPointer.y = client.pointer.y;
         }
         streamDiff.push(d);
     });

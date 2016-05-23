@@ -5,14 +5,14 @@ var SharedUtils = require('./shared.gen').SharedUtils;
 var _clientIdCounter = 0;
 var _READY_STATE_STR = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
 
-Client = function(socket, pos) {
+Client = function(socket) {
     this._socket = socket;
     this._id = _clientIdCounter++;
     this._name = "client" + this._id;
     this._approxLag = 0;
-    this.pos = pos;
-    this.lastSentPointer = {x:-1, y:-1};
-    this.pointer = {x:-1, y:-1};
+    // this.pos = pos;
+    // this.lastSentPointer = {x:-1, y:-1};
+    // this.pointer = {x:-1, y:-1};
 
     this.alive = true;
 

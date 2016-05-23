@@ -34,7 +34,7 @@ SendMessage.rewrap = function(message) { return JSON.stringify(message); };
 //
 
 SendMessage.welcome = function(clientId, x, y, name, isMe) {
-    if (isMe === 'undefined') isMe = false;
+    // if (isMe === 'undefined') isMe = false;
     var m = {
         'id': 'welcome', 
         'clientId': clientId, 'startX': x, 'startY': y, 'name': name, 'me': isMe

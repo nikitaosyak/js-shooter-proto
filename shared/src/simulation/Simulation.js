@@ -5,6 +5,7 @@ if ("undefined" !== typeof exports) {
 Simulation = function() {
     this._instantTimeline = new InstantTimeline();
     this._streamTimeline = new StreamTimeline();
+    this._registry = new PlayerRegistry();
 
     this._physics = new Physics();
 };
@@ -14,17 +15,22 @@ Simulation.prototype = {
 
     addClient: function(clientId, x, y, currentTime) {
         // console.log('sim: adding new client %i at %i:%i on time %i', clientId, x, y, currentTime);
-        this._physics.addActorBody(clientId, x, y);
-        this._streamTimeline.addClient(clientId, x, y, currentTime);
+        var player = this._registry.addPlayer(clientId, x, y);
+        this._physics.addActorBody(player.id, player.pos.x, player.pos.y);
+        this._streamTimeline.addClient(player.id, player.pos.x, player.pos.y, currentTime);
     },
 
     deleteClient: function(clientId) {
-        // console.log('sim: removing client body and history', clientId);
-        this._physics.deleteActorBody(clientId);
-        this._streamTimeline.delete(clientId);
+        if (this._registry.hasPlayer(clientId)) {
+            console.log('sim: removing client body and history', clientId);
+            this._physics.deleteActorBody(clientId);
+            this._streamTimeline.delete(clientId);
+        }
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
+        if (!this._registry.hasPlayer(clientId)) throw "cannot add action on non existing player " + clientId;
+        
         this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
     },
 
@@ -38,6 +44,7 @@ Simulation.prototype = {
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
+        if (!this._registry.hasPlayer(clientId)) throw "cannot add instant action on non existing player " + clientId;
 
         var lastAction = this._streamTimeline.getLastAction(clientId);
         var elapsedActionTime = currentTime - clientLag - lerp;
@@ -200,6 +207,12 @@ Simulation.prototype = {
 Object.defineProperty(Simulation.prototype, "physics", {
     get: function() {
         return this._physics;
+    }
+});
+
+Object.defineProperty(Simulation.prototype, "registry", {
+    get: function() {
+        return this._registry;
     }
 });
 

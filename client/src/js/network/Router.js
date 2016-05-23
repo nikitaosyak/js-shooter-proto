@@ -22,6 +22,7 @@ Router.prototype = {
     },
 
     welcome: function(m) {
+        console.log(m);
         if (m.me) {
             Facade.myId = m.clientId;
             var me = new Player(m.clientId, m.startX, m.startY, m.name, true);
