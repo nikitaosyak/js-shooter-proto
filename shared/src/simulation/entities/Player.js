@@ -6,7 +6,7 @@ Player = function(id, x, y, name, isMe) {
     this.lastSentPointer = {x: -1, y: -1};
     this.pointer = {x: -1, y: -1};
 
-    this.alive = false;
+    this.alive = true;
 
     this.name = name;
     this.isMe = isMe;

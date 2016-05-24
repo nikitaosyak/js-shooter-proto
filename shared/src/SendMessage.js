@@ -57,6 +57,10 @@ SendMessage.playerDeath = function(killer, victims) {
     return JSON.stringify({'id': 'playerDeath', killer: killer, 'victims': victims});
 };
 
+SendMessage.clientLeave = function(clients) {
+    return JSON.stringify({'id': 'clientLeave', 'value': clients});
+};
+
 //
 // value = [id, to, hits[]]
 SendMessage.shotAck = function(value) {

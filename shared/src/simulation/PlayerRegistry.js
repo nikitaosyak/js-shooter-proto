@@ -30,7 +30,7 @@ PlayerRegistry.prototype = {
 
     iteratePlayers: function(iterator) {
         for (var k in this._players) {
-            iterator(k, this._players[k]);
+            iterator(this._players[k]);
         }
     }
 };

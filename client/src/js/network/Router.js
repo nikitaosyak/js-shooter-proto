@@ -36,7 +36,7 @@ Router.prototype = {
 
     srvTime: function(m) {
         Facade.srvDeltaTime = Date.now() - m.time;
-        console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
+        // console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
     },
 
     positionBatch: function(m) {
@@ -75,6 +75,23 @@ Router.prototype = {
             } else {
                 console.log('%d was killed by %d', deadId, m.killer);
                 Facade.networkState.removePlayerById(deadId);
+            }
+        }
+    },
+
+    clientLeave: function(m) {
+        for (var i = 0; i < m.value.length; i++) {
+            var leftClientId = m.value[i];
+            if (Facade.myId === leftClientId) {
+                throw "I cannot leave, i am here, right?";
+            } else {
+                console.log('client %d left the game', leftClientId);
+                // Facade.networkState.removePlayerById(deadId);
+                if (leftClientId in Facade.networkState.players) {
+                    Facade.networkState.removePlayerById(leftClientId);
+                } else {
+                    // do nothing, i guess
+                }
             }
         }
     }

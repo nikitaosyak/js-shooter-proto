@@ -18,13 +18,17 @@ Simulation.prototype = {
         var player = this._registry.addPlayer(clientId, x, y);
         this._physics.addActorBody(player.id, player.pos.x, player.pos.y);
         this._streamTimeline.addClient(player.id, player.pos.x, player.pos.y, currentTime);
+        return player;
     },
 
     deleteClient: function(clientId) {
         if (this._registry.hasPlayer(clientId)) {
-            console.log('sim: removing client body and history', clientId);
+            // console.log('sim: removing client body and history', clientId);
             this._physics.deleteActorBody(clientId);
             this._streamTimeline.delete(clientId);
+            this._registry.removePlayer(clientId);
+        } else {
+            console.warn("sim: attempt to delete non existing player %s", clientId);
         }
     },
 

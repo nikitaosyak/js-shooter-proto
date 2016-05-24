@@ -21,6 +21,7 @@ var clients = {};
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     var startPos = spawnPositions[currentSpawnPos];
     var client = new Client(socket);
+    var player = null;
     clients[client.id] = client;
 
     socket.on('message', function(rawMessage) {
@@ -28,12 +29,11 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
             socket.send('pong');
         } else {
             var m = JSON.parse(rawMessage);
-            var player = simulation.registry.getPlayer(client.id);
             // console.log(m, 'from ', client.id);
             switch(m.id) {
                 case 'medianRTT':
                     if (m.clientId in clients) {
-                        console.log('client', m.clientId, 'median rtt:', m.value);
+                        // console.log('client', m.clientId, 'median rtt:', m.value);
                         clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
                         clients[m.clientId].send(SendMessage.srvTime(time_util.elapsed));
                     } else {
@@ -41,19 +41,23 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     }
                     break;
                 case 'vd':
-                    // console.log('velocitydiff: ', rawMessage);
+                    // console.log('velocitydiff: ', rawMessage, client.id);
                     simulation.addStreamAction(
-                        time_util.elapsed, clients[m.cid].lag, m.cid, m.x, m.y, m.dt
+                        time_util.elapsed, client.lag, client.id, m.x, m.y, m.dt
                     );
                     break;
                 case 'pointer':
+                    if (player === null) return;
                     player.pointer.x = m.x;
                     player.pointer.y = m.y;
                     break;
                 case 'requestShot':
                     simulation.addInstantAction(
-                        time_util.elapsed, client.id, clients[client.id].lag, m.lerp, m.time, m.to
+                        time_util.elapsed, client.id, client.lag, m.lerp, m.time, m.to
                         );
+                    break;
+                case 'requestSpawn':
+
                     break;
                 case 'p':
                     client.send(SendMessage.pong(time_util.elapsed));
@@ -68,28 +72,26 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
 
     socket.on('close', function() {
-        console.log('client', client.toString(), 'leaving: removing from clients');
+        console.log('main: client', client.toString(), 'leaving: removing from clients');
+        
         var removingId = client.id;
         simulation.deleteClient(removingId);
         delete clients[removingId];
         client.purge();
-        broadcast(SendMessage.playerDeath(null, [removingId]));
+
+        broadcast(SendMessage.clientLeave([removingId]));
     });
 
-    console.log('incoming connection: ', client.toString());
+    console.log('main: incoming connection: ', client.toString());
 
-    simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
-    client.send(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, true));
+    player = simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
     broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
     
     simulation.registry.iteratePlayers(
-        function (playerId, player) {
-            if (playerId === client.id) return;
-
-            var playerClient = clients[playerId];
-            if (playerClient) {
-                client.send(SendMessage.welcome(playerId, player.pos.x, player.pos.y, playerClient.name, false));
-            }
+        function (player) {
+            console.log('sending player %s to client %s. wtf? %s', player.id, client.id, player.id === client.id);
+            var playerClient = clients[player.id];
+            client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, playerClient.name, player.id === client.id));
         }
     );
 
@@ -102,15 +104,15 @@ time_util.onTimer(function(dt) {
     var currentTime = time_util.elapsed;
     var streamDiff = [];
     
-    simulation.registry.iteratePlayers(function(playerId, player) {
+    simulation.registry.iteratePlayers(function(player) {
         if (!player.alive) return;
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = player.pointer.x !== player.lastSentPointer.x || player.pointer.y !== player.lastSentPointer.y;
-        var simulationResult = simulation.simulateClientStream(currentTime, playerId, player.pos);
+        var simulationResult = simulation.simulateClientStream(currentTime, player.id, player.pos);
         
         if (!simulationResult.change && !addPointerToDiff) return;
         
-        var d = {clientId: clientId, time:currentTime};
+        var d = {clientId: player.id, time:currentTime};
         if (simulationResult.change) {
             player.pos.x = d.x = simulationResult.state.x;
             player.pos.y = d.y = simulationResult.state.y;
@@ -119,8 +121,8 @@ time_util.onTimer(function(dt) {
         if (addPointerToDiff) {
             d.px = player.pointer.x;
             d.py = player.pointer.y;
-            player.lastSentPointer.x = client.pointer.x;
-            player.lastSentPointer.y = client.pointer.y;
+            player.lastSentPointer.x = player.pointer.x;
+            player.lastSentPointer.y = player.pointer.y;
         }
         streamDiff.push(d);
     });
@@ -140,7 +142,6 @@ time_util.onTimer(function(dt) {
                 var cid = shotData.hits[j];
                 console.log('client', cid, ' is dead, will remove from simulation');
                 simulation.deleteClient(cid);
-                clients[cid].alive = false;
             }
         }
     }

@@ -10,6 +10,7 @@ Interpolator.prototype = {
     addNode: function(id, startState) {
         this[id] = new InterpolatorNode(id, startState);
         this._nodeKeyList.push(id);
+        console.log(this);
     },
 
     removeNode: function(id) {
@@ -30,6 +31,7 @@ Interpolator.prototype = {
         }
 
         // console.log(dt, calculatedServerTime);
+        // console.log(this._nodeKeyList);
         for (var i = 0; i < this._nodeKeyList.length; i++) {
             var n = this[this._nodeKeyList[i]];
             n.update(dt, calculatedServerTime);
