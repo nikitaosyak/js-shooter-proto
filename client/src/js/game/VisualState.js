@@ -116,7 +116,9 @@ VisualState.prototype = {
                 }
                 var leftPlayer = this._visuals[leftPlayerId];
                 delete this._visuals[leftPlayerId];
-                leftPlayer.purge();
+                if (leftPlayer) {
+                    leftPlayer.purge();
+                }
             }
             this._networkState.removedPlayers = [];
         }

@@ -29,6 +29,7 @@ ServerSync.prototype = {
         var currentTime = Date.now();
         this._lastRtt = currentTime - this._lastPingTime;
         this._lastSrvDelta = currentTime - packet.time;
+        document.getElementById("pingHolder").innerHTML = "ping: " + Math.ceil(this._lastRtt/2) + "ms";
         // console.log('rtt', this._lastRtt, 'delta', this._lastSrvDelta);
 
         if (this._calculatingMedian) {

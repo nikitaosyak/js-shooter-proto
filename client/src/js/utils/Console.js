@@ -8,7 +8,6 @@ Console = function() {
     
     this._output.value = "commands:\n";
     this._output.value += "setname\n";
-    this._output.value += "say\n";
 };
 Console.prototype.constructor = Console;
 

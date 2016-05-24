@@ -15,17 +15,21 @@ var _OPPOSITE_KEYS = {
 
 Input = function(onVelocityChange, velocityContext, onPointerChange, pointerContext) {
     console.log("input created");
+    this._waitingForRespawn = false;
     this._game = Facade.game;
     this._game.input.keyboard.addCallbacks(this, this._onKeyDown, this._onKeyUp, null);
     this._game.input.mouse.callbackContext = this;
     this._railgunShotAt = 0;
     this._game.input.mouse.mouseDownCallback = function(e) {
         if (Facade.networkState.isDead) {
-            console.log('isDead - request respawn');
-            Facade.connection.sendSpawnRequest();
+            if (!this._waitingForRespawn) {
+                console.log('isDead - request respawn');
+                Facade.connection.sendSpawnRequest();    
+                this._waitingForRespawn = true;
+            }
             return;
         }
-
+        
         var t = Date.now();
         if (t - this._railgunShotAt < Facade.params.weapons.railgun.recoilTime) 
             return;
@@ -89,6 +93,7 @@ Input.prototype = {
         if (Facade.networkState.isDead) {
             return;
         }
+        this._waitingForRespawn = false;
 
         // update mouse position
         var p = this._game.input.mousePointer;

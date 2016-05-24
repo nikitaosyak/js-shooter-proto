@@ -33,7 +33,7 @@ Simulation.prototype = {
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
-        if (!this._registry.hasPlayer(clientId)) throw "cannot add action on non existing player " + clientId;
+        if (!this._registry.hasPlayer(clientId)) return;
         
         this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
     },
@@ -48,7 +48,7 @@ Simulation.prototype = {
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
-        if (!this._registry.hasPlayer(clientId)) throw "cannot add instant action on non existing player " + clientId;
+        if (!this._registry.hasPlayer(clientId)) return;//throw "cannot add instant action on non existing player " + clientId;
 
         var lastAction = this._streamTimeline.getLastAction(clientId);
         var elapsedActionTime = currentTime - clientLag - lerp;

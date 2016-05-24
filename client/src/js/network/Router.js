@@ -40,8 +40,13 @@ Router.prototype = {
     },
 
     changeName: function(m) {
-        Facade.networkState.players[m.cid].name = m.name;
-        Facade.visualState._visuals[m.cid].setName(m.name);
+        if (Facade.networkState.players[m.cid]) {
+            Facade.networkState.players[m.cid].name = m.name;    
+        }
+        if (Facade.visualState._visuals[m.cid]) {
+            Facade.visualState._visuals[m.cid].setName(m.name);    
+        }
+        
     },
 
     positionBatch: function(m) {
@@ -79,7 +84,9 @@ Router.prototype = {
                 Facade.input.reset();
             } else {
                 console.log('%d was killed by %d', deadId, m.killer);
-                Facade.networkState.removePlayerById(deadId);
+                if (deadId in Facade.networkState.players) {
+                    Facade.networkState.removePlayerById(deadId);
+                }
             }
             Facade.simulation.deleteClient(deadId);
         }
@@ -95,7 +102,7 @@ Router.prototype = {
                 // Facade.networkState.removePlayerById(deadId);
                 if (leftClientId in Facade.networkState.players) {
                     Facade.networkState.removePlayerById(leftClientId);
-                    Facade.simulation.deleteClient(deadId);
+                    Facade.simulation.deleteClient(leftClientId);
                 } else {
                     // do nothing, i guess
                 }
