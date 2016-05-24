@@ -91,7 +91,7 @@ VisualState.prototype = {
                 var newPlayer = this._networkState.players[newPlayerId];
                 var pos = this._networkState.interpolator[newPlayerId].pos.rawValue;
                 // console.log('adding visual player (isMe:', newPlayer.isMe);
-                this._visuals[newPlayerId] = new PlayerVisual(newPlayerId, pos.x, pos.y, this._group, newPlayer.isMe);
+                this._visuals[newPlayerId] = new PlayerVisual(newPlayerId, pos.x, pos.y, this._group, newPlayer.isMe, newPlayer.name);
                 if (newPlayer.isMe) {
                     this._visualMe = this._visuals[newPlayerId];
                     this._game.camera.follow(this._visualMe.view);

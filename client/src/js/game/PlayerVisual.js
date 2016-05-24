@@ -1,4 +1,4 @@
-PlayerVisual = function(id, x, y, group, isMe) {
+PlayerVisual = function(id, x, y, group, isMe, name) {
     this.id = id;
     this.isMe = isMe;
     this.group = group;
@@ -17,6 +17,12 @@ PlayerVisual = function(id, x, y, group, isMe) {
         x, y, 'player_sprite', group, color, new Phaser.Point(0.5, 0.5), undefined, 0.5
     );
 
+    this.textView = new Phaser.Text(Facade.factory._game, x, y, name, {font: "12px Arial", fill: "#FFFFFF", boundsAlignH: "center", boundsAlignV: "middle"});
+    this.textView.anchor.x = 0.5;
+    this.textView.anchor.y = 0.5;
+    group.add(this.textView);
+    // this.textView.setTextBounds(0, 0, 50, 50);
+
     this.arrow = Facade.factory.sprite(
         x, y, 'player_dir_arrow', group, color,
         undefined,
@@ -31,6 +37,7 @@ PlayerVisual.prototype = {
         this.group.remove(this.debugView);
         this.group.remove(this.view);
         this.group.remove(this.arrow);
+        this.group.remove(this.textView);
         this.group = null;
 
         this.debugView = null;
@@ -47,6 +54,8 @@ PlayerVisual.prototype = {
         var prevPos = {x: this.view.position.x, y: this.view.position.y};
         this.view.position.x = newPos.x;
         this.view.position.y = newPos.y;
+        this.textView.position.x = newPos.x;
+        this.textView.position.y = newPos.y;
         this.arrow.position = this.view.position;
 
         if (this.isMe) return;
