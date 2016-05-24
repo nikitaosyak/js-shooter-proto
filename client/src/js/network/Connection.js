@@ -47,6 +47,10 @@ Connection.prototype = {
         this._socket.send(SendMessage.requestShot(lerpTime, moveTimeOffset, to));
     },
 
+    sendSpawnRequest: function() {
+        this._socket.send(SendMessage.requestSpawn(Facade.myId));
+    },
+
     _onOpen: function() {
         console.log('socket connected to ', this._host, ':', this._port);
         this._sync = new ServerSync(this._socket);

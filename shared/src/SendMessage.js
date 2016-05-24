@@ -85,6 +85,9 @@ SendMessage.requestShot = function(lerp, moveTimeOffset, to) {
     return JSON.stringify({id: 'requestShot', lerp: lerp, time: moveTimeOffset, to: to});
 };
 
+SendMessage.requestSpawn = function(clientId) {
+    return JSON.stringify({id: 'requestSpawn', 'cid': clientId});
+};
 
 //
 // nodejs plug

@@ -7,7 +7,7 @@ PlayerRegistry.prototype.constructor = PlayerRegistry;
 PlayerRegistry.prototype = {
 
     addPlayer: function(id, x, y) {
-        if (this.hasPlayer(id)) throw "already contains player " + id;
+        if (this.hasPlayer(id)) throw "registry: already contains player " + id;
         var p = new Player(id, x, y);
         this._players[id] = p;
         return p;
@@ -18,13 +18,13 @@ PlayerRegistry.prototype = {
     },
 
     removePlayer: function(id) {
-        if (!this.hasPlayer(id)) throw "already does not have player " + id;
+        if (!this.hasPlayer(id)) throw "registry: already does not have player " + id;
         this._players[id].destroy();
         delete this._players[id];
     },
 
     getPlayer: function(id) {
-        if (!this.hasPlayer(id)) throw "does not contains player " + id;
+        if (!this.hasPlayer(id)) throw "registry: does not contains player " + id;
         return this._players[id];
     },
 

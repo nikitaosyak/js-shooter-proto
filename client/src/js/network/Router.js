@@ -76,6 +76,7 @@ Router.prototype = {
                 console.log('%d was killed by %d', deadId, m.killer);
                 Facade.networkState.removePlayerById(deadId);
             }
+            Facade.simulation.deleteClient(deadId);
         }
     },
 
@@ -89,6 +90,7 @@ Router.prototype = {
                 // Facade.networkState.removePlayerById(deadId);
                 if (leftClientId in Facade.networkState.players) {
                     Facade.networkState.removePlayerById(leftClientId);
+                    Facade.simulation.deleteClient(deadId);
                 } else {
                     // do nothing, i guess
                 }

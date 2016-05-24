@@ -19,7 +19,6 @@ var currentSpawnPos = 0;
 var clients = {};
 
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
-    var startPos = spawnPositions[currentSpawnPos];
     var client = new Client(socket);
     var player = null;
     clients[client.id] = client;
@@ -47,7 +46,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     );
                     break;
                 case 'pointer':
-                    if (player === null) return;
+                    if (!player.alive) return;
                     player.pointer.x = m.x;
                     player.pointer.y = m.y;
                     break;
@@ -57,7 +56,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                         );
                     break;
                 case 'requestSpawn':
-
+                    player = spawnPlayer(client, false);
                     break;
                 case 'p':
                     client.send(SendMessage.pong(time_util.elapsed));
@@ -83,20 +82,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     });
 
     console.log('main: incoming connection: ', client.toString());
-
-    player = simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
-    broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
-    
-    simulation.registry.iteratePlayers(
-        function (player) {
-            console.log('sending player %s to client %s. wtf? %s', player.id, client.id, player.id === client.id);
-            var playerClient = clients[player.id];
-            client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, playerClient.name, player.id === client.id));
-        }
-    );
-
-    currentSpawnPos += 1;
-    if (currentSpawnPos > spawnPositions.length-1) currentSpawnPos = 0;
+    player = spawnPlayer(client, true);
 });
 
 
@@ -172,4 +158,29 @@ function iterateClientsExcept(exceptId, action) {
         if (exceptId == clientId) continue;
         action(clientId, clients[clientId]);
     }
+}
+
+function spawnPlayer(client, notifyOfOtherPlayers) {
+    console.log('will spawn player ', client.id);
+    var startPos = spawnPositions[currentSpawnPos];
+
+    player = simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
+    broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
+    
+    if (notifyOfOtherPlayers) {
+        simulation.registry.iteratePlayers(
+            function (player) {
+                console.log('sending player %s to client %s. wtf? %s', player.id, client.id, player.id === client.id);
+                var isSelf = player.id === client.id;
+                client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, client.name, isSelf));
+            }
+        );    
+    } else {
+        client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, client.name, true));
+    }
+
+    currentSpawnPos += 1;
+    if (currentSpawnPos > spawnPositions.length-1) currentSpawnPos = 0;
+
+    return player;
 }

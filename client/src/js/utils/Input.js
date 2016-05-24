@@ -21,7 +21,8 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
     this._railgunShotAt = 0;
     this._game.input.mouse.mouseDownCallback = function(e) {
         if (Facade.networkState.isDead) {
-            console.log('will not shoot - dead');
+            console.log('isDead - request respawn');
+            Facade.connection.sendSpawnRequest();
             return;
         }
 
