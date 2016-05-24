@@ -27,6 +27,10 @@ SendMessage.pong = function(srvTime) {
     return JSON.stringify({id:"p_ack"});
 };
 
+SendMessage.changeName = function(clientId, name) {
+    return JSON.stringify({id: "changeName", cid: clientId, name: name});
+};
+
 SendMessage.rewrap = function(message) { return JSON.stringify(message); };
 
 //
@@ -71,6 +75,7 @@ SendMessage.shotAck = function(value) {
 //
 // Client messages
 //
+
 
 SendMessage.medianRTT = function(clientId, value) {
     return JSON.stringify({'id': 'medianRTT', 'clientId': clientId, 'value': value});

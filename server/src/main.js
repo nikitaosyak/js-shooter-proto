@@ -64,6 +64,24 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 case 'p_ack':
                     client.ackPong(time_util.elapsed);
                     break;
+                case 'changeName':
+                    // console.log("change name request to " + m.name);
+                    var canChange = true;
+                    iterateClients(function(cleintId, client) {
+                        if (client.name === m.name) {
+                            canChange = false;
+                            console.log("client %s already have name %s!", client.id, client.name);
+                        }
+                    });
+
+                    if (canChange) {
+                        client._name = m.name;
+                        if (player) {
+                            player.name = m.name;
+                        }
+                        broadcast(SendMessage.changeName(client.id, m.name));
+                    }
+                    break;
             }
             // console.log('incoming message: ', rawMessage);
         }

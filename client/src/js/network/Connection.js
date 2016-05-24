@@ -28,6 +28,10 @@ Connection.prototype = {
 
     calculateMedian: function() { this._sync.initialSync(); },
 
+    sendChangeName: function(name) {
+        this._socket.send(SendMessage.changeName(Facade.myId, name));
+    },
+
     sendPong: function() {
         this._socket.send(SendMessage.pong());
     },

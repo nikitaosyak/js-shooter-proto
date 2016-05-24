@@ -17,7 +17,7 @@ PlayerVisual = function(id, x, y, group, isMe, name) {
         x, y, 'player_sprite', group, color, new Phaser.Point(0.5, 0.5), undefined, 0.5
     );
 
-    this.textView = new Phaser.Text(Facade.factory._game, x, y, name, {font: "12px Arial", fill: "#FFFFFF", boundsAlignH: "center", boundsAlignV: "middle"});
+    this.textView = new Phaser.Text(Facade.factory._game, x, y, name, {font: "10x Arial", fill: "#CCCCCC", boundsAlignH: "center", boundsAlignV: "middle"});
     this.textView.anchor.x = 0.5;
     this.textView.anchor.y = 0.5;
     group.add(this.textView);
@@ -73,4 +73,9 @@ PlayerVisual.prototype = {
         var yd = newPointerPos.y - this.view.position.y;
         this.arrow.rotation = Math.atan2(yd, xd);
     },
+
+    setName: function(name) {
+        console.log("new name " + name);
+        this.textView.text = name;
+    }
 };

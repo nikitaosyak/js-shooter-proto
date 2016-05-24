@@ -39,6 +39,11 @@ Router.prototype = {
         // console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
     },
 
+    changeName: function(m) {
+        Facade.networkState.players[m.cid].name = m.name;
+        Facade.visualState._visuals[m.cid].setName(m.name);
+    },
+
     positionBatch: function(m) {
         // console.log('incoming pos batch: ', m);
         var ns = Facade.networkState;

@@ -39,6 +39,8 @@ Console.prototype = {
         var verb = cmd.split(" ")[0];
         if (verb == 'setname') {
             this._output.value += "name changed to " + cmd.split(" ")[1] + "\n";
+            var name = cmd.split(" ")[1];
+            Facade.connection.sendChangeName(name.substring(0, 10));
         } else if (verb == 'say') {
             this._output.value += "you say: " + cmd.split(" ")[1] + "\n";
         } else {
