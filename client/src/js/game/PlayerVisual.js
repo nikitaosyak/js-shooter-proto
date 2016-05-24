@@ -20,6 +20,7 @@ PlayerVisual = function(id, x, y, group, isMe, name) {
     this.textView = new Phaser.Text(Facade.factory._game, x, y, name, {font: "10x Arial", fill: "#CCCCCC", boundsAlignH: "center", boundsAlignV: "middle"});
     this.textView.anchor.x = 0.5;
     this.textView.anchor.y = 0.5;
+    // this.textView.visible = !isMe;
     group.add(this.textView);
     // this.textView.setTextBounds(0, 0, 50, 50);
 

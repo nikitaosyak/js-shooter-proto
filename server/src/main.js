@@ -190,7 +190,7 @@ function spawnPlayer(client, notifyOfOtherPlayers) {
             function (player) {
                 console.log('sending player %s to client %s. wtf? %s', player.id, client.id, player.id === client.id);
                 var isSelf = player.id === client.id;
-                client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, client.name, isSelf));
+                client.send(SendMessage.welcome(player.id, player.pos.x, player.pos.y, clients[player.id].name, isSelf));
             }
         );    
     } else {

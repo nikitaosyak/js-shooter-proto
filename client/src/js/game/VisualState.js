@@ -89,6 +89,7 @@ VisualState.prototype = {
             for (var i = 0; i < newPlayersLen; i++) {
                 var newPlayerId = this._networkState.newPlayers[i];
                 var newPlayer = this._networkState.players[newPlayerId];
+                console.log(newPlayer);
                 var pos = this._networkState.interpolator[newPlayerId].pos.rawValue;
                 // console.log('adding visual player (isMe:', newPlayer.isMe);
                 this._visuals[newPlayerId] = new PlayerVisual(newPlayerId, pos.x, pos.y, this._group, newPlayer.isMe, newPlayer.name);
