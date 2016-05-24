@@ -120,6 +120,21 @@ Simulation.prototype = {
         if (actions.length === 0) {
             var constAction = this._streamTimeline.getLastAction(clientId);
             constAction.update(currentTime);
+            // if (isNaN(constAction.state.x)) {
+                // var t = this._streamTimeline.getTimeline(clientId);
+                // var str = '';
+                // for (var i = 0; i < t.length; ++i) {
+                //     var a = t[i];
+                //     if (a.type == 1) {
+                //         // str += '[c' + Math.round(a.state.x) + ":" + Math.round(a.state.y) + ']';
+                //     } else {
+                //         // str += '[m' + a.startTime + ":" + a.simulationTime + ":" + a.endTime;
+                //         str += '[::' + Math.round(a.startState.x) + ":" + Math.round(a.startState.y);
+                //         str += '::' + Math.round(a.endState.x) + ":" + Math.round(a.endState.y) + ']';
+                //     }
+                // }
+                // console.log(str);
+            // }
             return { change: false, state: null };
         } 
 
@@ -192,6 +207,11 @@ Simulation.prototype = {
 
         if (startTime == endTime) {
             // console.log('seems like nothing to do');
+            // OHUENNII HOTFIX
+            if (action.ended && action.startTime === action.endTime) {
+                action.endState.x = action.startState.x;
+                action.endState.y = action.startState.y;
+            }
             return startSimState;
         }
 

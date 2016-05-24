@@ -43,7 +43,12 @@ StreamTimeline.prototype = {
 
         // var str = '';
         // for (var i = 0; i < timeline.length; ++i) {
-        //     str += '[' + timeline[i].simulationTime + '-' + timeline[i].endTime + ']';
+        //     var a = timeline[i];
+        //     if (a.type == 1) {
+        //         str += '[' + Math.round(a.state.x) + ":" + Math.round(a.state.y) + ']';
+        //     } else {
+        //         str += '[' + Math.round(a.endState.x) + ":" + Math.round(a.endState.y) + ']';
+        //     }
         // }
         // console.log(str);
 
