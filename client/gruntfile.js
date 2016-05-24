@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     //noinspection JSUnresolvedFunction
     grunt.initConfig({
         jshint: {
-            files: ["src/js/**/*.js", "!src/js/phaser.min.js", "!src/js/shared.gen.js"]
+            files: ["src/js/**/*.js", "!src/js/phaser.min.js", "!src/js/shared.gen.js", "src/scc/*.css"]
         },
         connect: {
             server: {
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         },
         watch: {
             scripts: {
-                files: ["src/js/**/*.js", "src/*.html", "gruntfile.js", "../server/src/*.js"],
+                files: ["src/js/**/*.js", "src/*.html", "gruntfile.js", "../server/src/*.js", "src/css/*.css"],
                 tasks: ['jshint'],
                 options: {
                     spawn: false,

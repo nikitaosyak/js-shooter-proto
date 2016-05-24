@@ -122,6 +122,16 @@ Input.prototype = {
     },
 
     _onKeyDown: function(e) {
+        // console.log(e.keyCode);
+        if (e.keyCode == 192) {
+            Facade.console.toggle();
+        }
+        if (e.keyCode == 13) {
+            Facade.console.parseCommand();
+        }
+        if (Facade.console.visible) {
+            return;
+        }
         if (Facade.networkState.isDead) {
             return;
         }

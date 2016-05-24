@@ -23,11 +23,13 @@
     <script type="text/javascript" src="js/utils/Input.js"></script>
     <script type="text/javascript" src="js/utils/Factory.js"></script>
     <script type="text/javascript" src="js/utils/settings_loader.js"></script>
+    <script type="text/javascript" src="js/utils/Console.js"></script>
     <style type="text/css">
         body {
             margin: 0;
         }
     </style>
+    <link rel="stylesheet" href="css/console.css" />
 </head>
 <body>
 
@@ -54,6 +56,7 @@ function preload() {
 
 function create() {
     game.stage.disableVisibilityChange = true;
+    Facade.console = new Console();
     Facade.myId = -1;
     Facade.game = game;
     Facade.params = GameParams;
@@ -99,6 +102,15 @@ function update() {
 }
 
 </script>
+
+<div id="consoleDiv" class="console">
+    <div class="consoleOutput">
+        <textarea id="consoleOutput" disabled="true" rows="6" style="width: 95%"></textarea>
+    </div>
+    <div class="consoleInput">
+        <input id="consoleInput" type="text" style="width: 95%" oninput="value = value.replace(/`/gi, '');"></input>
+    </div>
+</div>
 
 </body>
 </html>
