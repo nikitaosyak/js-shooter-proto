@@ -34,7 +34,7 @@ GameParams.weapons = {
 GameParams.serverStateVisible = false;
 GameParams.interpolationSnapshotBuffer = 2;
 GameParams.additionalVirtualLagMedian = 0;
-GameParams.startMap = 'map_draft.json';
+GameParams.startMap = 'small_map.json';
 
 if (typeof module !== 'undefined') {
     module.exports.GameParams = GameParams;

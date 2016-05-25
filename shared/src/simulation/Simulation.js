@@ -33,7 +33,7 @@ Simulation.prototype = {
     },
 
     addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
-        if (!this._registry.hasPlayer(clientId)) return;
+        if (!this._registry.hasPlayer(clientId)) throw "cannot add action on non existing player " + clientId;
         
         this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
     },
@@ -48,7 +48,7 @@ Simulation.prototype = {
      * @param {Point}  to           - crosshair point
      */
     addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
-        if (!this._registry.hasPlayer(clientId)) return;//throw "cannot add instant action on non existing player " + clientId;
+        if (!this._registry.hasPlayer(clientId)) throw "cannot add instant action on non existing player " + clientId;
 
         var lastAction = this._streamTimeline.getLastAction(clientId);
         var elapsedActionTime = currentTime - clientLag - lerp;
@@ -64,18 +64,24 @@ Simulation.prototype = {
 
     simulateInstantActions: function(currentTime) {
         var instantData = [];
+        var hitClients = [];
 
         while (!this._instantTimeline.isEmpty) {
             //
             // windback state to approx time of shot
             var action = this._instantTimeline.shift();
+            if (hitClients.indexOf(action.clientId) !== -1) {
+                console.log("this client is already dead!");
+                continue;
+            }
+
             var backwardsTime = currentTime - action.elapsedExecuteTime;
             // console.log('%d\'instant action. windback %d, ct %d', action.clientId, backwardsTime, currentTime);
             var windbackState = this._streamTimeline.getCompleteStateAtTime(
                 action.elapsedExecuteTime, 
                 action.clientId
             );
-            console.log('windbackState: ', windbackState);
+            // console.log('windbackState: ', windbackState);
             
             var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
 
@@ -98,14 +104,19 @@ Simulation.prototype = {
             for (var i in result.hits) {
                 var b = result.hits[i].body;
                 if ('clientId' in b) {
-                    hits.push(b.clientId);
+                    if (hitClients.indexOf(b.clientId) === -1) {
+                        hits.push(b.clientId);
+                    } else {
+                        console.log("cannot add already dead player to hits");
+                    }
                 }
             }
-            console.log(hits);
+            // console.log(hits);
 
             //
             // add result to pending data
             instantData.push({id: action.clientId, to: result.end, hits: hits});
+            hitClients = hitClients.concat(hits);
 
             // return to the original state
             this._physics.setActorBodyPositionMass(currentState);
