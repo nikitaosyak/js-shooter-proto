@@ -23,7 +23,7 @@
     <script type="text/javascript" src="js/utils/Input.js"></script>
     <script type="text/javascript" src="js/utils/Factory.js"></script>
     <script type="text/javascript" src="js/utils/settings_loader.js"></script>
-    <script type="text/javascript" src="js/utils/Console.js"></script>
+    <script type="text/javascript" src="js/utils/InGameConsole.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -40,7 +40,7 @@ var game = new Phaser.Game(
         { preload: preload, create: create, update: update }
     );
 
-Facade = function() {}
+Facade = function() {};
 Facade.prototype.constructor = Facade;
 
 var networkState;
@@ -56,7 +56,7 @@ function preload() {
 
 function create() {
     game.stage.disableVisibilityChange = true;
-    Facade.console = new Console();
+    Facade.console = new InGameConsole();
     Facade.myId = -1;
     Facade.game = game;
     Facade.params = GameParams;

@@ -1,4 +1,4 @@
-Console = function() {
+InGameConsole = function() {
     this._div = document.getElementById("consoleDiv");
     this._output = document.getElementById("consoleOutput");
     this._input = document.getElementById("consoleInput");
@@ -9,25 +9,14 @@ Console = function() {
     this._output.value = "commands:\n";
     this._output.value += "setname\n";
 };
-Console.prototype.constructor = Console;
+InGameConsole.prototype.constructor = InGameConsole;
 
-Console.prototype = {
-    show: function() {
-        this._div.style.display = "inline";
-        this._visible = true;
-        this._input.focus();
-    },
-
-    hide: function() {
-        this._div.style.display = "none";
-        this._visible = false;
-    },
-
+InGameConsole.prototype = {
     toggle: function() {
         if (this._visible) {
-            this.hide();
+            this._hide();
         } else {
-            this.show();
+            this._show();
         }
     },
 
@@ -45,10 +34,23 @@ Console.prototype = {
         } else {
             this._output.value += cmd + ": unknown command\n";
         }
+    },
+
+    /** @private */
+    _show: function() {
+        this._div.style.display = "inline";
+        this._visible = true;
+        this._input.focus();
+    },
+
+    /** @private */
+    _hide: function() {
+        this._div.style.display = "none";
+        this._visible = false;
     }
 };
 
-Object.defineProperty(Console.prototype, "visible", {
+Object.defineProperty(InGameConsole.prototype, "visible", {
     get: function() {
         return this._visible;
     }
