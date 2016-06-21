@@ -8,10 +8,10 @@ var gulp = require('gulp'),
 // <editor-fold desc="client-tasks">
 
 var client = {
-    watch : ['client/src/**/*.*'],
-    lint: ['client/src/js/**/*.js', '!client/src/js/**/*.gen.js', '!client/src/js/**/*.min.js'],
-    root: 'client/src',
-    reload: ['client/src/*.html']
+    watch : ['client/**/*.*'],
+    lint: ['client/js/**/*.js', '!client/js/**/*.gen.js', '!client/js/**/*.min.js'],
+    root: 'client',
+    reload: ['client/*.html']
 };
 
 gulp.task('client-connect', function() {
@@ -92,11 +92,11 @@ gulp.task('deploy-shared', function() {
             'shared/src/simulation/Simulation.js'
         ])
         .pipe(concat("shared.gen.js"))
-        .pipe(gulp.dest('client/src/js'))
+        .pipe(gulp.dest('client/js'))
         .pipe(gulp.dest('server/src'));
 
     gulp.src(['shared/assets/**/*.*'])
-        .pipe(gulp.dest('client/src/assets'))
+        .pipe(gulp.dest('client/assets'))
         .pipe(gulp.dest('server/assets'))
 });
 
