@@ -46,26 +46,31 @@ gulp.task('client-watch', function() {
 
 var server = {
     watch: ['server/assets/*.*', 'server/src/**/*.js'],
-    lint: ['server/src/*.js', '!server/src/shared.gen.js']
+    lint: ['server/src/*.js', '!server/src/shared.gen.js'],
+    compile_dest: 'server/build',
+    exec_name: 'main.js'
 };
 
 gulp.task('compile', function() {
     "use strict";
     return gulp.src('server/src/**/*.js')
+        // .pipe(sourcemaps.init())
         .pipe(babel())
-        .pipe(gulp.dest('server/build'))
+        // .pipe(concat(server.exec_name))
+        // .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(server.compile_dest))
 });
 
 gulp.task('start-server', ['compile'], function() {
     "use strict";
 
     return nodemon({
-        script: 'server/build/main.js',
+        script: server.compile_dest + '/' + server.exec_name,
         watch: 'server/src',
         tasks: ['compile'],
         env: { 'ASSETS_FOLDER': 'shared/assets/'}
-    }).on('restart', function(list) {
-        gulp.src(list).pipe(jshint()).pipe(jshint.reporter('default'));
+    }).on('restart', function(changeList) {
+        gulp.src(changeList).pipe(jshint()).pipe(jshint.reporter('default'));
     })
 });
 
