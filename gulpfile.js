@@ -8,7 +8,7 @@ var gulp = require('gulp'),
 // <editor-fold desc="client-tasks">
 
 var client = {
-    watch : ['client/**/*.*'],
+    watch : ['server/**/*.*', 'client/**/*.*'],
     lint: ['client/js/**/*.js', '!client/js/**/*.gen.js', '!client/js/**/*.min.js'],
     root: 'client',
     reload: ['client/*.html']
@@ -49,9 +49,8 @@ var server = {
 
 gulp.task('lint-server', function() {
     "use strict";
-    gulp.src(server.lint)
+    return gulp.src(server.lint)
         .pipe(jshint())
-        .pipe(jshint.reporter('default'));
 });
 
 gulp.task('start-server', function() {
@@ -60,9 +59,10 @@ gulp.task('start-server', function() {
     nodemon({
         cwd: './server/',
         script: './src/main.js',
-        ext: 'js json',
-        tasks: ['lint-server']
-    });
+        ext: 'js json'
+    }).on('restart', function(list) {
+        gulp.src(list).pipe(jshint()).pipe(jshint.reporter('default'));
+    })
 });
 
 // </editor-fold>
