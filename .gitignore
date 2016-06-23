@@ -1,5 +1,7 @@
 .idea
-node_modules
-*.gen.js
+
 platform_settings.json
-project.sublime-workspace
+*.gen.js
+
+node_modules/
+build/

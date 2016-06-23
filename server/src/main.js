@@ -9,7 +9,7 @@ var GameParams = shared.GameParams;
 var simulation = shared.Simulation;
 var LevelModel = shared.LevelModel;
 
-var levelRaw = fs.readFileSync('assets/' + GameParams.startMap);
+var levelRaw = fs.readFileSync(process.env.ASSETS_FOLDER + GameParams.startMap);
 var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
 simulation.physics.addStaticBodies(level.bodies);
 

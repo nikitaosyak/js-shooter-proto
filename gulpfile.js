@@ -2,7 +2,10 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat'),
-    connect = require('gulp-connect')
+    connect = require('gulp-connect'),
+    babel = require('gulp-babel'),
+    sourcemaps = require('gulp-sourcemaps'),
+    FileCache = require('gulp-file-cache');
 
 // <editor-fold desc="client-tasks">
 
@@ -46,19 +49,21 @@ var server = {
     lint: ['server/src/*.js', '!server/src/shared.gen.js']
 };
 
-gulp.task('lint-server', function() {
+gulp.task('compile', function() {
     "use strict";
-    return gulp.src(server.lint)
-        .pipe(jshint())
+    return gulp.src('server/src/**/*.js')
+        .pipe(babel())
+        .pipe(gulp.dest('server/build'))
 });
 
-gulp.task('start-server', function() {
+gulp.task('start-server', ['compile'], function() {
     "use strict";
 
-    nodemon({
-        cwd: './server/',
-        script: './src/main.js',
-        ext: 'js json'
+    return nodemon({
+        script: 'server/build/main.js',
+        watch: 'server/src',
+        tasks: ['compile'],
+        env: { 'ASSETS_FOLDER': 'shared/assets/'}
     }).on('restart', function(list) {
         gulp.src(list).pipe(jshint()).pipe(jshint.reporter('default'));
     })
@@ -96,7 +101,7 @@ gulp.task('deploy-shared', function() {
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/assets'))
-        .pipe(gulp.dest('server/assets'))
+        //.pipe(gulp.dest('server/build/assets'))
 });
 
 gulp.task('watch-shared', function() {
