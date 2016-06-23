@@ -55,7 +55,9 @@ gulp.task('compile', function() {
     "use strict";
     return gulp.src('server/src/**/*.js')
         // .pipe(sourcemaps.init())
-        .pipe(babel())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
         // .pipe(concat(server.exec_name))
         // .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(server.compile_dest))
@@ -70,7 +72,18 @@ gulp.task('start-server', ['compile'], function() {
         tasks: ['compile'],
         env: { 'ASSETS_FOLDER': 'shared/assets/'}
     }).on('restart', function(changeList) {
-        gulp.src(changeList).pipe(jshint()).pipe(jshint.reporter('default'));
+        //console.log(changeList)
+        var result = [];
+        for (var item in changeList) {
+            // console.log(item);
+            var strItem = changeList[item];
+            if (strItem.includes('gen.js')) continue;
+
+            result.push(strItem);
+        }
+        gulp.src(result)
+            .pipe(jshint())
+            .pipe(jshint.reporter('default'));
     })
 });
 
