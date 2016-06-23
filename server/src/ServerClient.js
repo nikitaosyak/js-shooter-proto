@@ -31,12 +31,6 @@ export class ServerClient {
         this._sentPingTime = -1;
         this._rttHistory = [];
 
-        /**
-         * TODO: DEPRECATED
-         * @type {boolean}
-         */
-        this.alive = true;
-
         this._socket = socket;
     }
 
