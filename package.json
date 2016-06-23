@@ -1,0 +1,18 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "scripts": {
+    "server": "gulp start-server",
+    "shared": "gulp deploy-shared watch-shared",
+    "client": "gulp client-connect client-watch"
+  },
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-concat": "^2.6.0",
+    "gulp-develop-server": "^0.5.2",
+    "gulp-jshint": "^2.0.1",
+    "gulp-nodemon": "^2.1.0",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0"
+  }
+}
