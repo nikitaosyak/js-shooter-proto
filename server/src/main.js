@@ -1,7 +1,8 @@
+import {ServerClient} from './ServerClient'
+
 var fs = require('fs');
 var ws = require('ws');
 var time_util = require('./time_util.js');
-var Client = require('./client.js');
 
 var shared = require('./shared.gen.js');
 var SendMessage = shared.SendMessage;
@@ -19,7 +20,7 @@ var currentSpawnPos = 0;
 var clients = {};
 
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
-    var client = new Client(socket);
+    var client = new ServerClient(socket);
     var player = null;
     clients[client.id] = client;
 
