@@ -1,6 +1,6 @@
-PlayerRegistry = function() {
+function PlayerRegistry() {
     this._players = {};
-};
+}
 
 PlayerRegistry.prototype.constructor = PlayerRegistry;
 

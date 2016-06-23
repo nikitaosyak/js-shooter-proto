@@ -1,5 +1,9 @@
 
-MoveAction = function(clientId, startTime, vX, vY) {
+function MoveAction(
+    clientId,
+    startTime,
+    vX,
+    vY) {
     StreamActionBase.call(this, clientId, startTime, StreamActionBase.ActionType.MOVE_ACTION);
 
     this.velocityX = vX;
@@ -8,7 +12,8 @@ MoveAction = function(clientId, startTime, vX, vY) {
     this.currentState = {x: NaN, y: NaN};
     this.startState = {x: NaN, y: NaN};
     this.endState = {x: NaN, y: NaN};
-};
+}
+
 MoveAction.prototype = Object.create(StreamActionBase.prototype);
 MoveAction.prototype.constructor = MoveAction;
 

@@ -1,7 +1,7 @@
 
-StreamTimeline = function() {
+function StreamTimeline() {
     this._current = {};
-};
+}
 StreamTimeline.prototype.constructor = StreamTimeline;
 
 StreamTimeline.prototype = {

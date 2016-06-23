@@ -2,13 +2,13 @@ if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
 }
 
-Simulation = function() {
+function Simulation() {
     this._instantTimeline = new InstantTimeline();
     this._streamTimeline = new StreamTimeline();
     this._registry = new PlayerRegistry();
 
     this._physics = new Physics();
-};
+}
 Simulation.prototype.constructor = Simulation;
 
 Simulation.prototype = {

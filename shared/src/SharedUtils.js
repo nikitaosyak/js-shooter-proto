@@ -36,7 +36,7 @@ SharedUtils.shootRay = function(anchor, targetDir, anchorOffset, rayLen, bodyGet
 };
 
 SharedUtils.shootRayRaw = function(start, end, bodyGetter, bodyGetterCtx) {
-    t = Date.now();
+    var t = Date.now();
     var bodies = bodyGetter.call(bodyGetterCtx);
     var result = ShitCast.complexCast(bodies, Matter.Query.ray,
         function(bb) {

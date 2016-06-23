@@ -73,7 +73,7 @@ Connection.prototype = {
 
     _onError: function(data) {
         console.error('error on socket: %s', data);
-        window.location.reload(true);
+        // window.location.reload(true);
     },
 
     _onClose: function(closeEvent) {

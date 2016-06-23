@@ -1,13 +1,13 @@
 var GameParams = require('./shared.gen.js').GameParams;
 
-TimeUtil = function() {
+function TimeUtil() {
     this._started = Date.now();
     this._lastUpdate = this._started;
     this._callback = null;
     this._longCallback = null;
     setInterval(this._onTimer, GameParams.serverUpdateTime, this);
     setInterval(this._onLongTimer, GameParams.rttCheckTimeout, this);
-};
+}
 TimeUtil.prototype.constructor = TimeUtil;
 
 TimeUtil.prototype = {

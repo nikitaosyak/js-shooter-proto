@@ -1,5 +1,4 @@
-ShitCast = function() {};
-ShitCast.prototype.constructor = ShitCast;
+function ShitCast() {}
 
 ShitCast.complexCast = function(bodies, rayCall, canPunchThough, from, to, accuracy) {
     var result = [];

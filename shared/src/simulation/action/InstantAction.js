@@ -1,9 +1,13 @@
 
-InstantAction = function(clientId, elapsedExecuteTime, shotPoint) {
+function InstantAction(
+    clientId,
+    elapsedExecuteTime,
+    shotPoint)
+{
     this.clientId = clientId;
     this.elapsedExecuteTime = elapsedExecuteTime;
     this.shotPoint = shotPoint;
-};
+}
 InstantAction.prototype.constructor = InstantAction;
 
 InstantAction.prototype = {

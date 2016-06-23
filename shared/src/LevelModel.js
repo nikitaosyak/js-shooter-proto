@@ -2,14 +2,14 @@ if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
 }
 
-LevelModel = function() {
+function LevelModel() {
     console.log('LevelModel created');
     this._source = null;
     this.bodies = [];
     this.respawns = [];
     this.width = NaN;
     this.height = NaN;
-};
+}
 
 LevelModel.prototype.constructor = LevelModel;
 

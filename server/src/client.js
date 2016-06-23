@@ -5,7 +5,7 @@ var SharedUtils = require('./shared.gen').SharedUtils;
 var _clientIdCounter = 0;
 var _READY_STATE_STR = ["CONNECTING", "OPEN", "CLOSING", "CLOSED"];
 
-Client = function(socket) {
+function Client(socket) {
     this._socket = socket;
     this._id = _clientIdCounter++;
     this._name = "client" + this._id;
