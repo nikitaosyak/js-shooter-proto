@@ -2,8 +2,7 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat'),
-    connect = require('gulp-connect'),
-    dev_server = require('gulp-develop-server');
+    connect = require('gulp-connect')
 
 // <editor-fold desc="client-tasks">
 
