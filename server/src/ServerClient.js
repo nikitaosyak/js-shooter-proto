@@ -1,4 +1,6 @@
+/*jshint esversion: 6*/
 import {SendMessage, GameParams, SharedUtils} from "./shared.gen";
+
 var __clientIdCounter = 0;
 
 export class ServerClient {
@@ -43,7 +45,7 @@ export class ServerClient {
      */
     send(data) {
         if (!this._canUseSocket('send message')) return;
-        this._socket.send(data)
+        this._socket.send(data);
     }
 
     /**
@@ -63,12 +65,12 @@ export class ServerClient {
             console.error("wrong time on client", this._id);
             return;
         }
-        var rtt = currentTime - this._sentPingTime;
+        const rtt = currentTime - this._sentPingTime;
         this._rttHistory.push(rtt);
         if (this._rttHistory.length > GameParams.rttMedianHistory) {
             this._rttHistory.shift();
-            var sortedHistory = this._rttHistory.concat().sort(SharedUtils.sortAcc);
-            var medianIdx = Math.floor(GameParams.rttMedianHistory/2);
+            const sortedHistory = this._rttHistory.concat().sort(SharedUtils.sortAcc);
+            const medianIdx = Math.floor(GameParams.rttMedianHistory/2);
             this._approxLag = Math.round((sortedHistory[medianIdx] + GameParams.additionalVirtualLagMedian)/2);
             // console.log(this.lag, this._rttHistory, sortedHistory);
         }
@@ -89,7 +91,7 @@ export class ServerClient {
     
     toString() {
         if (this._id > -1) {
-            var state = ServerClient._socketStateToStr(this._socket.readyState);
+            const state = ServerClient._socketStateToStr(this._socket.readyState);
             return '{[' + this._id + ":" + this._name + "]; sock [" + state + "]}";
         }
         return '{[' + this._id + ":" + this._name + "]; sock [DEAD]}"; 
