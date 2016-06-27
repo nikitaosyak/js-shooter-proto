@@ -1,8 +1,8 @@
-Interpolator = function() {
+function Interpolator() {
     console.log('interpolator created');
     this._nodeKeyList = [];
     this._tt = -1;
-};
+}
 
 Interpolator.prototype.constructor = Interpolator;
 

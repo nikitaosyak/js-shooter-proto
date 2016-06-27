@@ -9,17 +9,10 @@ var gulp = require('gulp'),
 
 // <editor-fold desc="client-tasks">
 
-var client = {
-    watch : ['server/**/*.*', 'client/**/*.*'],
-    lint: ['client/js/**/*.js', '!client/js/**/*.gen.js', '!client/js/**/*.min.js'],
-    root: 'client',
-    reload: ['client/*.html']
-};
-
 gulp.task('client-connect', function() {
     "use strict";
     connect.server({
-        root: client.root,
+        root: 'client/build/',
         port: 8080,
         livereload: true
     });
@@ -27,17 +20,34 @@ gulp.task('client-connect', function() {
 
 gulp.task('client-deploy', function() {
     "use strict";
-    gulp.src(client.lint)
+
+    var scriptsButLibs = ['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'];
+
+    gulp.src(scriptsButLibs)
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 
-    gulp.src(client.reload)
+    gulp.src(['shared/assets/**/*.*'])
+        .pipe(gulp.dest('client/build/assets'));
+
+    gulp.src('client/src/*.html').pipe(gulp.dest('client/build'));
+    gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
+    gulp.src('client/src/assets/**/*.*').pipe(gulp.dest('client/build/assets'));
+    gulp.src(['client/src/js/phaser.min.js', 'client/src/js/shared.gen.js']).pipe(gulp.dest('client/build/js'));
+
+    gulp.src(scriptsButLibs)
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(gulp.dest('client/build/js'));
+
+    gulp.src(['client/build/**/*.*'])
         .pipe(connect.reload());
 });
 
 gulp.task('client-watch', function() {
     "use strict";
-    gulp.watch(client.watch, ['client-deploy']);
+    gulp.watch(['client/src/**/*.*'], ['client-deploy']);
 });
 
 // </editor-fold>
@@ -53,14 +63,16 @@ var server = {
 
 gulp.task('compile', function() {
     "use strict";
-    return gulp.src('server/src/**/*.js')
+    gulp.src('server/src/shared.gen.js').pipe(gulp.dest('server/build'));
+
+    return gulp.src(['server/src/**/*.js', '!server/src/shared.gen.js'])
         // .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015']
         }))
         // .pipe(concat(server.exec_name))
         // .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(server.compile_dest))
+        .pipe(gulp.dest(server.compile_dest));
 });
 
 gulp.task('start-server', ['compile'], function() {
@@ -84,7 +96,9 @@ gulp.task('start-server', ['compile'], function() {
         gulp.src(result)
             .pipe(jshint())
             .pipe(jshint.reporter('default'));
-    })
+    }).on('start', function() {
+        require('fs').writeFileSync('client/src/srvreload.file', new Date());
+    });
 });
 
 // </editor-fold>
@@ -114,11 +128,11 @@ gulp.task('deploy-shared', function() {
             'shared/src/simulation/Simulation.js'
         ])
         .pipe(concat("shared.gen.js"))
-        .pipe(gulp.dest('client/js'))
+        .pipe(gulp.dest('client/src/js'))
         .pipe(gulp.dest('server/src'));
 
     gulp.src(['shared/assets/**/*.*'])
-        .pipe(gulp.dest('client/assets'))
+        .pipe(gulp.dest('client/build/assets'));
         //.pipe(gulp.dest('server/build/assets'))
 });
 

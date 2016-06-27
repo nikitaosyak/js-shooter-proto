@@ -1,4 +1,4 @@
-PlayerVisual = function(id, x, y, group, isMe, name) {
+function PlayerVisual(id, x, y, group, isMe, name) {
     this.id = id;
     this.isMe = isMe;
     this.group = group;
@@ -29,7 +29,7 @@ PlayerVisual = function(id, x, y, group, isMe, name) {
         undefined,
         new Phaser.Point(-1, 0.5), 0.8
     );
-};
+}
 
 PlayerVisual.prototype.constructor = PlayerVisual;
 

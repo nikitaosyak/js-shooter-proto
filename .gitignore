@@ -1,4 +1,6 @@
 .idea
+npm-debug.log
+srvreload.file
 
 platform_settings.json
 *.gen.js

@@ -1,12 +1,12 @@
 
-Connection = function (host, port, router) {
+function Connection(host, port, router) {
     this._host = host;
     this._port = port;
     this._router = router || new Router();
 
     this._socket = null;
     this._sync = null;
-};
+}
 Connection.prototype.constructor = Connection;
 
 Connection.prototype = {

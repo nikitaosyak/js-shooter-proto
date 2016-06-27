@@ -1,7 +1,7 @@
 
-Factory = function(game) {
+function Factory(game) {
     this._game = game;
-};
+}
 Factory.prototype.constructor = Factory;
 
 Factory.prototype = {
