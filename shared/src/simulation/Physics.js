@@ -3,12 +3,12 @@ if ("undefined" !== typeof exports) {
     var Matter = exports.Matter;
 }
 
-Physics = function() {
+function Physics() {
     this._bodies = {};
     this._engine = Matter.Engine.create();
     this._world = Matter.World.create({gravity: {x:0, y:0}});
     this._engine.world = this._world;
-};
+}
 Physics.prototype.constructor = Physics;
 
 Physics.prototype = {

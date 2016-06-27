@@ -1,8 +1,8 @@
 
-InstantTimeline = function() {
+function InstantTimeline() {
     this._timeline = [];
     this._sorted = false;
-};
+}
 InstantTimeline.prototype.constructor = InstantTimeline;
 
 InstantTimeline.prototype = {

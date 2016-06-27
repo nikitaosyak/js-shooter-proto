@@ -2,7 +2,10 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat'),
-    connect = require('gulp-connect')
+    connect = require('gulp-connect'),
+    babel = require('gulp-babel'),
+    sourcemaps = require('gulp-sourcemaps'),
+    FileCache = require('gulp-file-cache');
 
 // <editor-fold desc="client-tasks">
 
@@ -43,24 +46,44 @@ gulp.task('client-watch', function() {
 
 var server = {
     watch: ['server/assets/*.*', 'server/src/**/*.js'],
-    lint: ['server/src/*.js', '!server/src/shared.gen.js']
+    lint: ['server/src/*.js', '!server/src/shared.gen.js'],
+    compile_dest: 'server/build',
+    exec_name: 'main.js'
 };
 
-gulp.task('lint-server', function() {
+gulp.task('compile', function() {
     "use strict";
-    return gulp.src(server.lint)
-        .pipe(jshint())
+    return gulp.src('server/src/**/*.js')
+        // .pipe(sourcemaps.init())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        // .pipe(concat(server.exec_name))
+        // .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(server.compile_dest))
 });
 
-gulp.task('start-server', function() {
+gulp.task('start-server', ['compile'], function() {
     "use strict";
 
-    nodemon({
-        cwd: './server/',
-        script: './src/main.js',
-        ext: 'js json'
-    }).on('restart', function(list) {
-        gulp.src(list).pipe(jshint()).pipe(jshint.reporter('default'));
+    return nodemon({
+        script: server.compile_dest + '/' + server.exec_name,
+        watch: 'server/src',
+        tasks: ['compile'],
+        env: { 'ASSETS_FOLDER': 'shared/assets/'}
+    }).on('restart', function(changeList) {
+        //console.log(changeList)
+        var result = [];
+        for (var item in changeList) {
+            // console.log(item);
+            var strItem = changeList[item];
+            if (strItem.includes('gen.js')) continue;
+
+            result.push(strItem);
+        }
+        gulp.src(result)
+            .pipe(jshint())
+            .pipe(jshint.reporter('default'));
     })
 });
 
@@ -96,7 +119,7 @@ gulp.task('deploy-shared', function() {
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/assets'))
-        .pipe(gulp.dest('server/assets'))
+        //.pipe(gulp.dest('server/build/assets'))
 });
 
 gulp.task('watch-shared', function() {

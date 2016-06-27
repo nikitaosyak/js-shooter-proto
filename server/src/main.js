@@ -1,7 +1,10 @@
+/*jshint esversion: 6*/
+import {ServerClient} from './ServerClient';
+import {TimerUtil} from './TimerUtil';
+
 var fs = require('fs');
 var ws = require('ws');
-var time_util = require('./time_util.js');
-var Client = require('./client.js');
+var timerUtil = new TimerUtil();
 
 var shared = require('./shared.gen.js');
 var SendMessage = shared.SendMessage;
@@ -9,7 +12,7 @@ var GameParams = shared.GameParams;
 var simulation = shared.Simulation;
 var LevelModel = shared.LevelModel;
 
-var levelRaw = fs.readFileSync('assets/' + GameParams.startMap);
+var levelRaw = fs.readFileSync(process.env.ASSETS_FOLDER + GameParams.startMap);
 var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
 simulation.physics.addStaticBodies(level.bodies);
 
@@ -19,11 +22,12 @@ var currentSpawnPos = 0;
 var clients = {};
 
 ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
-    var client = new Client(socket);
+    var client = new ServerClient(socket);
     var player = null;
     clients[client.id] = client;
 
     socket.on('message', function(rawMessage) {
+        const elapsed = timerUtil.elapsed;
         if (rawMessage == 'ping') {
             socket.send('pong');
         } else {
@@ -34,7 +38,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     if (m.clientId in clients) {
                         // console.log('client', m.clientId, 'median rtt:', m.value);
                         clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
-                        clients[m.clientId].send(SendMessage.srvTime(time_util.elapsed));
+                        clients[m.clientId].send(SendMessage.srvTime(elapsed));
                     } else {
                         console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
                     }
@@ -42,7 +46,7 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 case 'vd':
                     // console.log('velocitydiff: ', rawMessage, client.id);
                     simulation.addStreamAction(
-                        time_util.elapsed, client.lag, client.id, m.x, m.y, m.dt
+                        elapsed, client.lag, client.id, m.x, m.y, m.dt
                     );
                     break;
                 case 'pointer':
@@ -52,17 +56,17 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                     break;
                 case 'requestShot':
                     simulation.addInstantAction(
-                        time_util.elapsed, client.id, client.lag, m.lerp, m.time, m.to
+                        elapsed, client.id, client.lag, m.lerp, m.time, m.to
                         );
                     break;
                 case 'requestSpawn':
                     player = spawnPlayer(client, false);
                     break;
                 case 'p':
-                    client.send(SendMessage.pong(time_util.elapsed));
+                    client.send(SendMessage.pong(elapsed));
                     break;
                 case 'p_ack':
-                    client.ackPong(time_util.elapsed);
+                    client.ackPong(elapsed);
                     break;
                 case 'changeName':
                     // console.log("change name request to " + m.name);
@@ -103,19 +107,19 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
     player = spawnPlayer(client, true);
 });
 
-
-time_util.onTimer(function(dt) {
-    var currentTime = time_util.elapsed;
+timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
+    "use strict";
+    const currentTime = timerUtil.elapsed;
     var streamDiff = [];
-    
+
     simulation.registry.iteratePlayers(function(player) {
         if (!player.alive) return;
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = player.pointer.x !== player.lastSentPointer.x || player.pointer.y !== player.lastSentPointer.y;
         var simulationResult = simulation.simulateClientStream(currentTime, player.id, player.pos);
-        
+
         if (!simulationResult.change && !addPointerToDiff) return;
-        
+
         var d = {clientId: player.id, time:currentTime};
         if (simulationResult.change) {
             player.pos.x = d.x = simulationResult.state.x;
@@ -151,10 +155,11 @@ time_util.onTimer(function(dt) {
     }
 });
 
-time_util.onLongTimer(function() {
-    var currentTime = time_util.now;
+timerUtil.addTimer(GameParams.rttCheckTimeout, function() {
+    "use strict";
+    const elapsed = timerUtil.elapsed;
     iterateClients(function(clientId, client) {
-        client.ping(time_util.elapsed);
+        client.ping(elapsed);
     });
 });
 
@@ -182,7 +187,7 @@ function spawnPlayer(client, notifyOfOtherPlayers) {
     console.log('will spawn player ', client.id);
     var startPos = spawnPositions[currentSpawnPos];
 
-    player = simulation.addClient(client.id, startPos.x, startPos.y, time_util.elapsed);
+    var player = simulation.addClient(client.id, startPos.x, startPos.y, timerUtil.elapsed);
     broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
     
     if (notifyOfOtherPlayers) {

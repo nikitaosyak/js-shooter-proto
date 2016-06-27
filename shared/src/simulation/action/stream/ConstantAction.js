@@ -1,9 +1,12 @@
 
-ConstantAction = function(clientId, startTime, state) {
+function ConstantAction(
+    clientId,
+    startTime,
+    state) {
     StreamActionBase.call(this, clientId, startTime, StreamActionBase.ActionType.CONSTANT_ACTION);
 
     this.state = state;
-};
+}
 ConstantAction.prototype = Object.create(StreamActionBase.prototype);
 ConstantAction.prototype.constructor = ConstantAction;
 

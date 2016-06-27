@@ -1,14 +1,17 @@
 //
 // stateless abstract stream action
 
-StreamActionBase = function(clientId, startTime, actionType) {
+function StreamActionBase(
+    clientId,
+    startTime,
+    actionType) {
     this.clientId = clientId;
     this.startTime = startTime;
     this.simulationTime = NaN;
     this.endTime = NaN;
 
     this._actionType = actionType;
-};
+}
 
 StreamActionBase.ActionType = {
     CONSTANT_ACTION: 1,

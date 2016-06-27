@@ -1,5 +1,5 @@
 
-Player = function(id, x, y, name, isMe) {
+function Player(id, x, y, name, isMe) {
     this._id = id;
     
     this.pos = {x: x, y: y};
@@ -10,7 +10,7 @@ Player = function(id, x, y, name, isMe) {
 
     this.name = name;
     this.isMe = isMe;
-};
+}
 Player.prototype.constructor = Player;
 
 Player.prototype = {
