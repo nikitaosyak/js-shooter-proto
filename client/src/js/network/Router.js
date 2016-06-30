@@ -1,7 +1,7 @@
 
-Router = function() {
+function Router() {
     console.log("router created");
-};
+}
 
 Router.prototype.constructor = Router;
 

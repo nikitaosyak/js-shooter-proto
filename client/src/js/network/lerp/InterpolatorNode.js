@@ -1,4 +1,4 @@
-InterpolatorNode = function(playerId, startState) {
+function InterpolatorNode(playerId, startState) {
     this._id = playerId;
     this._interpolatedTime = 0;
     this._propertyNamelist = [];
@@ -8,7 +8,7 @@ InterpolatorNode = function(playerId, startState) {
         this._propertyNamelist.push(propertyName);
     }
     // console.log('creating lerp node for player %s with properies %s', playerId, this._propertyNamelist.join(', '));
-};
+}
 
 InterpolatorNode.prototype.constructor = InterpolatorNode;
 

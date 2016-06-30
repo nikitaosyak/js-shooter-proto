@@ -1,4 +1,4 @@
-InGameConsole = function() {
+function InGameConsole() {
     this._div = document.getElementById("consoleDiv");
     this._output = document.getElementById("consoleOutput");
     this._input = document.getElementById("consoleInput");
@@ -8,7 +8,7 @@ InGameConsole = function() {
     
     this._output.value = "commands:\n";
     this._output.value += "setname\n";
-};
+}
 InGameConsole.prototype.constructor = InGameConsole;
 
 InGameConsole.prototype = {

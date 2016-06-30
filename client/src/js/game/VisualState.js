@@ -1,5 +1,5 @@
 
-VisualState = function(game, networkState, levelModel) {
+function VisualState(game, networkState, levelModel) {
     console.log("visual state created");
     this._game = game;
     this._networkState = networkState;
@@ -30,7 +30,7 @@ VisualState = function(game, networkState, levelModel) {
 
     this._visuals = {};
     this._visualMe = null;
-};
+}
 
 VisualState.prototype.constructor = VisualState;
 

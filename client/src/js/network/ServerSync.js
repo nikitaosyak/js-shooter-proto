@@ -1,4 +1,4 @@
-ServerSync = function(socket) {
+function ServerSync(socket) {
     console.log('ServerSync created');
     this._socket = socket;
 
@@ -9,7 +9,7 @@ ServerSync = function(socket) {
 
     this._lastRtt = -1;
     this._lastSrvDelta = -1;
-};
+}
 
 ServerSync.prototype.constructor = ServerSync;
 

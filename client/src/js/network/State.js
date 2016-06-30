@@ -1,5 +1,5 @@
 
-State = function() {
+function State() {
     console.log("network state created");
     this._me = null;
     this._players = {};
@@ -7,7 +7,7 @@ State = function() {
 
     this.newPlayers = [];
     this.removedPlayers = [];
-};
+}
 
 State.prototype.constructor = State;
 

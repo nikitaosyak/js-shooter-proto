@@ -13,7 +13,7 @@ var _OPPOSITE_KEYS = {
     68: 65
 };
 
-Input = function(onVelocityChange, velocityContext, onPointerChange, pointerContext) {
+function Input(onVelocityChange, velocityContext, onPointerChange, pointerContext) {
     console.log("input created");
     this._waitingForRespawn = false;
     this._game = Facade.game;
@@ -66,7 +66,7 @@ Input = function(onVelocityChange, velocityContext, onPointerChange, pointerCont
     this._onPointerChange = onPointerChange;
     this._pointerContext = pointerContext;
     this.reset();
-};
+}
 
 Input.prototype.constructor = Input;
 

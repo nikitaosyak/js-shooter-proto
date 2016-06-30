@@ -1,4 +1,4 @@
-InterpolatorNodeProperty = function(name, initialState) {
+function InterpolatorNodeProperty(name, initialState) {
     this._name = name;
     this._template = [];
     this._lerpState = {};
@@ -17,7 +17,7 @@ InterpolatorNodeProperty = function(name, initialState) {
 
     this._simulationStarted = -1;
     this._targetSimulationTime = -1;
-};
+}
 
 InterpolatorNodeProperty.constructor = InterpolatorNodeProperty;
 
