@@ -111,6 +111,7 @@ var sharedLib = [
     'shared/src/SendMessage.js',
     'shared/src/LevelModel.js',
     'shared/src/ShitCast.js',
+    'shared/src/util/**/*.js',
     'shared/src/simulation/timeline/InstantTimeline.js',
     'shared/src/simulation/timeline/StreamTimeline.js',
     'shared/src/simulation/action/**/*.js',
