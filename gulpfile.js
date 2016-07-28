@@ -3,12 +3,12 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     concat = require('gulp-concat'),
     connect = require('gulp-connect'),
+    addSrc = require('gulp-add-src'),
     babel = require('gulp-babel'),
     sourcemaps = require('gulp-sourcemaps'),
     FileCache = require('gulp-file-cache');
 
 // <editor-fold desc="client-tasks">
-
 gulp.task('client-connect', function() {
     "use strict";
     connect.server({
@@ -105,35 +105,39 @@ gulp.task('start-server', ['compile'], function() {
 
 // <editor-fold desc="shared-tasks">
 
+var sharedLib = [
+    'shared/src/GameParams.js',
+    'shared/src/SharedUtils.js',
+    'shared/src/SendMessage.js',
+    'shared/src/LevelModel.js',
+    'shared/src/ShitCast.js',
+    'shared/src/simulation/timeline/InstantTimeline.js',
+    'shared/src/simulation/timeline/StreamTimeline.js',
+    'shared/src/simulation/action/**/*.js',
+    'shared/src/simulation/entities/Player.js',
+    'shared/src/simulation/PlayerRegistry.js',
+    'shared/src/simulation/Physics.js',
+    'shared/src/simulation/Simulation.js'
+];
+
 gulp.task('deploy-shared', function() {
     "use strict";
 
-    gulp.src(['shared/src/**/*.js', '!shared/src/matter-0.8.0.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'));
+    // gulp.src(['shared/src/**/*.js', '!shared/src/matter-0.8.0.js'])
+    //     .pipe(jshint())
+    //     .pipe(jshint.reporter('default'));
 
-    gulp.src([
-            'shared/src/matter-0.8.0.js',
-            'shared/src/GameParams.js',
-            'shared/src/SharedUtils.js',
-            'shared/src/SendMessage.js',
-            'shared/src/LevelModel.js',
-            'shared/src/ShitCast.js',
-            'shared/src/simulation/timeline/InstantTimeline.js',
-            'shared/src/simulation/timeline/StreamTimeline.js',
-            'shared/src/simulation/action/**/*.js',
-            'shared/src/simulation/entities/Player.js',
-            'shared/src/simulation/PlayerRegistry.js',
-            'shared/src/simulation/Physics.js',
-            'shared/src/simulation/Simulation.js'
-        ])
-        .pipe(concat("shared.gen.js"))
+    gulp.src(sharedLib)
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(addSrc.prepend('shared/src/matter-0.8.0.js'))
+        .pipe(concat('shared.gen.js'))
         .pipe(gulp.dest('client/src/js'))
         .pipe(gulp.dest('server/src'));
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
-        //.pipe(gulp.dest('server/build/assets'))
 });
 
 gulp.task('watch-shared', function() {
