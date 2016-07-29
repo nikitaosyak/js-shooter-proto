@@ -133,9 +133,8 @@ gulp.task('deploy-shared', function() {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(addSrc.prepend('shared/src/matter-0.8.0.js'))
+        .pipe(addSrc.prepend('lib/matter-0.8.0.js'))
         .pipe(concat('shared.gen.js'))
-        .pipe(gulp.dest('client/src/js'))
         .pipe(gulp.dest('server/src'));
 
     gulp.src(['shared/assets/**/*.*'])
