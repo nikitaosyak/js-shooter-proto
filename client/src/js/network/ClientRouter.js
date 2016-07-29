@@ -60,7 +60,7 @@ export class ClientRouter extends RouterBase {
         for (var i = 0; i < m.value.length; ++i) {
             var data = m.value[i];
             var shooterPosition = Facade.networkState.interpolator[data.id].pos.lerpValue;
-            var ray = SharedUtils.truncateRay(shooterPosition, data.to, Facade.params.playerRadius + 1);
+            var ray = SharedUtils.Point.truncateRay(shooterPosition, data.to, Facade.params.playerRadius + 1);
             if (data.id == Facade.myId) continue;
             Facade.visualState.drawRay(ray.start, ray.end);
         }

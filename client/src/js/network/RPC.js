@@ -5,10 +5,6 @@ export class RPC {
         this._s = socket;
     }
 
-    pong() {
-        this._s.send(SendMessage.pong());
-    }
-
     changeName(name) {
         this._s.send(JSON.stringify({id: "changeName", cid: Facade.myId, name: name}));
     }

@@ -130,10 +130,10 @@ gulp.task('deploy-shared', function() {
     //     .pipe(jshint.reporter('default'));
 
     gulp.src(sharedLib)
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        .pipe(addSrc.prepend('lib/matter-0.8.0.js'))
+        // .pipe(babel({
+        //     presets: ['es2015']
+        // }))
+        // .pipe(addSrc.prepend('lib/matter-0.8.0.js'))
         .pipe(concat('shared.gen.js'))
         .pipe(gulp.dest('server/src'));
 

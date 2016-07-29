@@ -1,13 +1,13 @@
 /*jshint esversion: 6*/
 import {ServerClient} from './ServerClient';
 import {TimerUtil} from './TimerUtil';
+import {SendMessage} from "./shared.gen";
 
 var fs = require('fs');
 var ws = require('ws');
 var timerUtil = new TimerUtil();
 
 var shared = require('./shared.gen.js');
-var SendMessage = shared.SendMessage;
 var GameParams = shared.GameParams;
 var simulation = shared.Simulation;
 var LevelModel = shared.LevelModel;
@@ -28,67 +28,61 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
 
     socket.on('message', function(rawMessage) {
         const elapsed = timerUtil.elapsed;
-        if (rawMessage == 'ping') {
-            socket.send('pong');
-        } else {
-            var m = JSON.parse(rawMessage);
-            // console.log(m, 'from ', client.id);
-            switch(m.id) {
-                case 'medianRTT':
-                    if (m.clientId in clients) {
-                        // console.log('client', m.clientId, 'median rtt:', m.value);
-                        clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
-                        clients[m.clientId].send(SendMessage.srvTime(elapsed));
-                    } else {
-                        console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
-                    }
-                    break;
-                case 'vd':
-                    // console.log('velocitydiff: ', rawMessage, client.id);
-                    simulation.addStreamAction(
-                        elapsed, client.lag, client.id, m.x, m.y, m.dt
-                    );
-                    break;
-                case 'pointer':
-                    if (!player.alive) return;
-                    player.pointer.x = m.x;
-                    player.pointer.y = m.y;
-                    break;
-                case 'requestShot':
-                    simulation.addInstantAction(
-                        elapsed, client.id, client.lag, m.lerp, m.time, m.to
-                        );
-                    break;
-                case 'requestSpawn':
-                    player = spawnPlayer(client, false);
-                    break;
-                case 'p':
-                    client.send(SendMessage.pong(elapsed));
-                    break;
-                case 'p_ack':
-                    client.ackPong(elapsed);
-                    break;
-                case 'changeName':
-                    // console.log("change name request to " + m.name);
-                    var canChange = true;
-                    iterateClients(function(cleintId, client) {
-                        if (client.name === m.name) {
-                            canChange = false;
-                            console.log("client %s already have name %s!", client.id, client.name);
-                        }
-                    });
 
-                    if (canChange) {
-                        client._name = m.name;
-                        if (player) {
-                            player.name = m.name;
-                        }
-                        broadcast(SendMessage.changeName(client.id, m.name));
+        var m = JSON.parse(rawMessage);
+        // console.log(m, 'from ', client.id);
+        switch(m.id) {
+            case 'medianRTT':
+                if (m.clientId in clients) {
+                    // console.log('client', m.clientId, 'median rtt:', m.value);
+                    clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
+                    clients[m.clientId].send(SendMessage.srvTime(elapsed));
+                } else {
+                    console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
+                }
+                break;
+            case 'vd':
+                // console.log('velocitydiff: ', rawMessage, client.id);
+                simulation.addStreamAction(
+                    elapsed, client.lag, client.id, m.x, m.y, m.dt
+                );
+                break;
+            case 'pointer':
+                if (!player.alive) return;
+                player.pointer.x = m.x;
+                player.pointer.y = m.y;
+                break;
+            case 'requestShot':
+                simulation.addInstantAction(
+                    elapsed, client.id, client.lag, m.lerp, m.time, m.to
+                    );
+                break;
+            case 'requestSpawn':
+                player = spawnPlayer(client, false);
+                break;
+            case 'p':
+                client.send(JSON.stringify({id:"p_ack", time:elapsed}));
+                break;
+            case 'changeName':
+                // console.log("change name request to " + m.name);
+                var canChange = true;
+                iterateClients(function(cleintId, client) {
+                    if (client.name === m.name) {
+                        canChange = false;
+                        console.log("client %s already have name %s!", client.id, client.name);
                     }
-                    break;
-            }
-            // console.log('incoming message: ', rawMessage);
+                });
+
+                if (canChange) {
+                    client._name = m.name;
+                    if (player) {
+                        player.name = m.name;
+                    }
+                    broadcast(SendMessage.changeName(client.id, m.name));
+                }
+                break;
         }
+            // console.log('incoming message: ', rawMessage);
     });
 
 
