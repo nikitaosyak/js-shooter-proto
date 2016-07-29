@@ -1,27 +1,19 @@
+/*jshint esversion: 6*/
+export class ClientRouter extends RouterBase {
 
-function Router() {
-    console.log("router created");
-}
+    constructor() {
+        super();
+        this.p_ack = Facade.connection.sync.pingAck().bind(Facade.connection.sync);
+    }
 
-Router.prototype.constructor = Router;
-
-Router.prototype = {
-    debug: function(message) {
+    debug(message) {
         console.log("incoming debug message: ");
         for (var k in message) {
             console.log("%s: %s", k, message[k]);
         }
-    },
+    }
 
-    p: function(message) {
-        Facade.connection.sync.ackToServer();
-    },
-
-    p_ack: function(message) {
-        Facade.connection.sync.pingAck(message);
-    },
-
-    welcome: function(m) {
+    welcome(m) {
         console.log(m);
         if (m.me) {
             Facade.myId = m.clientId;
@@ -32,24 +24,23 @@ Router.prototype = {
             Facade.networkState.addPlayer(other, {'pos': {x: m.startX, y: m.startY}, 'pointer_pos': {x: 0, y: 0}});
         }
         Facade.simulation.addClient(m.clientId, m.startX, m.startY);
-    },
+    }
 
-    srvTime: function(m) {
+    srvTime(m) {
         Facade.srvDeltaTime = Date.now() - m.time;
         // console.log("incoming srvTime", m.time, "delta:", Facade.srvDeltaTime);
-    },
+    }
 
-    changeName: function(m) {
+    changeName(m) {
         if (Facade.networkState.players[m.cid]) {
-            Facade.networkState.players[m.cid].name = m.name;    
+            Facade.networkState.players[m.cid].name = m.name;
         }
         if (Facade.visualState._visuals[m.cid]) {
-            Facade.visualState._visuals[m.cid].setName(m.name);    
+            Facade.visualState._visuals[m.cid].setName(m.name);
         }
-        
-    },
+    }
 
-    positionBatch: function(m) {
+    positionBatch(m) {
         // console.log('incoming pos batch: ', m);
         var ns = Facade.networkState;
         for (var i = 0; i < m.value.length; i++) {
@@ -61,9 +52,9 @@ Router.prototype = {
                 ns.setPointerLocation(piece.clientId, piece.px, piece.py, piece.time);
             }
         }
-    },
+    }
 
-    shotAck: function(m) {
+    shotAck(m) {
         if (m.cid == Facade.myId) return;
 
         for (var i = 0; i < m.value.length; ++i) {
@@ -71,11 +62,11 @@ Router.prototype = {
             var shooterPosition = Facade.networkState.interpolator[data.id].pos.lerpValue;
             var ray = SharedUtils.truncateRay(shooterPosition, data.to, Facade.params.playerRadius + 1);
             if (data.id == Facade.myId) continue;
-            Facade.visualState.drawRay(ray.start, ray.end);    
+            Facade.visualState.drawRay(ray.start, ray.end);
         }
-    },
+    }
 
-    playerDeath: function(m) {
+    playerDeath(m) {
         for (var i = 0; i < m.victims.length; i++) {
             var deadId = m.victims[i];
             if (Facade.myId == deadId) {
@@ -90,9 +81,9 @@ Router.prototype = {
             }
             Facade.simulation.deleteClient(deadId);
         }
-    },
+    }
 
-    clientLeave: function(m) {
+    clientLeave(m) {
         for (var i = 0; i < m.value.length; i++) {
             var leftClientId = m.value[i];
             if (Facade.myId === leftClientId) {
@@ -109,4 +100,4 @@ Router.prototype = {
             }
         }
     }
-};
+}

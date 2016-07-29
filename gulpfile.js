@@ -5,8 +5,9 @@ var gulp = require('gulp'),
     connect = require('gulp-connect'),
     addSrc = require('gulp-add-src'),
     babel = require('gulp-babel'),
-    sourcemaps = require('gulp-sourcemaps'),
-    FileCache = require('gulp-file-cache');
+    browserify = require('browserify'),
+    babelify = require('babelify'),
+    source = require('vinyl-source-stream');
 
 // <editor-fold desc="client-tasks">
 gulp.task('client-connect', function() {

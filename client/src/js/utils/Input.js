@@ -13,7 +13,7 @@ var _OPPOSITE_KEYS = {
     68: 65
 };
 
-function Input(onVelocityChange, velocityContext, onPointerChange, pointerContext) {
+function Input() {
     console.log("input created");
     this._waitingForRespawn = false;
     this._game = Facade.game;
@@ -24,7 +24,7 @@ function Input(onVelocityChange, velocityContext, onPointerChange, pointerContex
         if (Facade.networkState.isDead) {
             if (!this._waitingForRespawn) {
                 console.log('isDead - request respawn');
-                Facade.connection.sendSpawnRequest();    
+                Facade.connection.rpc.requestSpawn();
                 this._waitingForRespawn = true;
             }
             return;
@@ -53,7 +53,7 @@ function Input(onVelocityChange, velocityContext, onPointerChange, pointerContex
         Facade.visualState.drawRay(result.start, result.end);
         var timeOffset = this._velocity.isZero() ? Date.now() - this._lastVelEnded : Date.now() - this._lastVelStarted;
 
-        Facade.connection.sendShot(0, timeOffset, pointerPos);
+        Facade.connection.rpc.requestShot(0, timeOffset, pointerPos);
         // console.log('client hit: ', result.hits.join(', '));
         // for (var h in result.hits) {
         //     console.log(result.hits[h].body);
@@ -61,10 +61,6 @@ function Input(onVelocityChange, velocityContext, onPointerChange, pointerContex
         // console.log(Facade.networkState.interpolator.testLerpTime);
     };
 
-    this._onVelocityChange = onVelocityChange;
-    this._velocityContext = velocityContext;
-    this._onPointerChange = onPointerChange;
-    this._pointerContext = pointerContext;
     this.reset();
 }
 
@@ -122,7 +118,7 @@ Input.prototype = {
 
     _sendPointer: function(p) {
         this._lastPointerUpdated = Date.now();
-        this._onPointerChange.call(this._pointerContext, p.x, p.y);
+        Facade.connection.rpc.pointer(p.x, p.y);
         this._lastPointerPosition = {x: p.x, y: p.y};
     },
 
@@ -192,7 +188,7 @@ Input.prototype = {
             if (this._lastVelStarted !== 0) {
                 ts = now - this._lastVelStarted;
             }
-            this._onVelocityChange.call(this._velocityContext, this._velocity, ts);
+            Facade.connection.rpc.velocity(this._velocity, ts);
             Facade.simulation.addStreamAction(Date.now(), 0, Facade.myId, this._velocity.x, this._velocity.y, ts);
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;

@@ -7,22 +7,6 @@
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/shared.gen.js"></script>
 
-    <script type="text/javascript" src="js/network/ServerSync.js"></script>
-    <script type="text/javascript" src="js/network/Connection.js"></script>
-    <script type="text/javascript" src="js/network/Router.js"></script>
-    <script type="text/javascript" src="js/network/State.js"></script>
-    <script type="text/javascript" src="js/network/lerp/Interpolator.js"></script>
-    <script type="text/javascript" src="js/network/lerp/InterpolatorNode.js"></script>
-    <script type="text/javascript" src="js/network/lerp/InterpolatorNodeProperty.js"></script>
-
-    <script type="text/javascript" src="js/game/Player.js"></script>
-    <script type="text/javascript" src="js/game/PlayerVisual.js"></script>
-    <script type="text/javascript" src="js/game/VisualState.js"></script>
-    
-    <script type="text/javascript" src="js/utils/Input.js"></script>
-    <script type="text/javascript" src="js/utils/Factory.js"></script>
-    <script type="text/javascript" src="js/utils/settings_loader.js"></script>
-    <script type="text/javascript" src="js/utils/InGameConsole.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -33,7 +17,6 @@
 <body>
 
 <script type="text/javascript">
-
 var game = new Phaser.Game(
         512, 512, Phaser.AUTO, '',
         { preload: preload, create: create, update: update }
@@ -45,7 +28,6 @@ Facade.prototype.constructor = Facade;
 var networkState;
 var visualState;
 var input;
-var connection;
 
 function preload() {
     game.load.image('player_sprite', 'assets/test_player.png');
@@ -74,13 +56,13 @@ function create() {
 
         loadJson('assets/platform_settings.json', function(settings) {
             console.log('settings loaded:', settings);
-            Facade.connection = connection = new Connection(settings.server_address, settings.server_port);
-            connection.connect(function() {
-                connection.calculateMedian();
+            Facade.connection = new Connection(settings.server_address, parseInt(settings.server_port));
+            Facade.connection.listen(Connection.READY, function() {
                 game.world.remove(loadingSprite);
             });
+            Facade.connection.connect();
 
-            input = Facade.input = new Input(connection.sendVelocity, connection, connection.sendPointer, connection);
+            input = Facade.input = new Input();
         });    
     });
 
@@ -88,12 +70,12 @@ function create() {
 }
 
 function update() {
-    if (!connection || !connection.isReady) {
+    if (Facade.connection === null || !Facade.connection.ready) {
         // console.log('cannot update');
         return;
     }
     var dt = game.time.elapsed;
-    connection.sync.update();
+//    connection.sync.update();
     
     input.update(dt);
     networkState.interpolator.update(dt);

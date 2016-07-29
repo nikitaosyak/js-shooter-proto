@@ -1,94 +1,80 @@
+/*jshint esversion: 6*/
+import {ClientRouter} from "./ClientRouter";
+import {RPC} from "./RPC";
+import {ServerSync} from "./ServerSync";
+export class Connection extends EventEmitter
+{
+    /** @return {string} */
+    static get READY() { return 'connection_ready'; }
+    /** @return {string} */
+    static get ERROR() { return 'connection_error'; }
+    /** @return {string} */
+    static get CLOSE() { return 'connection_close'; }
 
-function Connection(host, port, router) {
-    this._host = host;
-    this._port = port;
-    this._router = router || new Router();
+    /**
+     * @param host {string}
+     * @param port {Number}
+     */
+    constructor(host, port) {
+        super();
+        this._host = host;
+        this._port = port;
 
-    this._socket = null;
-    this._sync = null;
-}
-Connection.prototype.constructor = Connection;
+        /**
+         * @type {WebSocket}
+         * @private
+         */
+        this._socket = null;
 
-Connection.prototype = {
+        /**
+         * @type {ServerSync}
+         * @private
+         */
+        this._sync = null;
+        /**
+         * @type {RPC}
+         * @private
+         */
+        this._rpc = null;
+        this._router = new ClientRouter();
+    }
 
-    connect: function(onConnectionEstableashed) {
-        // console.log('starting to connect at %s:%i', this._host, this._port);
+    /** @returns {boolean} */
+    get ready() { return this._socket !== null && this._socket.readyState === 1; }
+
+    /** @returns {ServerSync} */
+    get sync() { return this._sync; }
+
+    /** @returns {RPC} */
+    get rpc() { return this._rpc; }
+
+    connect() {
         this._socket = new WebSocket('ws://' + this._host + ':' + this._port);
-        var s = this._socket;
-        var context = this;
+        let self = this;
 
-        s.onopen = function() { 
-            context._onOpen.call(context); 
-            onConnectionEstableashed();
+        this._socket.onopen = () => {
+            console.log('connected to', self._host, ':', self._port);
+            self._sync = new ServerSync(self._socket);
+            self._rpc = new RPC(self._socket);
+            self.emit(Connection.READY);
         };
-        s.onmessage = function(messageEvent) { context._onMessage.call(context, messageEvent); };
-        s.onerror = function(data) { context._onError.call(context, data); };
-        s.onclose = function(closeEvent) { context._onClose.call(context, closeEvent); };
-    },
 
-    calculateMedian: function() { this._sync.initialSync(); },
+        this._socket.onmessage = m => {
+            let data = m.data;
+            let command = JSON.parse(data);
+            console.log(typeof self, ': MESSAGE:', command.id);
 
-    sendChangeName: function(name) {
-        this._socket.send(SendMessage.changeName(Facade.myId, name));
-    },
+            self._router.execute(command.id, command);
+        };
 
-    sendPong: function() {
-        this._socket.send(SendMessage.pong());
-    },
+        this._socket.onerror = e => {
+            console.log(typeof self, ': ERROR: ', e);
+            self.emit(Connection.ERROR, e);
+        };
 
-    sendVelocity: function(v, td) {
-        var m = SendMessage.velocityDiff(Facade.myId, v.x, v.y, td);
-        this._socket.send(m);
-    },
-
-    sendPointer: function(x, y) {
-        x = Math.round(x);
-        y = Math.round(y);
-        this._socket.send(SendMessage.pointer(Facade.myId, x, y));
-    },
-
-    sendShot: function(lerpTime, moveTimeOffset, to) {
-        this._socket.send(SendMessage.requestShot(lerpTime, moveTimeOffset, to));
-    },
-
-    sendSpawnRequest: function() {
-        this._socket.send(SendMessage.requestSpawn(Facade.myId));
-    },
-
-    _onOpen: function() {
-        console.log('socket connected to ', this._host, ':', this._port);
-        this._sync = new ServerSync(this._socket);
-    },
-
-    _onMessage: function(messageEvent) {
-        var rawData = messageEvent.data;
-        var command = JSON.parse(rawData);
-        // console.log('attempting to route command [%s] to router: ', command.id.toUpperCase());
-        if (command.id in this._router) {
-            this._router[command.id](command);
-        } else {
-            console.log('router have no command', command.id.toUpperCase());
-        }
-    },
-
-    _onError: function(data) {
-        console.error('error on socket: %s', data);
-        // window.location.reload(true);
-    },
-
-    _onClose: function(closeEvent) {
-        console.log('socket closed: %s', closeEvent);
+        this._socket.onclose = e => {
+            console.log(typeof self, ': CLOSE: ', e);
+            self.emit(Connection.CLOSE, e);
+        };
     }
-};
-
-Object.defineProperty(Connection.prototype, "isReady", {
-    get: function() {
-        return this._socket !== null && this._socket.readyState == 1 && this._sync.isReady;
-    }
-});
-
-Object.defineProperty(Connection.prototype, "sync", {
-    get: function() {
-        return this._sync;
-    }
-});
+}

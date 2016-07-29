@@ -27,10 +27,6 @@ SendMessage.pong = function(srvTime) {
     return JSON.stringify({id:"p_ack"});
 };
 
-SendMessage.changeName = function(clientId, name) {
-    return JSON.stringify({id: "changeName", cid: clientId, name: name});
-};
-
 SendMessage.rewrap = function(message) { return JSON.stringify(message); };
 
 //
@@ -71,28 +67,6 @@ SendMessage.shotAck = function(value) {
     return JSON.stringify({id: 'shotAck', value: value});
 };
 
-
-//
-// Client messages
-//
-
-
-SendMessage.medianRTT = function(clientId, value) {
-    return JSON.stringify({'id': 'medianRTT', 'clientId': clientId, 'value': value});
-};
-
-SendMessage.velocityDiff = function(clientId, x, y, timeDelta) {
-    var m = {'id': 'vd', 'cid': clientId, 'x': x, 'y': y, 'dt': timeDelta};
-    return JSON.stringify(m);
-};
-
-SendMessage.requestShot = function(lerp, moveTimeOffset, to) {
-    return JSON.stringify({id: 'requestShot', lerp: lerp, time: moveTimeOffset, to: to});
-};
-
-SendMessage.requestSpawn = function(clientId) {
-    return JSON.stringify({id: 'requestSpawn', 'cid': clientId});
-};
 
 //
 // nodejs plug

@@ -1,85 +1,42 @@
-function ServerSync(socket) {
-    console.log('ServerSync created');
-    this._socket = socket;
+/*jshint esversion: 6*/
+export class ServerSync {
+    constructor(socket) {
+        console.log(typeof this, 'created');
+        
+        this._s = socket;
+        this._lastPingTime = Number.NaN;
+        
+        this._rttHistory = [];
+        this._rttMedianHistory = [];
+        
+        this._srvDelta = Number.NaN;
+        
+        this._cachedPingMessage = JSON.stringify({ id: "p" });
+    }
 
-    this._lastPingTime = -1;
-    this._calculatingMedian = false;
-    this._wasMedianChecked = false;
-    this._rttHistory = [];
+    get rtt() { return this._rttMedianHistory[Math.floor(this._rttMedianHistory.length/2)]; }
+    get lag() { return this.rtt/2; }
+    get srvDelta() { return this._srvDelta; }
 
-    this._lastRtt = -1;
-    this._lastSrvDelta = -1;
-}
+    pingAck(packet) {
+        let t = Date.now();
+        let lastRtt = t - this._lastPingTime;
+        this._srvDelta = t - packet.time;
+        console.log(typeof this, ': got server pong, rtt:', lastRtt, '; srvDelta: ', this._srvDelta);
 
-ServerSync.prototype.constructor = ServerSync;
+        this._lastPingTime = Number.NaN;
+        this._rttHistory.unshift(lastRtt);
+        if (this._rttHistory.length > 21) this._rttHistory.pop();
 
-ServerSync.prototype = {
-    initialSync: function() {
-        if (this._calculatingMedian || this._wasMedianChecked) return;
-        this._calculatingMedian = true;
-        this.ping();
-    },
+        this._rttMedianHistory = this._rttHistory.slice();
+        this._rttMedianHistory.sort(SharedUtils.sortAcc);
 
-    ping: function() {
+        setTimeout(this._ping.bind(this), 1000);
+    }
+
+    _ping() {
+        console.log(typeof this, ': performing ping');
         this._lastPingTime = Date.now();
-        this._socket.send(SendMessage.ping());
-    },
-
-    pingAck: function(packet) {
-        var currentTime = Date.now();
-        this._lastRtt = currentTime - this._lastPingTime;
-        this._lastSrvDelta = currentTime - packet.time;
-        document.getElementById("pingHolder").innerHTML = "ping: " + Math.ceil(this._lastRtt/2) + "ms";
-        // console.log('rtt', this._lastRtt, 'delta', this._lastSrvDelta);
-
-        if (this._calculatingMedian) {
-            this._rttHistory.push(this._lastRtt);
-            if (this._rttHistory.length == Facade.params.rttMedianHistory) {
-                // finish median checking
-                this._calculatingMedian = false;
-                this._wasMedianChecked = true;
-                this._rttHistory.sort(SharedUtils.sortAcc);
-                this._lastRtt = this._rttHistory[Math.floor(Facade.params.rttMedianHistory/2)];
-                this._socket.send(SendMessage.medianRTT(Facade.myId, this._lastRtt));
-                console.log('initial approx rtt:', this._lastRtt);
-            } else {
-                this.ping();
-            }
-        }
-    },
-
-    ackToServer: function() { this._socket.send(SendMessage.pong()); },
-
-    update: function() {
-        if (this._calculatingMedian) return;
-
-        var currentTime = Date.now();
-        if (currentTime - this._lastPingTime > Facade.params.rttCheckTimeout) {
-            this.ping();
-        }
-    },
-};
-
-Object.defineProperty(ServerSync.prototype, "isReady", {
-    get: function() {
-        return this.rtt >= 0 && this._wasMedianChecked;
+        this._s.send(this._cachedPingMessage);
     }
-});
-
-Object.defineProperty(ServerSync.prototype, "rtt", {
-    get: function() {
-        return this._lastRtt;
-    }
-});
-
-Object.defineProperty(ServerSync.prototype, "lag", {
-    get: function() {
-        return Math.round(this._lastRtt/2);
-    }
-});
-
-Object.defineProperty(ServerSync.prototype, "srvDelta", {
-    get: function() {
-        return this._lastSrvDelta;
-    }
-});
+}

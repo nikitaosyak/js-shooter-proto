@@ -1,3 +1,4 @@
+/*jshint esversion: 6*/
 export class EventEmitter {
     constructor() {
         /**
@@ -7,6 +8,7 @@ export class EventEmitter {
         this._l = null;
     }
 
+    /** @private */
     _checkMap() {
         if (this._l === null) this._l = new Map();
     }
@@ -33,12 +35,13 @@ export class EventEmitter {
         throw 'EventEmitter.unlisten is not implemented yet';
     }
 
-    emit(e, ...args) {
+    emit(e) {
         let v = this._l.get(e);
 
         if (v && v.length) {
+            arguments.shift();
             v.forEach((cb) => {
-                cb(...args);
+                cb.apply(null, arguments);
             });
         }
     }
