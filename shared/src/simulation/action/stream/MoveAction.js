@@ -2,8 +2,12 @@ import {StreamActionBase} from "../StreamActionBase";
 import {SharedUtils} from "../../../util/game/SharedUtils";
 
 export class MoveAction extends StreamActionBase {
+
+    /** @return {string} */
+    static get TYPE() { return 'MOVE_ACTION'; }
+
     constructor(clientid, startTime, vX, vY) {
-        super(clientid, startTime, StreamActionBase.ActionType.MOVE_ACTION);
+        super(clientid, startTime, MoveAction.TYPE);
         
         this.velocityX = vX;
         this.velocityY = vY;
@@ -12,7 +16,7 @@ export class MoveAction extends StreamActionBase {
         this.startState = {x: NaN, y: NaN};
         this.endState = {x: NaN, y: NaN};
     }
-    
+
     get isZeroVelocity() { return this.velocityX === 0 && this.velocityY === 0; }
     
     getStateAtTime(time) {

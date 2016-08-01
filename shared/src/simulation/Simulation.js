@@ -50,7 +50,7 @@ Simulation.prototype = {
         var lastAction = this._streamTimeline.getLastAction(clientId);
         var elapsedActionTime = currentTime - clientLag - lerp;
         // var elapsedActionTime = lastAction.startTime + timeDiff - clientLag - lerp;
-        if (lastAction.type == StreamActionBase.ActionType.MOVE_ACTION) {
+        if (lastAction.type == MoveAction.TYPE) {
             console.log('%d is moving while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);
         } else {
             console.log('%d is standing still while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);

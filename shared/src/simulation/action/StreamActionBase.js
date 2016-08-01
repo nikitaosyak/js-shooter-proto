@@ -2,8 +2,6 @@
 // stateless abstract stream action
 export class StreamActionBase {
 
-    static get ActionType() { return {CONSTANT_ACTION: 1, MOVE_ACTION: 2}; }
-
     constructor(clientId, startTime, actionType) {
         this.clientId = clientId;
         this.startTime = startTime;
@@ -13,6 +11,7 @@ export class StreamActionBase {
         this._actionType = actionType;
     }
 
+    /** @returns {String} */
     get type() { return this._actionType; }
     get simulationStarted() { return !isNaN(this.simulationTime); }
     get simulationEnded() { return this.simulationTime === this.endTime; }

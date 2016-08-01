@@ -29,7 +29,7 @@ StreamTimeline.prototype = {
             endTime = lastAction.startTime + dt;
             timeline.push(new ConstantAction(clientId, endTime, lastAction.endState));
         } else {
-            if (lastAction.type == StreamActionBase.ActionType.CONSTANT_ACTION) {
+            if (lastAction.type == ConstantAction.TYPE) {
                 // console.log('started moving', vx, vy);
                 endTime = currentTime - lag;
                 timeline.push(new MoveAction(clientId, endTime, vx, vy));
@@ -59,7 +59,7 @@ StreamTimeline.prototype = {
 
     hasCurrentActions: function(clientId) {
         var a = this.getLastAction(clientId);
-        if (a.type == StreamActionBase.ActionType.CONSTANT_ACTION) return false;
+        if (a.type == ConstantAction.TYPE) return false;
         return !a.simulationEnded;
     },
 
@@ -68,7 +68,7 @@ StreamTimeline.prototype = {
         var t = this._current[clientId];
         var idx = t.length-1;
         while (idx >= 0) {
-            if (t[idx].type == StreamActionBase.ActionType.CONSTANT_ACTION) {
+            if (t[idx].type == ConstantAction.TYPE) {
                 idx -= 1;
                 continue;  
             } 
