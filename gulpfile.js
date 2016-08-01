@@ -64,9 +64,9 @@ var server = {
 
 gulp.task('compile', function() {
     "use strict";
-    gulp.src('server/src/shared.gen.js').pipe(gulp.dest('server/build'));
+    // gulp.src('server/src/shared.gen.js').pipe(gulp.dest('server/build'));
 
-    return gulp.src(['server/src/**/*.js', '!server/src/shared.gen.js'])
+    return gulp.src(['server/src/**/*.js'])
         // .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ['es2015']

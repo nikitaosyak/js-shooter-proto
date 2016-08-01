@@ -48,8 +48,8 @@ function create() {
     var loadingSprite = game.add.sprite(10, 10, 'loading');
 
     loadJson('assets/' + Facade.params.startMap, function(data) {
-        Facade.level = new LevelModel().fromTiledDescriptor(data);
-        Facade.simulation.physics.addStaticBodies(Facade.level.bodies);
+        Facade.level = new LevelModel(data);
+        Facade.simulation.physics.initializeLevel(Facade.level);
         visualState = Facade.visualState = new VisualState(game, networkState, Facade.level);
         game.world.setBounds(-20, -20, Facade.level.width+40, Facade.level.height+60);
 

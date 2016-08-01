@@ -1,7 +1,9 @@
 /*jshint esversion: 6*/
+import {SendMessage} from "./shared.gen";
+import {LevelModel} from "./shared.gen"
+
 import {ServerClient} from './ServerClient';
 import {TimerUtil} from './TimerUtil';
-import {SendMessage} from "./shared.gen";
 
 var fs = require('fs');
 var ws = require('ws');
@@ -9,12 +11,11 @@ var timerUtil = new TimerUtil();
 
 var shared = require('./shared.gen.js');
 var GameParams = shared.GameParams;
-var simulation = shared.Simulation;
-var LevelModel = shared.LevelModel;
+var simulation = new shared.Simulation();
 
 var levelRaw = fs.readFileSync(process.env.ASSETS_FOLDER + GameParams.startMap);
-var level = new LevelModel().fromTiledDescriptor(JSON.parse(levelRaw));
-simulation.physics.addStaticBodies(level.bodies);
+var level = new LevelModel(JSON.parse(levelRaw), physics.rectFactory);
+simulation.physics.initializeLevel(level);
 
 var spawnPositions = level.respawns;
 var currentSpawnPos = 0;

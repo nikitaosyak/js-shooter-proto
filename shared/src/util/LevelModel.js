@@ -1,32 +1,21 @@
-if ("undefined" !== typeof exports) {
-    var Matter = exports.Matter;
-}
-
-function LevelModel() {
-    console.log('LevelModel created');
-    this._source = null;
-    this.bodies = [];
-    this.respawns = [];
-    this.width = NaN;
-    this.height = NaN;
-}
-
-LevelModel.prototype.constructor = LevelModel;
-
-LevelModel.prototype = {
-    fromTiledDescriptor: function(jsonSource) {
-        console.log('loading level');
-        this.width = jsonSource.width * jsonSource.tilewidth;
-        this.height = jsonSource.height * jsonSource.tileheight;
-
+export class LevelModel {
+    /**
+     * @param jsonSource {String}
+     */
+    constructor(jsonSource) {
         this._source = jsonSource;
+        this._width = jsonSource.width * jsonSource.tilewidth;
+        this._height = jsonSource.height * jsonSource.tileheight;
+        this._bodies = [];
+        this._respawns = [];
+
         for (var layerIdx = 0; layerIdx < jsonSource.layers.length; layerIdx++) {
             var layer = jsonSource.layers[layerIdx];
             // console.log(layer.name);
             for (var boundIdx = 0; boundIdx < layer.objects.length; boundIdx++) {
                 var levelObject = layer.objects[boundIdx];
                 if (layer.name == 'respawns') {
-                    this.respawns.push({x:levelObject.x, y:levelObject.y});
+                    this._respawns.push({x:levelObject.x, y:levelObject.y});
                     continue;
                 }
                 var x = levelObject.x, y = levelObject.y;
@@ -37,16 +26,24 @@ LevelModel.prototype = {
                 var wholeAngle = angleRad + bigAngle;
                 var xDiff = hip * Math.cos(wholeAngle);
                 var yDiff = hip * Math.sin(wholeAngle);
-                var boundBody = Matter.Bodies.rectangle(x + xDiff, y + yDiff, w, h, {angle:angleRad});
-                boundBody.colorScheme = layer.name;
-                this.bodies.push(boundBody);
+                var boundBody = {
+                    x: x + xDiff,
+                    y: y + yDiff,
+                    w: w, h: h,
+                    o: {angle: angleRad},
+                    colorScheme: layer.name
+                };
+                this._bodies.push(boundBody);
             }
         }
-
-        return this;
     }
-};
 
-if (typeof module !== 'undefined') {
-    module.exports.LevelModel = LevelModel;
+    /** @returns {number} */
+    get width() { return this._width; }
+    /** @returns {number} */
+    get height() { return this._height; }
+    /** @returns {Array.<*>} */
+    get bodies() { return this._bodies; }
+    /** @returns {Array.<*>} */
+    get respawns() { return this._respawns; }
 }

@@ -1,3 +1,4 @@
+import {ShitCast} from "./ShitCast";
 /*jshint esversion: 6*/
 export class SharedUtils {
 

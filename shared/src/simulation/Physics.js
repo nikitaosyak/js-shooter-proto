@@ -12,14 +12,19 @@ function Physics() {
 Physics.prototype.constructor = Physics;
 
 Physics.prototype = {
-    addStaticBody: function(b) {
-        Matter.Body.setStatic(b, true);
-        Matter.World.add(this._world, b);
-    },
 
-    addStaticBodies: function(bs) {
+    /**
+     * @param level {LevelModel}
+     */
+    initializeLevel: function(level) {
+        var bs = level.bodies;
         for (var i = 0; i < bs.length; i++) {
-            this.addStaticBody(bs[i]);
+            // this.addStaticBody(bs[i]);
+            var b = level.bodies[i];
+            var rectB = Matter.Bodies.rectangle(b.x, b.y, b.w, b.h, b.o);
+            rectB.colorCheme = b.colorCheme;
+            Matter.Body.setStatic(rectB, true);
+            Matter.World.add(this._world, rectB);
         }
     },
 

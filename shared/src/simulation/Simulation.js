@@ -1,7 +1,3 @@
-if ("undefined" !== typeof exports) {
-    var Matter = exports.Matter;
-}
-
 function Simulation() {
     this._instantTimeline = new InstantTimeline();
     this._streamTimeline = new StreamTimeline();
@@ -250,7 +246,3 @@ Object.defineProperty(Simulation.prototype, "registry", {
         return this._registry;
     }
 });
-
-if (typeof module !== 'undefined') {
-    module.exports.Simulation = new Simulation();
-}
