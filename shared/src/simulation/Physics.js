@@ -1,9 +1,11 @@
-class ShitCast {
+import {GameParams} from "../GameParams";
+import {SharedUtils} from "../util/game/SharedUtils";
+class _ShitCast {
 
     static complexCast(bodies, rayCall, canPunchThough, from, to, accuracy) {
         var result = [];
         while (true) {
-            var r = ShitCast._cast(bodies, rayCall, from, to, accuracy);
+            var r = _ShitCast._cast(bodies, rayCall, from, to, accuracy);
             if (r === null || r === 'undefined') return result;
             result.unshift(r);
             if (!canPunchThough(r.body)) {
@@ -69,127 +71,139 @@ class ShitCast {
 
 var Matter = null;
 
-/**
- * @param _matter {Matter}
- */
-function Physics(_matter) {
-    Matter = _matter;
-    this._bodies = {};
-    this._engine = Matter.Engine.create();
-    this._world = Matter.World.create({gravity: {x:0, y:0}});
-    this._engine.world = this._world;
+export class Physics {
+    /**
+     * @param _matterInjection {Matter}
+     */
+    constructor(_matterInjection) {
+        Matter = _matterInjection;
 
-    if (_matter !== 'undefined') {
-        console.log('Physics: wrapper created. Matter injected');
-    } else {
-        console.error('Physics: wrapper cannot be initialized - Matter absent');
+        this._bodies = {};
+        this._engine = Matter.Engine.create();
+        this._world = Matter.World.create({gravity: {x:0, y:0}});
+        this._engine.world = this._world;
+
+        if (_matterInjection !== 'undefined') {
+            console.log('Physics: wrapper created. Matter injected');
+        } else {
+            console.error('Physics: wrapper cannot be initialized - Matter absent');
+        }
     }
-}
-Physics.prototype.constructor = Physics;
 
-Physics.prototype = {
+    get allBodies() { return Matter.Composite.allBodies(this._engine.world); }
 
     /**
      * @param level {LevelModel}
      */
-    initializeLevel: function(level) {
-        var bs = level.bodies;
-        for (var i = 0; i < bs.length; i++) {
+    initializeLevel(level) {
+        for (var i = 0; i < level.bodies.length; i++) {
             // this.addStaticBody(bs[i]);
-            var b = level.bodies[i];
-            var rectB = Matter.Bodies.rectangle(b.x, b.y, b.w, b.h, b.o);
+            let b = level.bodies[i];
+            let rectB = Matter.Bodies.rectangle(b.x, b.y, b.w, b.h, b.o);
             rectB.colorCheme = b.colorCheme;
             Matter.Body.setStatic(rectB, true);
             Matter.World.add(this._world, rectB);
         }
         console.log('Physics: level initialized');
-    },
+    }
 
-    addActorBody: function(clientId, x, y) {
-        var b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
-        b.friction = 1;
-        b.frictionAir = 1;
-        b.groupId = 1;
-        b.clientId = clientId;
+    /**
+     * @param clientId  {String}
+     * @param x         {Number}
+     * @param y         {Number}
+     */
+    addActorBody(clientId, x, y) {
+        let b = Matter.Bodies.circle(x, y, GameParams.playerRadius, null, 32);
+        b.friction = 1; b.frictionAir = 1;
+        b.groupId = 1; b.clientId = clientId;
 
         Matter.World.add(this._world, b);
         this._bodies[clientId] = b;
-    },
+    }
 
-    deleteActorBody: function(clientId) {
-        Matter.World.remove(this._world, this._bodies[clientId]);
-        delete this._bodies[clientId];
-    },
-
-    getAllBodies: function() { return Matter.Composite.allBodies(this._engine.world); },
-
-    getActorBody: function(clientId) {
+    deleteActorBody(clientId) {
+        if (clientId in this._bodies) {
+            Matter.World.remove(this._world, this._bodies[clientId]);
+            delete this._bodies[clientId];
+        } else {
+            throw 'Physics: deleteActorBody of client ' + clientId + ' FAILED';
+        }
+    }
+    
+    getActorBody(clientId) {
         if (clientId in this._bodies) {
             return this._bodies[clientId];
         }
-        return null;
-    },
+        throw 'Physics: getActorBody of client ' + clientId + ' FAILED';
+    }
 
-    translateActorBody: function(clientId, xAmount, yAmount) {
-        var b = this.getActorBody(clientId);
-        if (b === null) {
-            console.warn('physics failed to get body of actor %i', clientId);
-            return;
-        }
-        Matter.Body.translate(b, {x: xAmount, y: yAmount});
-    },
+    /**
+     * @param clientId  {String}
+     * @param xAmount   {Number}
+     * @param yAmount   {Number}
+     */
+    translateActorBody(clientId, xAmount, yAmount) {
+        Matter.Body.translate(
+            this.getActorBody(clientId), 
+            {x: xAmount, y: yAmount}
+        );
+    }
 
-    setActorBodyPosition: function(clientId, x, y) {
-        var b = this.getActorBody(clientId);
-        if (b === null) {
-            console.warn('physics failed to get body of actor %i', clientId);
-            return;
-        }
-        Matter.Body.translate(b, {x: x - b.position.x, y: y - b.position.y});
-    },
+    /**
+     * @param clientId  {String}
+     * @param x         {Number}
+     * @param y         {Number}
+     */
+    setActorBodyPosition(clientId, x, y) {
+        let b = this.getActorBody(clientId);
+        Matter.Body.translate(
+            b, 
+            {x: x - b.position.x, y: y - b.position.y}
+        )
+    }
 
-    setActorBodyPositionMass: function(data, needOldPositions) {
-        var oldPositions = [];
-        for (var i = 0; i < data.length; i++) {
-            var clientId = data[i].clientId;
-            var state = data[i].state;
-
-            var body = this._bodies[clientId];
-            if (needOldPositions) {
-                oldPositions.push({clientId: clientId, state: {x: body.position.x, y: body.position.y }});
-            }
-            
-            Matter.Body.translate(
-                body, 
-                {
-                    x: state.x - body.position.x,
-                    y: state.y - body.position.y
-                }
-            );
-        }
+    /**
+     * @param rewindData {Array.<*>}
+     * @returns          {Array.<*>}
+     */
+    rewindActorsPosition(rewindData) {
+        let self = this;
+        let oldPositions = [];
+        rewindData.forEach(rd => {
+            let b = self.getActorBody(rd.clientId);
+            oldPositions.push({
+                clientId: rd.clientId,
+                state: {x: b.position.x, y: b.position.y}
+            });
+            self.setActorBodyPosition(rd.clientId, rd.state.x, rd.state.y);
+        });
         return oldPositions;
-    },
+    }
 
-    simulateTimeSpan: function (clientId, timespan, vX, vY) {
-        var isAngle = vX !== 0 && vY !== 0;
+    /**
+     * @param clientId  {String}
+     * @param timespan  {Number}
+     * @param vX        {Number}
+     * @param vY        {Number}
+     */
+    simulateTimeSpan(clientId, timespan, vX, vY) {
+        let isAngle = vX !== 0 && vY !== 0;
         if (isAngle) {
             // рассчет для частного случая. говно конечно.
-            var vxSign = vX;
-            var vySign = vY;
-            var hipVel = 1 * Math.cos(45 * Math.PI / 180);
-            vX = hipVel * vxSign;
-            vY = hipVel * vySign;
+            let hipVel = Math.cos(45 * Math.PI / 180);
+            vX = hipVel * vX;
+            vY = hipVel * vY;
         }
 
-        var body = this._bodies[clientId];
+        let b = this.getActorBody(clientId);
 
-        var extrasim = timespan % GameParams.dStep;
-        var simulations = Math.floor(timespan/GameParams.dStep);
-        var resultVelocity = GameParams.playerSpeed / (GameParams.dStep * 100);
-        for(var i = 0; i < simulations; i++) {
-            body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
+        let extrasim = timespan % GameParams.dStep;
+        let simulations = Math.floor(timespan/GameParams.dStep);
+        let resultVelocity = GameParams.playerSpeed / (GameParams.dStep * 100);
+        for(let i = 0; i < simulations; i++) {
+            b.force = {x: vX * resultVelocity, y: vY * resultVelocity};
             Matter.Engine.update(this._engine, GameParams.dStep);
-            if (isNaN(body.position.x)) {
+            if (isNaN(b.position.x) || isNaN(b.position.y)) {
                 console.log('sim: ', resultVelocity, i, simulations, vX, vY);
                 return {x: NaN, y: NaN};
             }
@@ -197,23 +211,23 @@ Physics.prototype = {
         // console.log('simulated for', GameParams.dStep, i+1, 'times. total span:', timespan);
         if (extrasim > 0) {
             resultVelocity = GameParams.playerSpeed / (extrasim * 100);
-            body.force = {x: vX * resultVelocity, y: vY * resultVelocity};
+            b.force = {x: vX * resultVelocity, y: vY * resultVelocity};
             Matter.Engine.update(this._engine, extrasim);
-            // console.log('extrasimulated for', extrasim);   
-            if (isNaN(body.position.x)) {
+            // console.log('extrasimulated for', extrasim);
+            if (isNaN(b.position.x) || isNaN(b.position.y)) {
                 console.log('extrasim: ', resultVelocity, extrasim);
                 return {x: NaN, y: NaN};
             }
         }
-        return {x: body.position.x, y: body.position.y};
-    },
+        return {x: b.position.x, y: b.position.y};
+    }
 
-    shootRay: function(anchor, targetDir, anchorOffset, rayLen, bodyGetter, bodyGetterCtx) {
-        var shotDir = {x: targetDir.x - anchor.x, y: targetDir.y - anchor.y};
+    shootRay(anchor, targetDir, anchorOffset, rayLen, bodyGetter, bodyGetterCtx) {
+        let shotDir = {x: targetDir.x - anchor.x, y: targetDir.y - anchor.y};
         shotDir = SharedUtils.Point.setMagnitude(shotDir, anchorOffset);
-        var shotOrigin = {x: anchor.x + shotDir.x, y: anchor.y + shotDir.y};
+        let shotOrigin = {x: anchor.x + shotDir.x, y: anchor.y + shotDir.y};
 
-        var shotEnd = SharedUtils.Point.setPointMagnitude(
+        let shotEnd = SharedUtils.Point.setPointMagnitude(
             shotOrigin,
             targetDir,
             rayLen
@@ -222,7 +236,7 @@ Physics.prototype = {
         let shooter = (start, end, bdyGttr, bdyGttrCtx) => {
             let t = Date.now();
             let bodies = bdyGttr.call(bdyGttrCtx);
-            let r = ShitCast.complexCast(bodies, Matter.Query.ray,
+            let r = _ShitCast.complexCast(bodies, Matter.Query.ray,
                 function(bb) {
                     if ('clientId' in bb) return true;
                     return false;
@@ -247,8 +261,4 @@ Physics.prototype = {
 
         return {start: shotOrigin, end: shotEnd, hits: result};
     }
-};
-
-if (typeof module !== 'undefined') {
-    module.exports.Physics = Physics;
 }

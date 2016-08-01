@@ -25,7 +25,7 @@ Simulation.prototype = {
             this._streamTimeline.delete(clientId);
             this._registry.removePlayer(clientId);
         } else {
-            console.warn("sim: attempt to delete non existing player %s", clientId);
+            console.error("sim: attempt to delete non existing player %s", clientId);
         }
     },
 
@@ -72,15 +72,15 @@ Simulation.prototype = {
                 continue;
             }
 
-            var backwardsTime = currentTime - action.elapsedExecuteTime;
+            // var backwardsTime = currentTime - action.elapsedExecuteTime;
             // console.log('%d\'instant action. windback %d, ct %d', action.clientId, backwardsTime, currentTime);
             var windbackState = this._streamTimeline.getCompleteStateAtTime(
-                action.elapsedExecuteTime, 
+                action.elapsedExecuteTime,
                 action.clientId
             );
             // console.log('windbackState: ', windbackState);
             
-            var currentState = this._physics.setActorBodyPositionMass(windbackState, true);
+            var currentState = this._physics.rewindActorsPosition(windbackState);
 
             //
             // make a raycast
@@ -93,7 +93,7 @@ Simulation.prototype = {
                 action.shotPoint,
                 startOffset,
                 rayLen,
-                this._physics.getAllBodies,
+                this._physics.allBodies,
                 this._physics
             );
 

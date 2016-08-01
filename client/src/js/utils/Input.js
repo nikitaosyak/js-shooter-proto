@@ -46,7 +46,7 @@ function Input() {
             pointerPos, 
             startOffset, 
             rayMaxLen, 
-            physics.getAllBodies,
+            physics.allBodies,
             physics
         );
         
