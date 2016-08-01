@@ -1,44 +1,33 @@
+import {StreamActionBase} from "../StreamActionBase";
+import {SharedUtils} from "../../../util/game/SharedUtils";
 
-function MoveAction(
-    clientId,
-    startTime,
-    vX,
-    vY) {
-    StreamActionBase.call(this, clientId, startTime, StreamActionBase.ActionType.MOVE_ACTION);
-
-    this.velocityX = vX;
-    this.velocityY = vY;
-
-    this.currentState = {x: NaN, y: NaN};
-    this.startState = {x: NaN, y: NaN};
-    this.endState = {x: NaN, y: NaN};
-}
-
-MoveAction.prototype = Object.create(StreamActionBase.prototype);
-MoveAction.prototype.constructor = MoveAction;
-
-MoveAction.prototype.getStateAtTime = function(time) {
-    var t = (time - this.startTime) / this.duration;
-
-    if (this.ended) {
-        return {
-            x: SharedUtils.lerp(this.startState.x, this.endState.x, t),
-            y: SharedUtils.lerp(this.startState.y, this.endState.y, t),
-        };
-    } else {
-        return {
-            x: SharedUtils.lerp(this.startState.x, this.currentState.x, t),
-            y: SharedUtils.lerp(this.startState.y, this.currentState.y, t),
-        };
+export class MoveAction extends StreamActionBase {
+    constructor(clientid, startTime, vX, vY) {
+        super(clientid, startTime, StreamActionBase.ActionType.MOVE_ACTION);
+        
+        this.velocityX = vX;
+        this.velocityY = vY;
+        
+        this.currentState = {x: NaN, y:NaN};
+        this.startState = {x: NaN, y: NaN};
+        this.endState = {x: NaN, y: NaN};
     }
-};
+    
+    get isZeroVelocity() { return this.velocityX === 0 && this.velocityY === 0; }
+    
+    getStateAtTime(time) {
+        let t = (time - this.startState) / this.duration;
 
-Object.defineProperty(MoveAction.prototype, "isZeroVelocity", {
-    get: function() {
-        return this.velocityX === 0 && this.velocityY === 0;
+        if (this.ended) {
+            return {
+                x: SharedUtils.lerp(this.startState.x, this.endState.x, t),
+                y: SharedUtils.lerp(this.startState.y, this.endState.y, t)
+            };
+        } else {
+            return {
+                x: SharedUtils.lerp(this.startState.x, this.currentState.x, t),
+                y: SharedUtils.lerp(this.startState.y, this.currentState.y, t)
+            };
+        }
     }
-});
-
-if (typeof module !== 'undefined') {
-    module.exports.MoveAction = MoveAction;
 }
