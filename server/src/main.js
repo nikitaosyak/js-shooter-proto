@@ -163,7 +163,7 @@ function spawnPlayer(client, notifyOfOtherPlayers) {
     console.log('will spawn player ', client.id);
     var startPos = spawnPositions[currentSpawnPos];
 
-    var player = simulation.addClient(client.id, startPos.x, startPos.y, timerUtil.elapsed);
+    var player = simulation.addPlayer(client.id, startPos.x, startPos.y, timerUtil.elapsed);
     broadcast(SendMessage.welcome(client.id, startPos.x, startPos.y, client.name, false), client.id);
     
     if (notifyOfOtherPlayers) {

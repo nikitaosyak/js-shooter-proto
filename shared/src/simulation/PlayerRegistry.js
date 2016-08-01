@@ -19,7 +19,7 @@ PlayerRegistry.prototype = {
 
     removePlayer: function(id) {
         if (!this.hasPlayer(id)) throw "registry: already does not have player " + id;
-        this._players[id].destroy();
+        this._players[id].destroyPlayer();
         delete this._players[id];
     },
 

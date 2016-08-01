@@ -1,34 +1,38 @@
 
-function Player(id, x, y, name, isMe) {
-    this._id = id;
-    
-    this.pos = {x: x, y: y};
-    this.lastSentPointer = {x: -1, y: -1};
-    this.pointer = {x: -1, y: -1};
+export class Player {
+    /**
+     * @param id    {Number}
+     * @param x     {Number}
+     * @param y     {Number}
+     * @param name  {String}
+     * @param isMe  {Boolean}
+     */
+    constructor(id, x, y, name, isMe) {
+        this._id = id;
 
-    this.alive = true;
+        this._pos = {x: x, y: y};
+        this._lastSentPointer = {x: -1, y: -1};
+        this._pointer = {x: -1, y: -1};
 
-    this.name = name;
-    this.isMe = isMe;
-}
-Player.prototype.constructor = Player;
+        this._alive = true;
 
-Player.prototype = {
-    destroy: function() {
+        this._name = name;
+        this._isMe = isMe;
+    }
+
+    get id() { return this._id; }
+    get pos() { return this._pos; }
+    get lastSentPointer() { return this._lastSentPointer; }
+    get pointer() { return this._pointer; }
+    get alive() { return this._alive; }
+    get name() { return this._name; }
+    get isMe() { return this._isMe; }
+
+    destroyPlayer() {
         this._id = NaN;
-        this.pos = null;
-        this.lastSentPointer = null;
-        this.pointer = null;
-        this.alive = false;
+        this._pos = null;
+        this._lastSentPointer = null;
+        this._pointer = null;
+        this._alive = false;
     }
-};
-
-Object.defineProperty(Player.prototype, "id", {
-    get: function() {
-        return this._id;
-    }
-});
-
-if (typeof module !== 'undefined') {
-    module.exports.Player = Player;
 }

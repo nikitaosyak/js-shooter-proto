@@ -10,7 +10,7 @@ Simulation.prototype.constructor = Simulation;
 
 Simulation.prototype = {
 
-    addClient: function(clientId, x, y, currentTime) {
+    addPlayer: function(clientId, x, y, currentTime) {
         // console.log('sim: adding new client %i at %i:%i on time %i', clientId, x, y, currentTime);
         var player = this._registry.addPlayer(clientId, x, y);
         this._physics.addActorBody(player.id, player.pos.x, player.pos.y);
