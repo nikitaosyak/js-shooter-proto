@@ -1,17 +1,25 @@
 
-function InstantTimeline() {
-    this._timeline = [];
-    this._sorted = false;
-}
-InstantTimeline.prototype.constructor = InstantTimeline;
-
-InstantTimeline.prototype = {
-    add: function(action) {
+export class InstantTimeline {
+    constructor() {
+        /**
+         * @type {Array.<InstantAction>}
+         * @private
+         */
+        this._timeline = [];
         this._sorted = false;
-        this._timeline.push(action);
-    },
+    }
 
-    shift: function() {
+    get maximumEET() { return this._timeline.length > 0 ? this._timeline[0].elapsedExecuteTime : 0; }
+    get isEmpty() { return this._timeline.length === 0; }
+
+    /** @param value {InstantAction} */
+    add(value) {
+        this._sorted = false;
+        this._timeline.push(value);
+    }
+
+    /** @returns {InstantAction} */
+    shift() {
         if (!this._sorted) {
             if (this._timeline.length > 1) {
                 console.log('sorting timeline of len ' + this._timeline.length);
@@ -25,21 +33,4 @@ InstantTimeline.prototype = {
         }
         return this._timeline.shift();
     }
-};
-
-Object.defineProperty(InstantTimeline.prototype, "maximumEET", {
-    get: function() {
-        if (this._timeline.length === 0) return 0;
-        return this._timeline[0].elapsedExecuteTime;
-    }
-});
-
-Object.defineProperty(InstantTimeline.prototype, "isEmpty", {
-    get: function() {
-        return this._timeline.length === 0;
-    }
-});
-
-if (typeof module !== 'undefined') {
-    module.exports.InstantTimeline = InstantTimeline;
 }
