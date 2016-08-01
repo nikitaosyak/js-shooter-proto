@@ -36,6 +36,8 @@ export class LevelModel {
                 this._bodies.push(boundBody);
             }
         }
+
+        console.log('LevelModel: loaded. spawns: ' + this._respawns.length + '; walls: ' + this._bodies.length);
     }
 
     /** @returns {number} */

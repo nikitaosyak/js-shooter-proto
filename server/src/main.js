@@ -1,28 +1,27 @@
 /*jshint esversion: 6*/
-import {SendMessage} from "./shared.gen";
-import {LevelModel} from "./shared.gen"
+import {SendMessage} from "./dependencies/shared.gen";
+import {LevelModel} from "./dependencies/shared.gen"
+import {GameParams} from "./dependencies/shared.gen"
+import {TimerUtil} from './dependencies/shared.gen';
 
 import {ServerClient} from './ServerClient';
-import {TimerUtil} from './TimerUtil';
 
-var fs = require('fs');
-var ws = require('ws');
-var timerUtil = new TimerUtil();
+var shared = require('./dependencies/shared.gen.js');
+var simulation = new shared.Simulation(
+    new shared.Physics(require('./dependencies/matter-0.8.0').Matter)
+);
 
-var shared = require('./shared.gen.js');
-var GameParams = shared.GameParams;
-var simulation = new shared.Simulation();
-
-var levelRaw = fs.readFileSync(process.env.ASSETS_FOLDER + GameParams.startMap);
-var level = new LevelModel(JSON.parse(levelRaw), physics.rectFactory);
+var levelDescriptor = require('fs').readFileSync(process.env.ASSETS_FOLDER + GameParams.startMap);
+var level = new LevelModel(JSON.parse(levelDescriptor));
 simulation.physics.initializeLevel(level);
 
 var spawnPositions = level.respawns;
 var currentSpawnPos = 0;
 
+var timerUtil = new TimerUtil();
 var clients = {};
 
-ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
+require('ws').createServer({host: '0.0.0.0', port:3000}, function(socket) {
     var client = new ServerClient(socket);
     var player = null;
     clients[client.id] = client;
@@ -33,17 +32,10 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
         var m = JSON.parse(rawMessage);
         // console.log(m, 'from ', client.id);
         switch(m.id) {
-            case 'medianRTT':
-                if (m.clientId in clients) {
-                    // console.log('client', m.clientId, 'median rtt:', m.value);
-                    clients[m.clientId].setMedianRTT(m.value + GameParams.additionalVirtualLagMedian);
-                    clients[m.clientId].send(SendMessage.srvTime(elapsed));
-                } else {
-                    console.log('trying to do medianRTT at %i: does not exist!', m.clientId);
-                }
+            case 'p': // for 'PING'
+                client.send(JSON.stringify({id:"p_ack", time:elapsed}));
                 break;
-            case 'vd':
-                // console.log('velocitydiff: ', rawMessage, client.id);
+            case 'vd': // for 'VELOCITY DIFF'
                 simulation.addStreamAction(
                     elapsed, client.lag, client.id, m.x, m.y, m.dt
                 );
@@ -60,9 +52,6 @@ ws.createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 break;
             case 'requestSpawn':
                 player = spawnPlayer(client, false);
-                break;
-            case 'p':
-                client.send(JSON.stringify({id:"p_ack", time:elapsed}));
                 break;
             case 'changeName':
                 // console.log("change name request to " + m.name);
@@ -148,14 +137,6 @@ timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
             }
         }
     }
-});
-
-timerUtil.addTimer(GameParams.rttCheckTimeout, function() {
-    "use strict";
-    const elapsed = timerUtil.elapsed;
-    iterateClients(function(clientId, client) {
-        client.ping(elapsed);
-    });
 });
 
 function broadcast(message, except) {

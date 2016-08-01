@@ -8,3 +8,4 @@ platform_settings.json
 
 node_modules/
 build/
+dependencies/

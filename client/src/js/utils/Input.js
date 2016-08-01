@@ -41,8 +41,8 @@ function Input() {
         var startOffset = Facade.params.playerRadius+1;
         var rayMaxLen = Facade.params.weapons.rayCast.rayLength;
 
-        var result = SharedUtils.shootRay(
-            myPosition, 
+        var result = Facade.simulation.physics.shootRay(
+            myPosition,
             pointerPos, 
             startOffset, 
             rayMaxLen, 

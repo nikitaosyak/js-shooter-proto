@@ -1,6 +1,4 @@
 /*jshint esversion: 6*/
-import {SendMessage, GameParams, SharedUtils} from "./shared.gen";
-
 var __clientIdCounter = 0;
 
 export class ServerClient {
@@ -30,8 +28,6 @@ export class ServerClient {
         this._name = "client" + this._id;
 
         this._approxLag = 0;
-        this._sentPingTime = -1;
-        this._rttHistory = [];
 
         this._socket = socket;
     }
@@ -46,35 +42,6 @@ export class ServerClient {
     send(data) {
         if (!this._canUseSocket('send message')) return;
         this._socket.send(data);
-    }
-
-    /**
-     * @param currentTime {number}
-     */
-    ping(currentTime) {
-        if (!this._canUseSocket('ping client')) return;
-        this._sentPingTime = currentTime;
-        this._socket.send(SendMessage.ping());
-    }
-
-    /**
-     * @param currentTime {number}
-     */
-    ackPong(currentTime) {
-        if (this._sentPingTime === -1) {
-            console.error("wrong time on client", this._id);
-            return;
-        }
-        const rtt = currentTime - this._sentPingTime;
-        this._rttHistory.push(rtt);
-        if (this._rttHistory.length > GameParams.rttMedianHistory) {
-            this._rttHistory.shift();
-            const sortedHistory = this._rttHistory.concat().sort(SharedUtils.sortAcc);
-            const medianIdx = Math.floor(GameParams.rttMedianHistory/2);
-            this._approxLag = Math.round((sortedHistory[medianIdx] + GameParams.additionalVirtualLagMedian)/2);
-            // console.log(this.lag, this._rttHistory, sortedHistory);
-        }
-        this._sentPingTime = -1;
     }
 
     /**

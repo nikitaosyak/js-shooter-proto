@@ -69,7 +69,7 @@ InterpolatorNodeProperty.prototype = {
                 this._targetSimulationTime = -1;
                 nextState.simulatedTime = calculatedServerTime;
                 this._oldHistory.push(this._freshHistory.shift());
-                if (this._oldHistory.length > Facade.params.interpolatorHistoryLen) {
+                if (this._oldHistory.length > 10) {
                     this._oldHistory.shift();
                 }
 

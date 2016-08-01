@@ -1,9 +1,10 @@
-function Simulation() {
+function Simulation(physics) {
     this._instantTimeline = new InstantTimeline();
     this._streamTimeline = new StreamTimeline();
     this._registry = new PlayerRegistry();
 
-    this._physics = new Physics();
+    this._physics = physics;
+    console.log('Simulation: created');
 }
 Simulation.prototype.constructor = Simulation;
 
@@ -87,7 +88,7 @@ Simulation.prototype = {
             var startOffset = GameParams.playerRadius + 1;
             var rayLen = GameParams.weapons.rayCast.rayLength;
 
-            var result = SharedUtils.shootRay(
+            var result = this._physics.shootRay(
                 myPosition,
                 action.shotPoint,
                 startOffset,
@@ -246,3 +247,7 @@ Object.defineProperty(Simulation.prototype, "registry", {
         return this._registry;
     }
 });
+
+if (typeof module !== 'undefined') {
+    module.exports.Simulation = Simulation;
+}

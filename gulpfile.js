@@ -57,7 +57,6 @@ gulp.task('client-watch', function() {
 
 var server = {
     watch: ['server/assets/*.*', 'server/src/**/*.js'],
-    lint: ['server/src/*.js', '!server/src/shared.gen.js'],
     compile_dest: 'server/build',
     exec_name: 'main.js'
 };
@@ -65,14 +64,12 @@ var server = {
 gulp.task('compile', function() {
     "use strict";
     // gulp.src('server/src/shared.gen.js').pipe(gulp.dest('server/build'));
+    gulp.src('server/dependencies/*.js').pipe(gulp.dest('server/build/dependencies'));
 
-    return gulp.src(['server/src/**/*.js'])
-        // .pipe(sourcemaps.init())
+    return gulp.src(['server/src/**/*.js', '!server/src/dependenciess'])
         .pipe(babel({
             presets: ['es2015']
         }))
-        // .pipe(concat(server.exec_name))
-        // .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(server.compile_dest));
 });
 
@@ -81,61 +78,33 @@ gulp.task('start-server', ['compile'], function() {
 
     return nodemon({
         script: server.compile_dest + '/' + server.exec_name,
-        watch: 'server/src',
+        watch: 'server/src/**/*.js',
         tasks: ['compile'],
         env: { 'ASSETS_FOLDER': 'shared/assets/'}
-    }).on('restart', function(changeList) {
-        //console.log(changeList)
-        var result = [];
-        for (var item in changeList) {
-            // console.log(item);
-            var strItem = changeList[item];
-            if (strItem.includes('gen.js')) continue;
-
-            result.push(strItem);
-        }
-        gulp.src(result)
-            .pipe(jshint())
-            .pipe(jshint.reporter('default'));
     }).on('start', function() {
         require('fs').writeFileSync('client/src/srvreload.file', new Date());
-    });
+    })
 });
 
 // </editor-fold>
 
 // <editor-fold desc="shared-tasks">
 
-var sharedLib = [
-    'shared/src/GameParams.js',
-    'shared/src/SharedUtils.js',
-    'shared/src/SendMessage.js',
-    'shared/src/LevelModel.js',
-    'shared/src/ShitCast.js',
-    'shared/src/util/**/*.js',
-    'shared/src/simulation/timeline/InstantTimeline.js',
-    'shared/src/simulation/timeline/StreamTimeline.js',
-    'shared/src/simulation/action/**/*.js',
-    'shared/src/simulation/entities/Player.js',
-    'shared/src/simulation/PlayerRegistry.js',
-    'shared/src/simulation/Physics.js',
-    'shared/src/simulation/Simulation.js'
-];
-
 gulp.task('deploy-shared', function() {
     "use strict";
 
+    gulp.src('lib/*.js').pipe(gulp.dest('server/src/dependencies'));
     // gulp.src(['shared/src/**/*.js', '!shared/src/matter-0.8.0.js'])
     //     .pipe(jshint())
     //     .pipe(jshint.reporter('default'));
 
-    gulp.src(sharedLib)
+    gulp.src(['shared/src/**/*.js'])
         // .pipe(babel({
         //     presets: ['es2015']
         // }))
         // .pipe(addSrc.prepend('lib/matter-0.8.0.js'))
         .pipe(concat('shared.gen.js'))
-        .pipe(gulp.dest('server/src'));
+        .pipe(gulp.dest('server/src/dependencies'));
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));

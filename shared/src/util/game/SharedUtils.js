@@ -1,4 +1,3 @@
-import {ShitCast} from "./ShitCast";
 /*jshint esversion: 6*/
 export class SharedUtils {
 
@@ -50,46 +49,4 @@ export class SharedUtils {
             return toAddPoint;
         }
     }};
-
-    static shootRay(anchor, targetDir, anchorOffset, rayLen, bodyGetter, bodyGetterCtx) {
-
-        var shotDir = {x: targetDir.x - anchor.x, y: targetDir.y - anchor.y};
-        shotDir = SharedUtils.Point.setMagnitude(shotDir, anchorOffset);
-        var shotOrigin = {x: anchor.x + shotDir.x, y: anchor.y + shotDir.y};
-
-        var shotEnd = SharedUtils.Point.setPointMagnitude(
-            shotOrigin,
-            targetDir,
-            rayLen
-        );
-
-        // var result = SharedUtils.shootRayRaw(shotOrigin, shotEnd, bodyGetter, bodyGetterCtx);
-        let shooter = (start, end, bdyGttr, bdyGttrCtx) => {
-            let t = Date.now();
-            let bodies = bdyGttr.call(bdyGttrCtx);
-            let r = ShitCast.complexCast(bodies, Matter.Query.ray,
-                function(bb) {
-                    if ('clientId' in bb) return true;
-                    return false;
-                },
-                start,
-                end,
-                1
-            );
-            // console.log('complex cast took', Date.now() - t);
-            return r;
-        };
-
-        let result = shooter(shotOrigin, shotEnd, bodyGetter, bodyGetterCtx);
-
-        if (result.length !== 0) {
-            shotEnd = SharedUtils.Point.setPointMagnitude (
-                shotOrigin,
-                targetDir,
-                result[0].rayLen
-            );
-        }
-
-        return {start: shotOrigin, end: shotEnd, hits: result};
-    };
 }

@@ -52,7 +52,7 @@ StreamTimeline.prototype = {
         // }
         // console.log(str);
 
-        while (timeline.length > GameParams.streamingActionsHistoryLen) {
+        while (timeline.length > 10) {
             timeline.shift();
         }
     },
