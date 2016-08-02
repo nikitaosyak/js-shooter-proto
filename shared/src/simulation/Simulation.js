@@ -1,63 +1,8 @@
-function Simulation(physics) {
-    this._instantTimeline = new InstantTimeline();
-    this._streamTimeline = new StreamTimeline();
-    this._registry = new PlayerRegistry();
-
-    this._physics = physics;
-    console.log('Simulation: created');
-}
-Simulation.prototype.constructor = Simulation;
+import {InstantTimeline} from "./action/timeline/InstantTimeline";
+import {StreamTimeline} from "./action/timeline/StreamTimeline";
+import {PlayerRegistry} from "./PlayerRegistry";
 
 Simulation.prototype = {
-
-    addPlayer: function(clientId, x, y, currentTime) {
-        // console.log('sim: adding new client %i at %i:%i on time %i', clientId, x, y, currentTime);
-        var player = this._registry.addPlayer(clientId, x, y);
-        this._physics.addActorBody(player.id, player.pos.x, player.pos.y);
-        this._streamTimeline.addClient(player.id, player.pos.x, player.pos.y, currentTime);
-        return player;
-    },
-
-    deleteClient: function(clientId) {
-        if (this._registry.hasPlayer(clientId)) {
-            // console.log('sim: removing client body and history', clientId);
-            this._physics.deleteActorBody(clientId);
-            this._streamTimeline.delete(clientId);
-            this._registry.removePlayer(clientId);
-        } else {
-            console.error("sim: attempt to delete non existing player %s", clientId);
-        }
-    },
-
-    addStreamAction: function(currentTime, clientLag, clientId, velX, velY, dt) {
-        if (!this._registry.hasPlayer(clientId)) throw "cannot add action on non existing player " + clientId;
-        
-        this._streamTimeline.addAction(clientId, currentTime, clientLag, velX, velY, dt);
-    },
-
-    /**
-     * all numbers are integer
-     * @param {Number} currentTime  - server elapsed time
-     * @param {Number} clientId     - 
-     * @param {Number} clientLag    - half of rtt (last calculated)
-     * @param {Number} lerp         - current interpolation time on the client in the moment of action
-     * @param {Number} timeDiff     - time since last stream action on client
-     * @param {Point}  to           - crosshair point
-     */
-    addInstantAction: function(currentTime, clientId, clientLag, lerp, timeDiff, to) {
-        if (!this._registry.hasPlayer(clientId)) throw "cannot add instant action on non existing player " + clientId;
-
-        var lastAction = this._streamTimeline.getLastAction(clientId);
-        var elapsedActionTime = currentTime - clientLag - lerp;
-        // var elapsedActionTime = lastAction.startTime + timeDiff - clientLag - lerp;
-        if (lastAction.type == MoveAction.TYPE) {
-            console.log('%d is moving while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);
-        } else {
-            console.log('%d is standing still while shooting. td %d lag %d, lerp %d, ct %d', clientId, timeDiff, clientLag, lerp, currentTime);
-        }
-
-        this._instantTimeline.add(new InstantAction(clientId, elapsedActionTime, to));
-    },
 
     simulateInstantActions: function(currentTime) {
         var instantData = [];
@@ -236,18 +181,48 @@ Simulation.prototype = {
     }
 };
 
-Object.defineProperty(Simulation.prototype, "physics", {
-    get: function() {
-        return this._physics;
+export class Simulation {
+    /**
+     * @param physicsInjection {Physics}
+     */
+    constructor(physicsInjection) {
+        this._instantTimeline = new InstantTimeline();
+        this._streamTimeline = new StreamTimeline();
+        this._registry = new PlayerRegistry();
+        this._physics = physicsInjection;
+        
+        console.log('Simulation: created');
     }
-});
 
-Object.defineProperty(Simulation.prototype, "registry", {
-    get: function() {
-        return this._registry;
+    /** @returns {Physics} */
+    get physics() { return this._physics; }
+    /** @returns {PlayerRegistry} */
+    get registry() { return this._registry; }
+    /** @returns {StreamTimeline} */
+    get stream() { return this._streamTimeline; }
+    /** @returns {InstantTimeline} */
+    get instant() { return this._instantTimeline; }
+    
+    addPlayer(clientId, x, y, currentTime) {
+        let p = this._registry.addPlayer(clientId, x, y);
+        this._physics.addActorBody(p.id, p.pos.x, p.pos.y);
+        this._streamTimeline.addClient(p.id, p.pos.x, p.pos.y, currentTime);
+        return p;
     }
-});
+    
+    deletePlayer(clientId) {
+        this._registry.checkPlayerExist(clientId);
+        this._physics.deleteActorBody(clientId);
+        this._streamTimeline.removePlayer(clientId);
+        this._registry.removePlayer(clientId);
+    }
 
-if (typeof module !== 'undefined') {
-    module.exports.Simulation = Simulation;
+    simulateInstant(currentTime) {
+        let instantData = [];
+        let hitClients = [];
+
+        while(!this._instantTimeline.isEmpty) {
+            
+        }
+    }
 }

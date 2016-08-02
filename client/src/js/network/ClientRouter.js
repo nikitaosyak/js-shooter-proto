@@ -79,7 +79,7 @@ export class ClientRouter extends RouterBase {
                     Facade.networkState.removePlayerById(deadId);
                 }
             }
-            Facade.simulation.deleteClient(deadId);
+            Facade.simulation.deletePlayer(deadId);
         }
     }
 
@@ -93,7 +93,7 @@ export class ClientRouter extends RouterBase {
                 // Facade.networkState.removePlayerById(deadId);
                 if (leftClientId in Facade.networkState.players) {
                     Facade.networkState.removePlayerById(leftClientId);
-                    Facade.simulation.deleteClient(leftClientId);
+                    Facade.simulation.deletePlayer(leftClientId);
                 } else {
                     // do nothing, i guess
                 }

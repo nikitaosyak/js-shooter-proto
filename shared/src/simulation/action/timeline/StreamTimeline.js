@@ -17,7 +17,7 @@ export class StreamTimeline {
         )];
     }
     
-    removeClient(clientId) { delete this._current[clientId]; }
+    removePlayer(clientId) { delete this._current[clientId]; }
 
     addAction(clientId, currentTime, lag, vx, vy, dt) {
         if (!(clientId in this._current)) throw 'StreamTimeline: ' + clientId + ' is not in current';

@@ -189,7 +189,7 @@ Input.prototype = {
                 ts = now - this._lastVelStarted;
             }
             Facade.connection.rpc.velocity(this._velocity, ts);
-            Facade.simulation.addStreamAction(Date.now(), 0, Facade.myId, this._velocity.x, this._velocity.y, ts);
+            Facade.simulation.stream.addAction(Facade.myId, Date.now(), 0, this._velocity.x, this._velocity.y, ts);
             this._lastX = this._velocity.x;
             this._lastY = this._velocity.y;
 

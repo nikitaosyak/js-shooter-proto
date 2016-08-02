@@ -1,4 +1,4 @@
-
+import {InstantAction} from "../InstantAction";
 export class InstantTimeline {
     constructor() {
         /**
@@ -12,10 +12,23 @@ export class InstantTimeline {
     get maximumEET() { return this._timeline.length > 0 ? this._timeline[0].elapsedExecuteTime : 0; }
     get isEmpty() { return this._timeline.length === 0; }
 
-    /** @param value {InstantAction} */
-    add(value) {
+    // /** @param value {InstantAction} */
+    // add(value) {
+    //     this._sorted = false;
+    //     this._timeline.push(value);
+    // }
+
+    /**
+     * @param clientId
+     * @param currentTime - current server time
+     * @param clientLag   - last client's lag
+     * @param lerp        - client's interpolation time in the moment of action
+     * @param data        - action data
+     */
+    addAction(clientId, currentTime, clientLag, lerp, data) {
+        let elapsedActionTime = currentTime - clientLag - lerp;
+        this._timeline.push(new InstantAction(clientId, elapsedActionTime, data));
         this._sorted = false;
-        this._timeline.push(value);
     }
 
     /** @returns {InstantAction} */

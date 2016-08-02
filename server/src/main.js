@@ -36,9 +36,7 @@ require('ws').createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 client.send(JSON.stringify({id:"p_ack", time:elapsed}));
                 break;
             case 'vd': // for 'VELOCITY DIFF'
-                simulation.addStreamAction(
-                    elapsed, client.lag, client.id, m.x, m.y, m.dt
-                );
+                simulation.stream.addAction(client.id, elapsed, client.lag, m.x, m.y, m.dt);
                 break;
             case 'pointer':
                 if (!player.alive) return;
@@ -46,9 +44,7 @@ require('ws').createServer({host: '0.0.0.0', port:3000}, function(socket) {
                 player.pointer.y = m.y;
                 break;
             case 'requestShot':
-                simulation.addInstantAction(
-                    elapsed, client.id, client.lag, m.lerp, m.time, m.to
-                    );
+                simulation.instant.addAction(client.id, elapsed, client.lag, m.lerp, m.to);
                 break;
             case 'requestSpawn':
                 player = spawnPlayer(client, false);
@@ -80,7 +76,7 @@ require('ws').createServer({host: '0.0.0.0', port:3000}, function(socket) {
         console.log('main: client', client.toString(), 'leaving: removing from clients');
         
         var removingId = client.id;
-        simulation.deleteClient(removingId);
+        simulation.deletePlayer(removingId);
         delete clients[removingId];
         client.purge();
 
@@ -133,7 +129,7 @@ timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
             for (var j = shotData.hits.length - 1; j >= 0; j--) {
                 var cid = shotData.hits[j];
                 console.log('client', cid, ' is dead, will remove from simulation');
-                simulation.deleteClient(cid);
+                simulation.deletePlayer(cid);
             }
         }
     }

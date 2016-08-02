@@ -20,6 +20,10 @@ export class PlayerRegistry {
         delete this._players[id];
     }
 
+    checkPlayerExist(id) {
+        if (!this.hasPlayer(id)) throw 'Registry: does not contains player ' + id;
+    }
+
     // getPlayer(id) {
     //     if (!this.hasPlayer(id)) throw "registry: does not contains player " + id;
     //     return this._players[id];
