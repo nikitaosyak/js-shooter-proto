@@ -2,49 +2,74 @@ import {InstantTimeline} from "./action/timeline/InstantTimeline";
 import {StreamTimeline} from "./action/timeline/StreamTimeline";
 import {PlayerRegistry} from "./PlayerRegistry";
 
-Simulation.prototype = {
+export class Simulation {
+    /**
+     * @param physicsInjection {Physics}
+     */
+    constructor(physicsInjection) {
+        this._instantTimeline = new InstantTimeline();
+        this._streamTimeline = new StreamTimeline();
+        this._registry = new PlayerRegistry();
+        this._physics = physicsInjection;
 
-    simulateInstantActions: function(currentTime) {
-        var instantData = [];
-        var hitClients = [];
+        console.log('Simulation: created');
+    }
 
-        while (!this._instantTimeline.isEmpty) {
+    /** @returns {Physics} */
+    get physics() { return this._physics; }
+    /** @returns {PlayerRegistry} */
+    get registry() { return this._registry; }
+    /** @returns {StreamTimeline} */
+    get stream() { return this._streamTimeline; }
+    /** @returns {InstantTimeline} */
+    get instant() { return this._instantTimeline; }
+
+    addPlayer(clientId, x, y, currentTime) {
+        let p = this._registry.addPlayer(clientId, x, y);
+        this._physics.addActorBody(p.id, p.pos.x, p.pos.y);
+        this._streamTimeline.addClient(p.id, p.pos.x, p.pos.y, currentTime);
+        return p;
+    }
+
+    deletePlayer(clientId) {
+        this._registry.checkPlayerExist(clientId);
+        this._physics.deleteActorBody(clientId);
+        this._streamTimeline.removePlayer(clientId);
+        this._registry.removePlayer(clientId);
+    }
+
+    simulateInstant(currentTime) {
+        let instantData = [];
+        let hitClients = [];
+
+        while(!this._instantTimeline.isEmpty) {
             //
-            // windback state to approx time of shot
-            var action = this._instantTimeline.shift();
-            if (hitClients.indexOf(action.clientId) !== -1) {
-                console.log("this client is already dead!");
+            // windback state to approx time of shot:
+            let a = this._instantTimeline.shift();
+            if (hitClients.indexOf(a.clientId) !== -1) {
+                console.log("client is already hit");
                 continue;
             }
 
-            // var backwardsTime = currentTime - action.elapsedExecuteTime;
-            // console.log('%d\'instant action. windback %d, ct %d', action.clientId, backwardsTime, currentTime);
-            var windbackState = this._streamTimeline.getCompleteStateAtTime(
-                action.elapsedExecuteTime,
-                action.clientId
+            let pastState = this._streamTimeline.getCompleteStateAtTime(
+                a.elapsedExecuteTime,
+                a.clientId
             );
-            // console.log('windbackState: ', windbackState);
-            
-            var currentState = this._physics.rewindActorsPosition(windbackState);
+            let currentState = this._physics.rewindActorsPosition(pastState);
 
-            //
-            // make a raycast
-            var myPosition = this._physics.getActorBody(action.clientId).position;
-            var startOffset = GameParams.playerRadius + 1;
-            var rayLen = GameParams.weapons.rayCast.rayLength;
-
-            var result = this._physics.shootRay(
-                myPosition,
-                action.shotPoint,
-                startOffset,
-                rayLen,
+            // make raycast:
+            let result = this._physics.shootRay(
+                this._physics.getActorBody(a.clientId).position,
+                a.shotPoint,
+                GameParams.playerRadius + 1,
+                GameParams.weapons.rayCast.rayLength,
                 this._physics.allBodies,
                 this._physics
             );
 
-            var hits = [];
-            for (var i in result.hits) {
-                var b = result.hits[i].body;
+            let hits = [];
+            for(let i in result.hits) {
+                let b = result.hits[i].body;
                 if ('clientId' in b) {
                     if (hitClients.indexOf(b.clientId) === -1) {
                         hits.push(b.clientId);
@@ -53,7 +78,6 @@ Simulation.prototype = {
                     }
                 }
             }
-            // console.log(hits);
 
             //
             // add result to pending data
@@ -65,46 +89,29 @@ Simulation.prototype = {
         }
 
         return instantData;
-    },
+    }
 
-    simulateClientStream: function(currentTime, clientId, clientState) {
-        // var needToSimulate = this._streamTimeline.hasCurrentActions(clientId);
+    simulateStream(currentTime, clientId, clientState) {
         var actions = this._streamTimeline.getCurrentActions(clientId);
         if (actions.length === 0) {
             var constAction = this._streamTimeline.getLastAction(clientId);
             constAction.update(currentTime);
-            // if (isNaN(constAction.state.x)) {
-                // var t = this._streamTimeline.getTimeline(clientId);
-                // var str = '';
-                // for (var i = 0; i < t.length; ++i) {
-                //     var a = t[i];
-                //     if (a.type == 1) {
-                //         // str += '[c' + Math.round(a.state.x) + ":" + Math.round(a.state.y) + ']';
-                //     } else {
-                //         // str += '[m' + a.startTime + ":" + a.simulationTime + ":" + a.endTime;
-                //         str += '[::' + Math.round(a.startState.x) + ":" + Math.round(a.startState.y);
-                //         str += '::' + Math.round(a.endState.x) + ":" + Math.round(a.endState.y) + ']';
-                //     }
-                // }
-                // console.log(str);
-            // }
             return { change: false, state: null };
-        } 
+        }
 
         var stateChanged = false;
         var resultState = clientState;
 
         for (var i = 0; i < actions.length; ++i) {
-            // srsly, break a fucking leg, programming. if only i could do music
             resultState = this._simulateAction(clientId, actions[i], currentTime, resultState);
         }
 
         stateChanged = clientState.x != resultState.x || clientState.y != resultState.y;
 
         return { change: stateChanged, state: resultState };
-    },
+    }
 
-    _simulateAction: function(clientId, action, currentTime, startSimState) {
+    _simulateAction(clientId, action, currentTime, startSimState) {
         var startTime;
         var endTime;
         var rollback = false;
@@ -119,7 +126,7 @@ Simulation.prototype = {
                     // console.log('rollback. time: ', action.startTime, action.endTime, action.startState.x - action.currentState.x, action.startState.y - action.currentState.y);
                     // console.log('rollback. ', action.startState);
                     this._physics.setActorBodyPosition(
-                        clientId, 
+                        clientId,
                         action.startState.x,
                         action.startState.y
                     );
@@ -143,7 +150,7 @@ Simulation.prototype = {
                 endTime = action.endTime;
                 action.simulationTime = action.endTime;
                 // console.log('simulating at once for', (endTime - startTime));
-            } 
+            }
         }
 
         if (!action.ended) {
@@ -177,52 +184,6 @@ Simulation.prototype = {
             return action.endState;
         } else {
             return action.currentState;
-        }
-    }
-};
-
-export class Simulation {
-    /**
-     * @param physicsInjection {Physics}
-     */
-    constructor(physicsInjection) {
-        this._instantTimeline = new InstantTimeline();
-        this._streamTimeline = new StreamTimeline();
-        this._registry = new PlayerRegistry();
-        this._physics = physicsInjection;
-        
-        console.log('Simulation: created');
-    }
-
-    /** @returns {Physics} */
-    get physics() { return this._physics; }
-    /** @returns {PlayerRegistry} */
-    get registry() { return this._registry; }
-    /** @returns {StreamTimeline} */
-    get stream() { return this._streamTimeline; }
-    /** @returns {InstantTimeline} */
-    get instant() { return this._instantTimeline; }
-    
-    addPlayer(clientId, x, y, currentTime) {
-        let p = this._registry.addPlayer(clientId, x, y);
-        this._physics.addActorBody(p.id, p.pos.x, p.pos.y);
-        this._streamTimeline.addClient(p.id, p.pos.x, p.pos.y, currentTime);
-        return p;
-    }
-    
-    deletePlayer(clientId) {
-        this._registry.checkPlayerExist(clientId);
-        this._physics.deleteActorBody(clientId);
-        this._streamTimeline.removePlayer(clientId);
-        this._registry.removePlayer(clientId);
-    }
-
-    simulateInstant(currentTime) {
-        let instantData = [];
-        let hitClients = [];
-
-        while(!this._instantTimeline.isEmpty) {
-            
         }
     }
 }

@@ -129,7 +129,10 @@ export class Physics {
             throw 'Physics: deleteActorBody of client ' + clientId + ' FAILED';
         }
     }
-    
+
+    /**
+    * @param clientId {String}
+    */
     getActorBody(clientId) {
         if (clientId in this._bodies) {
             return this._bodies[clientId];
@@ -144,7 +147,7 @@ export class Physics {
      */
     translateActorBody(clientId, xAmount, yAmount) {
         Matter.Body.translate(
-            this.getActorBody(clientId), 
+            this.getActorBody(clientId),
             {x: xAmount, y: yAmount}
         );
     }
@@ -157,7 +160,7 @@ export class Physics {
     setActorBodyPosition(clientId, x, y) {
         let b = this.getActorBody(clientId);
         Matter.Body.translate(
-            b, 
+            b,
             {x: x - b.position.x, y: y - b.position.y}
         )
     }
