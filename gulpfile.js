@@ -21,20 +21,26 @@ gulp.task('client-connect', function() {
     });
 });
 
-gulp.task('client-deploy', function() {
+var depList = "";
+gulp.task('client-collect-deps', function() {
+    "use strict"
+
+    var isWin = /^win/.test(process.platform);
+
+    var d = isWin ? '\\' : '\/';
+
+    return gulp.src(['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'])
+        .pipe(through.obj(function(ch, enc, cb) {
+            var t = ch.path.replace(new RegExp("^.*client" + d + "src" + d, "i"), "")
+            depList += '\n    <script type="text/javascript" src="' + t + '"></script>';
+            cb(null, ch)
+        }));
+});
+
+gulp.task('client-deploy', ['client-collect-deps'], function() {
     "use strict";
 
     var scriptsButLibs = ['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'];
-
-    var listOfScripts = "";
-    gulp.src(scriptsButLibs)
-        .pipe(through.obj(function(ch, enc, cb) {
-            var t = ch.path.replace(/^.*client\\src\\/i, "")
-            // console.log(t);
-            listOfScripts += t;
-            cb(null, ch)
-        }))
-    console.log(listOfScripts);
 
     gulp.src(scriptsButLibs)
         .pipe(jshint())
@@ -43,8 +49,9 @@ gulp.task('client-deploy', function() {
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
 
+    console.log(depList);
     gulp.src('client/src/*.html')
-        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, listOfScripts))
+        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, depList))
         .pipe(gulp.dest('client/build'));
 
     gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
@@ -63,7 +70,7 @@ gulp.task('client-deploy', function() {
 
 gulp.task('client-watch', function() {
     "use strict";
-    gulp.watch(['client/src/**/*.*'], ['client-deploy']);
+    gulp.watch(['client/src/**/*.*'], ['client-collect-deps', 'client-deploy']);
 });
 
 // </editor-fold>
