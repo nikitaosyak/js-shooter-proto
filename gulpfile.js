@@ -120,7 +120,7 @@ gulp.task('deploy-shared', function() {
 
     gulp.src(['shared/build/shared.gen.js'])
         .pipe(babel({presets: ['es2015']}))
-        .pipe(gulp.dest('client/build/js'));
+        .pipe(gulp.dest('client/src/js'));
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
