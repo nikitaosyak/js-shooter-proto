@@ -8,7 +8,8 @@ var gulp = require('gulp'),
     browserify = require('browserify'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream'),
-    replace = require('gulp-replace');
+    replace = require('gulp-replace'),
+    through = require('through2');
 
 // <editor-fold desc="client-tasks">
 gulp.task('client-connect', function() {
@@ -25,14 +26,27 @@ gulp.task('client-deploy', function() {
 
     var scriptsButLibs = ['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'];
 
+    var listOfScripts = "";
+    gulp.src(scriptsButLibs)
+        .pipe(through.obj(function(ch, enc, cb) {
+            var t = ch.path.replace(/^.*client\\src\\/i, "")
+            // console.log(t);
+            listOfScripts += t;
+            cb(null, ch)
+        }))
+    console.log(listOfScripts);
+
     gulp.src(scriptsButLibs)
         .pipe(jshint())
-        .pipe(jshint.reporter('default'));
+        .pipe(jshint.reporter('default'))
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
 
-    gulp.src('client/src/*.html').pipe(gulp.dest('client/build'));
+    gulp.src('client/src/*.html')
+        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, listOfScripts))
+        .pipe(gulp.dest('client/build'));
+
     gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
     gulp.src('client/src/assets/**/*.*').pipe(gulp.dest('client/build/assets'));
     gulp.src(['client/src/js/phaser.min.js', 'client/src/js/shared.gen.js']).pipe(gulp.dest('client/build/js'));
