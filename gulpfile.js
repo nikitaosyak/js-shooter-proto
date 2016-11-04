@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     babelify = require('babelify'),
     source = require('vinyl-source-stream'),
     replace = require('gulp-replace'),
-    through = require('through2');
+    through = require('through2'),
+    fs = require('fs');
 
 // <editor-fold desc="client-tasks">
 gulp.task('client-connect', function() {
@@ -21,7 +22,8 @@ gulp.task('client-connect', function() {
     });
 });
 
-var depList = "";
+var htmlDepList = "";
+var scriptList = [];
 gulp.task('client-collect-deps', function() {
     "use strict"
 
@@ -32,7 +34,8 @@ gulp.task('client-collect-deps', function() {
     return gulp.src(['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'])
         .pipe(through.obj(function(ch, enc, cb) {
             var t = ch.path.replace(new RegExp("^.*client" + d + "src" + d, "i"), "")
-            depList += '\n    <script type="text/javascript" src="' + t + '"></script>';
+            htmlDepList += '\n    <script type="text/javascript" src="' + t + '"></script>';
+            scriptList.push(ch.path.replace(new RegExp("^.*client" + d + "src" + d, "i"), "client" + d + "src" + d));
             cb(null, ch)
         }));
 });
@@ -49,20 +52,18 @@ gulp.task('client-deploy', ['client-collect-deps'], function() {
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
 
-    console.log(depList);
     gulp.src('client/src/*.html')
-        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, depList))
+        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, '    <script type="text/javascript" src="js/bundle.js"></script>'))
         .pipe(gulp.dest('client/build'));
 
     gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
     gulp.src('client/src/assets/**/*.*').pipe(gulp.dest('client/build/assets'));
     gulp.src(['client/src/js/phaser.min.js', 'client/src/js/shared.gen.js']).pipe(gulp.dest('client/build/js'));
 
-    gulp.src(scriptsButLibs)
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        .pipe(gulp.dest('client/build/js'));
+    browserify(scriptList)
+        .transform("babelify", {presets: ["es2015", "react"]})
+        .bundle()
+        .pipe(fs.createWriteStream("client/build/js/bundle.js"));
 
     gulp.src(['client/build/**/*.*'])
         .pipe(connect.reload());
