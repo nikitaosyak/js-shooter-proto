@@ -7,7 +7,8 @@ var gulp = require('gulp'),
     babel = require('gulp-babel'),
     browserify = require('browserify'),
     babelify = require('babelify'),
-    source = require('vinyl-source-stream');
+    source = require('vinyl-source-stream'),
+    replace = require('gulp-replace');
 
 // <editor-fold desc="client-tasks">
 gulp.task('client-connect', function() {
@@ -61,7 +62,7 @@ var server = {
     exec_name: 'main.js'
 };
 
-gulp.task('compile', function() {
+gulp.task('compile-server', function() {
     "use strict";
     // gulp.src('server/src/shared.gen.js').pipe(gulp.dest('server/build'));
     gulp.src('server/dependencies/*.js').pipe(gulp.dest('server/build/dependencies'));
@@ -73,13 +74,13 @@ gulp.task('compile', function() {
         .pipe(gulp.dest(server.compile_dest));
 });
 
-gulp.task('start-server', ['compile'], function() {
+gulp.task('start-server', ['compile-server'], function() {
     "use strict";
 
     return nodemon({
         script: server.compile_dest + '/' + server.exec_name,
         watch: 'server/src/**/*.js',
-        tasks: ['compile'],
+        tasks: ['compile-server'],
         env: { 'ASSETS_FOLDER': 'shared/assets/'}
     }).on('start', function() {
         require('fs').writeFileSync('client/src/srvreload.file', new Date());
@@ -94,17 +95,18 @@ gulp.task('deploy-shared', function() {
     "use strict";
 
     gulp.src('lib/*.js').pipe(gulp.dest('server/src/dependencies'));
-    // gulp.src(['shared/src/**/*.js', '!shared/src/matter-0.8.0.js'])
-    //     .pipe(jshint())
-    //     .pipe(jshint.reporter('default'));
 
     gulp.src(['shared/src/**/*.js'])
-        // .pipe(babel({
-        //     presets: ['es2015']
-        // }))
-        // .pipe(addSrc.prepend('lib/matter-0.8.0.js'))
         .pipe(concat('shared.gen.js'))
+        .pipe(replace(/^import.*/gm, '\n'))
+        .pipe(gulp.dest('shared/build'));
+
+    gulp.src(['shared/build/shared.gen.js'])
         .pipe(gulp.dest('server/src/dependencies'));
+
+    gulp.src(['shared/build/shared.gen.js'])
+        .pipe(babel({presets: ['es2015']}))
+        .pipe(gulp.dest('client/build/js'));
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));

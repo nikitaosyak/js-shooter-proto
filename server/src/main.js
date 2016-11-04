@@ -119,7 +119,7 @@ timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
         broadcast(SendMessage.positionBatch(streamDiff));
     }
 
-    var instantResult = simulation.simulateInstantActions(currentTime);
+    var instantResult = simulation.simulateInstant(currentTime);
     if (instantResult.length !== 0) {
         broadcast(SendMessage.shotAck(instantResult));
         for (var i = instantResult.length - 1; i >= 0; i--) {

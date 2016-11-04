@@ -2,7 +2,7 @@ import {Player} from "./entities/Player";
 
 export class PlayerRegistry {
     constructor() {
-        this._players = {};
+        this._players = [];
     }
 
     hasPlayer(id) { return id in this._players; }

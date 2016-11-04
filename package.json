@@ -18,6 +18,7 @@
     "gulp-file-cache": "0.0.1",
     "gulp-jshint": "^2.0.1",
     "gulp-nodemon": "^2.1.0",
+    "gulp-replace": "^0.5.4",
     "jshint": "^2.9.2",
     "vinyl-source-stream": "^1.1.0"
   }
