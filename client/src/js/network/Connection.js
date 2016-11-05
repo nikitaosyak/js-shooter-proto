@@ -36,7 +36,11 @@ export class Connection extends EventEmitter
          * @private
          */
         this._rpc = null;
-        this._router = new ClientRouter();
+        /**
+        * @type {ClientRouter}
+        * @private
+        */
+        this._router = null;
     }
 
     /** @returns {boolean} */
@@ -56,13 +60,14 @@ export class Connection extends EventEmitter
             console.log('connected to', self._host, ':', self._port);
             self._sync = new ServerSync(self._socket);
             self._rpc = new RPC(self._socket);
+            self._router = new ClientRouter();
             self.emit(Connection.READY);
         };
 
         this._socket.onmessage = m => {
             let data = m.data;
             let command = JSON.parse(data);
-            console.log(typeof self, ': MESSAGE:', command.id);
+            console.log('Connection : MESSAGE:', command.id);
 
             self._router.execute(command.id, command);
         };

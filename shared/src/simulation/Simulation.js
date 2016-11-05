@@ -92,7 +92,7 @@ export class Simulation {
     }
 
     simulateStream(currentTime, clientId, clientState) {
-        var actions = this._streamTimeline.getCurrentActions(clientId);
+        var actions = this._streamTimeline.getCurrentAction(clientId);
         if (actions.length === 0) {
             var constAction = this._streamTimeline.getLastAction(clientId);
             constAction.update(currentTime);

@@ -96,7 +96,7 @@ timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
         if (!player.alive) return;
         // console.log('moving client', clientId, client.pos);
         var addPointerToDiff = player.pointer.x !== player.lastSentPointer.x || player.pointer.y !== player.lastSentPointer.y;
-        var simulationResult = simulation.simulateClientStream(currentTime, player.id, player.pos);
+        var simulationResult = simulation.simulateStream(currentTime, player.id, player.pos);
 
         if (!simulationResult.change && !addPointerToDiff) return;
 

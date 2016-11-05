@@ -1,7 +1,7 @@
 /*jshint esversion: 6*/
 export class ServerSync {
     constructor(socket) {
-        console.log(typeof this, 'created');
+        console.log('ServerSync created');
         
         this._s = socket;
         this._lastPingTime = Number.NaN;
@@ -19,6 +19,7 @@ export class ServerSync {
     get srvDelta() { return this._srvDelta; }
 
     pingAck(packet) {
+        console.log(packet)
         let t = Date.now();
         let lastRtt = t - this._lastPingTime;
         this._srvDelta = t - packet.time;

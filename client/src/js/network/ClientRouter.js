@@ -3,7 +3,7 @@ export class ClientRouter extends RouterBase {
 
     constructor() {
         super();
-        this.p_ack = Facade.connection.sync.pingAck().bind(Facade.connection.sync);
+        this.p_ack = Facade.connection.sync.pingAck.bind(Facade.connection.sync);
     }
 
     debug(message) {

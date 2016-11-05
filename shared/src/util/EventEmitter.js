@@ -36,10 +36,10 @@ export class EventEmitter {
     }
 
     emit(e) {
+        console.log("event emitter: ", arguments)
         let v = this._l.get(e);
 
         if (v && v.length) {
-            arguments.shift();
             v.forEach((cb) => {
                 cb.apply(null, arguments);
             });

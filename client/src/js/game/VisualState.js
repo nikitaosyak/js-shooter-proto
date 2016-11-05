@@ -72,7 +72,7 @@ VisualState.prototype = {
 
         // client prediction for myself:
         var state = {x: this._visualMe.view.position.x, y: this._visualMe.view.position.y};
-        var newState = Facade.simulation.simulateClientStream(Date.now(), Facade.myId, state);
+        var newState = Facade.simulation.simulateStream(Date.now(), Facade.myId, state);
         if (newState.change) {
             this._visualMe.updatePos(newState.state);
         }

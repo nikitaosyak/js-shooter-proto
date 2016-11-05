@@ -51,9 +51,6 @@ function create() {
     Facade.params = GameParams;
     Facade.factory = new Factory(game);
     Facade.simulation = new Simulation(new Physics(Matter));
-//     var simulation = new shared.Simulation(
-//     new shared.Physics(require('./dependencies/matter-0.8.0').Matter)
-// );
     networkState = Facade.networkState = new State();
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
@@ -77,8 +74,6 @@ function create() {
             input = Facade.input = new Input();
         });    
     });
-
-    
 }
 
 function update() {
