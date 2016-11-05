@@ -29,13 +29,15 @@ gulp.task('client-collect-deps', function() {
 
     var isWin = /^win/.test(process.platform);
 
-    var d = isWin ? '\\' : '\/';
+    var d = isWin ? "\\\\" : "\/";
 
     return gulp.src(['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'])
         .pipe(through.obj(function(ch, enc, cb) {
-            var t = ch.path.replace(new RegExp("^.*client" + d + "src" + d, "i"), "")
+            var regex = new RegExp("^.*client" + d + "src" + d, "i");
+            var t = ch.path.replace(regex, "")
             htmlDepList += '\n    <script type="text/javascript" src="' + t + '"></script>';
-            scriptList.push(ch.path.replace(new RegExp("^.*client" + d + "src" + d, "i"), "client" + d + "src" + d));
+            console.log(regex, t);
+            scriptList.push(ch.path.replace(regex, "client" + d + "src" + d));
             cb(null, ch)
         }));
 });
@@ -63,7 +65,11 @@ gulp.task('client-deploy', ['client-collect-deps'], function() {
 
     gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
     gulp.src('client/src/assets/**/*.*').pipe(gulp.dest('client/build/assets'));
-    gulp.src(['client/src/js/phaser.min.js', 'client/src/js/shared.gen.js']).pipe(gulp.dest('client/build/js'));
+    gulp.src([
+        'client/src/js/phaser.min.js', 
+        'client/src/js/shared.gen.js', 
+        'client/src/js/matter-0.8.0.js'])
+    .pipe(gulp.dest('client/build/js'));
 
     gulp.src(scriptsButLibs)
         .pipe(replace(/^import.*/gm, '\n'))
