@@ -46,8 +46,7 @@ function Input() {
             pointerPos, 
             startOffset, 
             rayMaxLen, 
-            physics.allBodies,
-            physics
+            physics.allBodies
         );
         
         Facade.visualState.drawRay(result.start, result.end);

@@ -81,11 +81,13 @@ export class Simulation {
 
             //
             // add result to pending data
-            instantData.push({id: action.clientId, to: result.end, hits: hits});
+            instantData.push({id: a.clientId, to: result.end, hits: hits});
             hitClients = hitClients.concat(hits);
 
             // return to the original state
-            this._physics.setActorBodyPositionMass(currentState);
+            currentState.forEach(st => {
+                this._physics.setActorBodyPosition(st.clientId, st.state.x, st.state.y);
+            })
         }
 
         return instantData;

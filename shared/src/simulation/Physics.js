@@ -225,7 +225,7 @@ export class Physics {
         return {x: b.position.x, y: b.position.y};
     }
 
-    shootRay(anchor, targetDir, anchorOffset, rayLen, bodyGetter, bodyGetterCtx) {
+    shootRay(anchor, targetDir, anchorOffset, rayLen, bodies) {
         let shotDir = {x: targetDir.x - anchor.x, y: targetDir.y - anchor.y};
         shotDir = SharedUtils.Point.setMagnitude(shotDir, anchorOffset);
         let shotOrigin = {x: anchor.x + shotDir.x, y: anchor.y + shotDir.y};
@@ -238,7 +238,6 @@ export class Physics {
 
         let shooter = (start, end, bdyGttr, bdyGttrCtx) => {
             let t = Date.now();
-            let bodies = bdyGttr.call(bdyGttrCtx);
             let r = _ShitCast.complexCast(bodies, Matter.Query.ray,
                 function(bb) {
                     if ('clientId' in bb) return true;
@@ -252,7 +251,7 @@ export class Physics {
             return r;
         };
 
-        let result = shooter(shotOrigin, shotEnd, bodyGetter, bodyGetterCtx);
+        let result = shooter(shotOrigin, shotEnd, bodies);
 
         if (result.length !== 0) {
             shotEnd = SharedUtils.Point.setPointMagnitude (

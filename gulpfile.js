@@ -36,7 +36,6 @@ gulp.task('client-collect-deps', function() {
             var regex = new RegExp("^.*client" + d + "src" + d, "i");
             var t = ch.path.replace(regex, "")
             htmlDepList += '\n    <script type="text/javascript" src="' + t + '"></script>';
-            console.log(regex, t);
             scriptList.push(ch.path.replace(regex, "client" + d + "src" + d));
             cb(null, ch)
         }));
