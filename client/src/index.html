@@ -58,7 +58,7 @@ function create() {
     loadJson('assets/' + Facade.params.startMap, function(data) {
         Facade.level = new LevelModel(data);
         Facade.simulation.physics.initializeLevel(Facade.level);
-        visualState = Facade.visualState = new VisualState(game, networkState, Facade.level);
+        visualState = Facade.visualState = new VisualState(game, networkState);
         game.world.setBounds(-20, -20, Facade.level.width+40, Facade.level.height+60);
 
 

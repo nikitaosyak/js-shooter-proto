@@ -100,7 +100,7 @@ export class Physics {
             // this.addStaticBody(bs[i]);
             let b = level.bodies[i];
             let rectB = Matter.Bodies.rectangle(b.x, b.y, b.w, b.h, b.o);
-            rectB.colorCheme = b.colorCheme;
+            rectB.colorScheme = b.colorScheme;
             Matter.Body.setStatic(rectB, true);
             Matter.World.add(this._world, rectB);
         }

@@ -1,15 +1,17 @@
 
-function VisualState(game, networkState, levelModel) {
+function VisualState(game, networkState) {
     console.log("visual state created");
     this._game = game;
     this._networkState = networkState;
 
-    var g = game.add.graphics(levelModel.width, levelModel.height);
+    var g = game.add.graphics(Facade.level.width, Facade.level.height);
     g.x = 0;
     g.y = 0;
     // console.log(levelModel);
-    for (var bi = 0; bi < levelModel.bodies.length; bi++) {
-        var b = levelModel.bodies[bi];
+
+    var bodies = Facade.simulation.physics.allBodies;
+    for (var bi = 0; bi < bodies.length; bi++) {
+        var b = bodies[bi];
         if (b.colorScheme == 'bounds') {
             g.lineStyle(2, 0xCC1111, 1);
         } else {

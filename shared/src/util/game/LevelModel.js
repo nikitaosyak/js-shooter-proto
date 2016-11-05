@@ -32,7 +32,6 @@ export class LevelModel {
                     w: w, h: h,
                     o: {angle: angleRad},
                     colorScheme: layer.name,
-                    vertices: this._fromPath('L 0 0 L ' + w + ' 0 L ' + w + ' ' + h + ' L 0 ' + h)
                 };
                 this._bodies.push(boundBody);
             }
@@ -49,21 +48,4 @@ export class LevelModel {
     get bodies() { return this._bodies; }
     /** @returns {Array.<*>} */
     get respawns() { return this._respawns; }
-
-    /**
-     * Description
-     * @method fromPath
-     * @param {string} path
-     * @return {vertices} vertices
-     */
-    _fromPath(path) {
-        let pathPattern = /L\s*([\-\d\.]*)\s*([\-\d\.]*)/ig;
-        let vertices = [];
-
-        path.replace(pathPattern, function(match, x, y) {
-            vertices.push({ x: parseFloat(x, 10), y: parseFloat(y, 10) });
-        });
-
-        return vertices;
-    };
 }
