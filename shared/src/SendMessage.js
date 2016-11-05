@@ -18,8 +18,8 @@ export class SendMessage {
         return JSON.stringify({'id': 'positionBatch', 'value': stampsArray});
     }
 
-    static playerDeath(killer, victims) {
-        return JSON.stringify({'id': 'playerDeath', killer: killer, 'victims': victims});
+    static playerDeath(killer, victim) {
+        return JSON.stringify({'id': 'playerDeath', killer: killer, 'victim': victim});
     }
 
     static clientLeave(clients) {

@@ -67,20 +67,18 @@ export class ClientRouter extends RouterBase {
     }
 
     playerDeath(m) {
-        for (var i = 0; i < m.victims.length; i++) {
-            var deadId = m.victims[i];
-            if (Facade.myId == deadId) {
-                console.log('I was killed by ', m.killer);
-                Facade.networkState.removeMe();
-                Facade.input.reset();
-            } else {
-                console.log('%d was killed by %d', deadId, m.killer);
-                if (deadId in Facade.networkState.players) {
-                    Facade.networkState.removePlayerById(deadId);
-                }
+        var deadId = m.victim;
+        if (Facade.myId == deadId) {
+            console.log('I was killed by ', m.killer);
+            Facade.networkState.removeMe();
+            Facade.input.reset();
+        } else {
+            console.log('%d was killed by %d', deadId, m.killer);
+            if (deadId in Facade.networkState.players) {
+                Facade.networkState.removePlayerById(deadId);
             }
-            Facade.simulation.deletePlayer(deadId);
         }
+        Facade.simulation.deletePlayer(deadId);
     }
 
     clientLeave(m) {

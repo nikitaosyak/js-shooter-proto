@@ -67,7 +67,7 @@ export class Connection extends EventEmitter
         this._socket.onmessage = m => {
             let data = m.data;
             let command = JSON.parse(data);
-            console.log('Connection : MESSAGE:', command.id);
+            console.log('Connection : MESSAGE:', command.id, command);
 
             self._router.execute(command.id, command);
         };

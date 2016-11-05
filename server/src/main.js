@@ -124,9 +124,9 @@ timerUtil.addTimer(GameParams.serverUpdateTime, function(dt){
         broadcast(SendMessage.shotAck(instantResult));
         for (var i = instantResult.length - 1; i >= 0; i--) {
             var shotData = instantResult[i];
-            broadcast(SendMessage.playerDeath(shotData.id, shotData.hits));
-
+            
             for (var j = shotData.hits.length - 1; j >= 0; j--) {
+                broadcast(SendMessage.playerDeath(shotData.id, shotData.hits[j]));
                 var cid = shotData.hits[j];
                 console.log('client', cid, ' is dead, will remove from simulation');
                 simulation.deletePlayer(cid);
