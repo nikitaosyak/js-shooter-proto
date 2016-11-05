@@ -5,8 +5,9 @@
     <title>Phaser multiplayer game</title>
 
     <script type="text/javascript" src="js/phaser.min.js"></script>
-
-    <script type="text/javascript"> var exports = {}; </script>
+    <script type="text/javascript" src="js/matter-0.8.0.js"></script>
+    
+    <script type="text/javascript"> var exports = {}; var module = {'exports': {}}; </script>
     <script type="text/javascript" src="js/shared.gen.js"></script>
 
     <!-- GENERATOR_MARK -->
@@ -34,6 +35,8 @@ var networkState;
 var visualState;
 var input;
 
+var updateLock = true;
+
 function preload() {
     game.load.image('player_sprite', 'assets/test_player.png');
     game.load.image('player_dir_arrow', 'assets/test_arrow.png');
@@ -47,7 +50,10 @@ function create() {
     Facade.game = game;
     Facade.params = GameParams;
     Facade.factory = new Factory(game);
-    Facade.simulation = new Simulation();
+    Facade.simulation = new Simulation(new Physics(Matter));
+//     var simulation = new shared.Simulation(
+//     new shared.Physics(require('./dependencies/matter-0.8.0').Matter)
+// );
     networkState = Facade.networkState = new State();
 
     var loadingSprite = game.add.sprite(10, 10, 'loading');
@@ -64,6 +70,7 @@ function create() {
             Facade.connection = new Connection(settings.server_address, parseInt(settings.server_port));
             Facade.connection.listen(Connection.READY, function() {
                 game.world.remove(loadingSprite);
+                updateLock = false;
             });
             Facade.connection.connect();
 
@@ -75,6 +82,7 @@ function create() {
 }
 
 function update() {
+    if (updateLock) return;
     if (Facade.connection === null || !Facade.connection.ready) {
         // console.log('cannot update');
         return;

@@ -43,27 +43,32 @@ gulp.task('client-collect-deps', function() {
 gulp.task('client-deploy', ['client-collect-deps'], function() {
     "use strict";
 
-    var scriptsButLibs = ['client/src/js/**/*.js', '!client/src/js/phaser.min.js', '!client/src/js/shared.gen.js'];
+    var scriptsButLibs = [
+        'client/src/js/**/*.js', 
+        '!client/src/js/phaser.min.js', 
+        '!client/src/js/shared.gen.js',
+        '!client/src/js/matter-0.8.0.js'
+        ];
 
-    gulp.src(scriptsButLibs)
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'))
+    // gulp.src(scriptsButLibs)
+    //     .pipe(jshint())
+    //     .pipe(jshint.reporter('default'))
 
     gulp.src(['shared/assets/**/*.*'])
         .pipe(gulp.dest('client/build/assets'));
 
     gulp.src('client/src/*.html')
-        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, '    <script type="text/javascript" src="js/bundle.js"></script>'))
+        .pipe(replace(/.*<!-- GENERATOR_MARK -->.*/m, htmlDepList))
         .pipe(gulp.dest('client/build'));
 
     gulp.src('client/src/css/**/*.css').pipe(gulp.dest('client/build/css'));
     gulp.src('client/src/assets/**/*.*').pipe(gulp.dest('client/build/assets'));
     gulp.src(['client/src/js/phaser.min.js', 'client/src/js/shared.gen.js']).pipe(gulp.dest('client/build/js'));
 
-    browserify(scriptList)
-        .transform("babelify", {presets: ["es2015", "react"]})
-        .bundle()
-        .pipe(fs.createWriteStream("client/build/js/bundle.js"));
+    gulp.src(scriptsButLibs)
+        .pipe(replace(/^import.*/gm, '\n'))
+        .pipe(babel({presets: ['es2015']}))
+        .pipe(gulp.dest('client/build/js'));
 
     gulp.src(['client/build/**/*.*'])
         .pipe(connect.reload());
@@ -117,6 +122,7 @@ gulp.task('deploy-shared', function() {
     "use strict";
 
     gulp.src('lib/*.js').pipe(gulp.dest('server/src/dependencies'));
+    gulp.src('lib/*.js').pipe(gulp.dest('client/src/js'));
 
     gulp.src(['shared/src/**/*.js'])
         .pipe(concat('shared.gen.js'))
